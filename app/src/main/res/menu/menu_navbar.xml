@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/dashboard"
+        android:title="Dashboard"
+        android:icon="@drawable/selector_dashboard"
+        />
+    <item
+        android:id="@+id/grades"
+        android:title="Grades"
+        android:icon="@drawable/selector_grades"
+        />
+    <item
+        android:id="@+id/evaluation"
+        android:title="Evaluation"
+        android:icon="@drawable/selector_evaluation"
+        />
+
+    <item
+        android:id="@+id/accounts"
+        android:title="Accounts"
+        android:icon="@drawable/selector_account"
+        />
+
+    <item
+        android:id="@+id/more"
+        android:title="More"
+        android:icon="@drawable/ic_more_horiz"
+        />
+
+
+</menu>
