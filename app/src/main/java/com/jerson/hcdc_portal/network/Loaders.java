@@ -293,9 +293,9 @@ public class Loaders {
         data.postValue(links);
     }
 
-    public static void account(MutableLiveData<List<AccountModel>> data, MutableLiveData<String> response,String link) throws IOException {
+    public static void account(MutableLiveData<List<AccountModel>> data, MutableLiveData<String> response, String link) throws IOException {
         List<AccountModel> accounts = new ArrayList<>();
-        Connection.Response gradePage = Jsoup.connect(AppConstants.baseUrl + AppConstants.accountUrl+link)
+        Connection.Response gradePage = Jsoup.connect(AppConstants.baseUrl + link)
                 .timeout(timeout)
                 .userAgent(AppConstants.userAgent)
                 .headers(headers)
@@ -361,7 +361,7 @@ public class Loaders {
                         );
                 accounts.add(model);
 
-                if(indexData == iData){
+                if (indexData == iData) {
                     break;
                 }
 

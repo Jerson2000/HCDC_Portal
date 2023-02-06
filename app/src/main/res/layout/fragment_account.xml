@@ -50,7 +50,33 @@
             android:layout_marginStart="@dimen/_5sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_above="@id/dueLayout"
             android:clipToPadding="true" />
+
+        <LinearLayout
+            android:id="@+id/dueLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="@dimen/_10sdp">
+
+            <TextView
+                android:id="@+id/dueText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Due"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:textSize="@dimen/_14ssp"/>
+            <TextView
+                android:id="@+id/dueAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Amount"
+                android:textSize="@dimen/_16ssp"
+                android:textAlignment="center"/>
+
+        </LinearLayout>
 
     </RelativeLayout>
 

@@ -107,12 +107,12 @@ public class AccountFragment extends Fragment {
         viewModel.getResponse().observe(getActivity(), res -> {
             try {
 
-                if (res != null) {
-                    binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
-                    binding.retryLayout.retryBtn.setEnabled(true);
-                    binding.semSelectorLayout.setVisibility(View.GONE);
-                    binding.accountRecyclerView.setVisibility(View.GONE);
-                }
+//                if (res != null) {
+//                    binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
+//                    binding.retryLayout.retryBtn.setEnabled(true);
+//                    binding.semSelectorLayout.setVisibility(View.GONE);
+//                    binding.accountRecyclerView.setVisibility(View.GONE);
+//                }
 
             } catch (NullPointerException e) {
                 Log.d(TAG, "getResponse: " + e.getMessage());
@@ -126,6 +126,8 @@ public class AccountFragment extends Fragment {
             if(data!=null){
                 accList.addAll(data);
                 adapter.notifyDataSetChanged();
+                binding.dueText.setText(accList.get(0).getDueText());
+                binding.dueAmount.setText(accList.get(0).getDue());
             }
         });
     }
