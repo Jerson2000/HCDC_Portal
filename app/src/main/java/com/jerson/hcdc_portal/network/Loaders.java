@@ -2,6 +2,8 @@ package com.jerson.hcdc_portal.network;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.jerson.hcdc_portal.model.AccountLinksModel;
+import com.jerson.hcdc_portal.model.AccountModel;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.model.GradeLinksModel;
 import com.jerson.hcdc_portal.model.GradeModel;
@@ -74,7 +76,7 @@ public class Loaders {
         boolean wrongPass = doc.body().text().contains("CROSSIAN LOG-IN");
 
         if (wrongPass) {
-            System.out.println("Wrong Password!");
+            System.out.println("Incorrect Credentials!");
             response.postValue("Incorrect Credentials!");
         }
         if (!wrongPass) {
@@ -168,9 +170,9 @@ public class Loaders {
 
     }
 
-    public static void grades(MutableLiveData<List<GradeModel>> data, MutableLiveData<String> response,String link) throws IOException {
+    public static void grades(MutableLiveData<List<GradeModel>> data, MutableLiveData<String> response, String link) throws IOException {
         List<GradeModel> gradeModelList = new ArrayList<>();
-        Connection.Response homepage = Jsoup.connect(AppConstants.baseUrl+link)
+        Connection.Response homepage = Jsoup.connect(AppConstants.baseUrl + link)
                 .timeout(timeout)
                 .userAgent(AppConstants.userAgent)
                 .headers(headers)
@@ -186,14 +188,43 @@ public class Loaders {
             Elements tableData = list.select("tr");
             Elements spans = list.select("span");
 
-            Element span = spans.first();
-            Element span2 = spans.last();
 
-            System.out.println(span.text());
-            System.out.println(span2.text());
+            int rows = tableData.size() - 3;
+            int rows2 = tableData.size() - 1;
+            int i2 = 0;
+            String earnText, earn = null, aveText, ave = null;
 
-            int rows =tableData.size() - 3;
 
+            // GET AVERAGE and EARNED UNITS
+            for (Element rowData : tableData) {
+
+                Elements earnUnitsText = rowData.select("td:eq(0)");
+                Elements earnUnits = rowData.select("td:eq(1)");
+                Elements averageText = rowData.select("td:eq(2)");
+                Elements average = rowData.select("td:eq(3)");
+
+                earnText = earnUnitsText.text();
+                earn = earnUnits.text();
+                aveText = averageText.text();
+                ave = average.text();
+
+                i2++;
+
+                if (i2 == rows2) {
+                    System.out.println(earnText);
+                    System.out.println(earn);
+                    System.out.println(aveText);
+                    System.out.println(ave);
+
+//                    GradeModel model = new GradeModel();
+//                    gradeModelList.add(model);
+                    break;
+                }
+
+            }
+
+
+            // GET ALL SUBJECTS GRADES
             for (Element rowData : tableData) {
                 //  System.out.println("----------- ROW "+i+"--------------"); // Test purposes
                 i++;
@@ -208,12 +239,7 @@ public class Loaders {
                 Elements finalremark = rowData.select("td:eq(7)");
                 Elements teacher = rowData.select("td:eq(8)");
 
-                System.out.println("Code "+code.text());
-
-                if(i== rows){
-
-                    break;
-                }
+//                System.out.println("Code "+code.text());
 
                 GradeModel model = new GradeModel
                         (
@@ -225,15 +251,125 @@ public class Loaders {
                                 mideremark.text(),
                                 finalgrade.text(),
                                 finalremark.text(),
-                                teacher.text()
+                                teacher.text(),
+                                earn,
+                                ave
                         );
-
                 gradeModelList.add(model);
 
+                if (i == rows) {
+
+                    break;
+                }
 
             }
+
         }
 
         data.postValue(gradeModelList);
     }
+
+    public static void accountLink(MutableLiveData<List<AccountLinksModel>> data, MutableLiveData<String> response) throws IOException {
+        List<AccountLinksModel> links = new ArrayList<>();
+        Connection.Response gradePage = Jsoup.connect(AppConstants.baseUrl + AppConstants.accountUrl)
+                .timeout(timeout)
+                .userAgent(AppConstants.userAgent)
+                .headers(headers)
+                .cookies(cookies)
+                .method(Connection.Method.GET)
+                .execute();
+        Document doc = gradePage.parse();
+
+        Elements semList = doc.select("main.app-content ul li.nav-item");
+
+        for (Element list : semList) {
+            String link = list.select("a.nav-link").attr("href");
+            String text = list.select("a.nav-link").text();
+            AccountLinksModel model = new AccountLinksModel(link, text);
+            links.add(model);
+
+        }
+
+        data.postValue(links);
+    }
+
+    public static void account(MutableLiveData<List<AccountModel>> data, MutableLiveData<String> response,String link) throws IOException {
+        List<AccountModel> accounts = new ArrayList<>();
+        Connection.Response gradePage = Jsoup.connect(AppConstants.baseUrl + AppConstants.accountUrl+link)
+                .timeout(timeout)
+                .userAgent(AppConstants.userAgent)
+                .headers(headers)
+                .cookies(cookies)
+                .method(Connection.Method.GET)
+                .execute();
+        Document doc = gradePage.parse();
+
+        Elements table = doc.select("div.col-md-9 section.invoice tbody");
+
+//        System.out.println(table);
+
+        for (Element tabData : table) {
+            Elements rowsData = tabData.select("tr");
+
+//            System.out.println("ROWDATA::  "+rowsData);
+
+            int iDue = rowsData.size() - 1;
+            int indexDue = 0;
+            int iData = rowsData.size() - 2;
+            int indexData = 0;
+            String dueTex = null;
+            String dueDat = null;
+
+            System.out.println(rowsData.text());
+
+            // Get Due Payment
+            for (Element row : rowsData) {
+                indexDue++;
+                Elements dueText = row.select("td:eq(0)");
+                Elements dueData = row.select("td:eq(1)");
+                // System.out.println("ROWS IN FOR LOOP::"+ indexDue+" :: "+row);
+                if (indexDue == iDue) {
+
+                    dueTex = dueText.text();
+                    dueDat = dueData.text();
+                    break;
+                }
+            }
+
+            for (Element row : rowsData) {
+                indexData++;
+                Elements date = row.select("td:eq(0)");
+                Elements ref = row.select("td:eq(1)");
+                Elements desc = row.select("td:eq(2)");
+                Elements period = row.select("td:eq(3)");
+                Elements added = row.select("td:eq(4)");
+                Elements deducted = row.select("td:eq(5)");
+                Elements runBal = row.select("td:eq(6)");
+
+                AccountModel model = new AccountModel
+                        (
+                                date.text(),
+                                ref.text(),
+                                desc.text(),
+                                period.text(),
+                                added.text(),
+                                deducted.text(),
+                                runBal.text(),
+                                dueTex,
+                                dueDat
+
+                        );
+                accounts.add(model);
+
+                if(indexData == iData){
+                    break;
+                }
+
+            }
+
+        }
+
+        data.postValue(accounts);
+    }
+
 }

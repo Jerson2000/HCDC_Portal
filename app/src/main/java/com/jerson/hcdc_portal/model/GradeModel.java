@@ -16,7 +16,7 @@ public class GradeModel {
     public GradeModel() {
     }
 
-    public GradeModel(String code, String subject, String description, String unit, String midGrade, String midRemark, String finalGrade, String finalRemark, String teacher) {
+    public GradeModel(String code, String subject, String description, String unit, String midGrade, String midRemark, String finalGrade, String finalRemark, String teacher,String earnedUnits, String average) {
         this.code = code;
         this.subject = subject;
         this.description = description;
@@ -26,6 +26,8 @@ public class GradeModel {
         this.finalGrade = finalGrade;
         this.finalRemark = finalRemark;
         this.teacher = teacher;
+        this.earnedUnits = earnedUnits;
+        this.average = average;
     }
 
     public String getCode() {

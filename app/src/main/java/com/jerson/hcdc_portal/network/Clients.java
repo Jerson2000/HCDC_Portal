@@ -6,6 +6,8 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.jerson.hcdc_portal.model.AccountLinksModel;
+import com.jerson.hcdc_portal.model.AccountModel;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.model.GradeLinksModel;
 import com.jerson.hcdc_portal.model.GradeModel;
@@ -36,13 +38,10 @@ public class Clients {
                 response.postValue(e.getLocalizedMessage());
             }
         });
-       /* new Thread() {
-            @Override
-            public void run() {
 
-                Loaders.login(response, email, pass);
-            }
-        }.start();*/
+        /* new Thread(() -> {
+            Loaders.login(response, email, pass);
+        }).start();*/
     }
 
     public  void dashboardData(MutableLiveData<List<DashboardModel>> data, MutableLiveData<String> response) {
@@ -55,9 +54,6 @@ public class Clients {
             }
         });
 
-       /* new Thread(() -> {
-            Loaders.dashboard(data, response);
-        }).start();*/
     }
 
     public void gradesLinkData(MutableLiveData<List<GradeLinksModel>> data, MutableLiveData<String> response) {
@@ -71,9 +67,7 @@ public class Clients {
             }
         });
 
-       /* new Thread(() -> {
-            Loaders.gradesLink(data, response);
-        }).start();*/
+
     }
 
     public void grades(MutableLiveData<List<GradeModel>> data,MutableLiveData<String> response,String link){
@@ -82,6 +76,28 @@ public class Clients {
                 Loaders.grades(data,response,link);
             } catch (IOException e) {
                 Log.d(TAG, "grades: "+e.getLocalizedMessage());
+                response.postValue(e.getLocalizedMessage());
+            }
+        });
+    }
+
+    public void accountLinks(MutableLiveData<List<AccountLinksModel>> data,MutableLiveData<String> response){
+        executor.execute(() -> {
+            try {
+                Loaders.accountLink(data, response);
+            } catch (IOException e) {
+                Log.d(TAG, "accountLinks: "+e.getLocalizedMessage());
+                response.postValue(e.getLocalizedMessage());
+            }
+        });
+    }
+
+    public void account(MutableLiveData<List<AccountModel>> data, MutableLiveData<String> response,String link){
+        executor.execute(() -> {
+            try {
+                Loaders.account(data, response,link);
+            } catch (IOException e) {
+                Log.d(TAG, "account: "+e.getMessage());
                 response.postValue(e.getLocalizedMessage());
             }
         });

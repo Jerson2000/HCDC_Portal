@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
-//        textChangeListener();
+        textChangeListener();
 
         binding.loginBtn.setOnClickListener(v -> {
             if (binding.emailET.getText().toString().equals("")) {
@@ -69,7 +69,9 @@ public class LoginActivity extends AppCompatActivity {
 
     void Init(String email, String pass) {
         viewModel.login(email, pass).observeForever(response -> {
-            if(response.toLowerCase(Locale.ROOT).contains("timeout")||response.toLowerCase(Locale.ROOT).contains("error fetching url")){
+            if(response.toLowerCase(Locale.ROOT).contains("timeout")||
+                    response.toLowerCase(Locale.ROOT).contains("error fetching url") ||
+                    response.toLowerCase(Locale.ROOT).contains("time out")){
                 SnackBarUtil.SnackBarIndefiniteDuration(binding.snackBarLayout, "Connection Timeout")
                         .setAction("Retry", view -> {
                             retry(email,pass);
@@ -81,6 +83,8 @@ public class LoginActivity extends AppCompatActivity {
 
             if(response.toLowerCase(Locale.ROOT).contains("credentials")){
                 SnackBarUtil.SnackBarLong(binding.snackBarLayout, response).show();
+                binding.progressBar.setVisibility(View.GONE);
+                binding.loginBtn.setEnabled(true);
                 return;
             }
 

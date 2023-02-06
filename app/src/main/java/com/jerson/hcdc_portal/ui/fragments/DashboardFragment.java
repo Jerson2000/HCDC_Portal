@@ -23,6 +23,7 @@ import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class DashboardFragment extends Fragment {
 
@@ -45,12 +46,10 @@ public class DashboardFragment extends Fragment {
         binding.recyclerView.setAdapter(adapter);
 
 
-        if (dashList.size() == 0) {
-            getData();
-            getDataRes();
-        }
+        getData();
+        getDataRes();
 
-        binding.retryLayout.retryBtn.setOnClickListener(v->{
+        binding.retryLayout.retryBtn.setOnClickListener(v -> {
             retry();
         });
 
@@ -60,24 +59,34 @@ public class DashboardFragment extends Fragment {
 
     void getData() {
         binding.progressBar.setVisibility(View.VISIBLE);
-        viewModel.getDashboardData().observeForever(data -> {
+        viewModel.getDashboardData().observe(getActivity(),data -> {
             if (data != null) {
-                dashList.clear();
-                dashList.addAll(data);
-                adapter.notifyDataSetChanged();
-                binding.progressBar.setVisibility(View.GONE);
-                binding.retryLayout.getRoot().setVisibility(View.GONE);
-                binding.recyclerView.setVisibility(View.VISIBLE);
+                try {
+                    dashList.clear();
+                    dashList.addAll(data);
+                    adapter.notifyDataSetChanged();
+
+                    if(binding.progressBar.getVisibility() == View.VISIBLE){
+                        binding.progressBar.setVisibility(View.INVISIBLE);
+                        return;
+                    }
+
+                    binding.retryLayout.getRoot().setVisibility(View.GONE);
+                    binding.recyclerView.setVisibility(View.VISIBLE);
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "getData: " + e.getMessage());
+                }
+
             }
         });
     }
 
     void getDataRes() {
-        viewModel.getDashboardResponse().observeForever(res -> {
+        viewModel.getDashboardResponse().observe(getActivity(),res -> {
             Log.d(TAG, "getDataRes: " + res);
-            if(res.contains("timeout")) {
+            if (res.contains("timeout") || res.contains("error fetching")) {
                 binding.recyclerView.setVisibility(View.GONE);
-                binding.progressBar.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.INVISIBLE);
                 binding.retryLayout.getRoot().setBackgroundColor(Color.WHITE);
                 binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
                 binding.retryLayout.retryBtn.setEnabled(true);
@@ -86,10 +95,16 @@ public class DashboardFragment extends Fragment {
         });
     }
 
-    void retry(){
-        viewModel.getDashboardData();
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.retryLayout.retryBtn.setEnabled(false);
+    void retry() {
+        try{
+            viewModel.getDashboardData();
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.retryLayout.retryBtn.setEnabled(false);
+
+        }catch (NullPointerException e){
+            Log.d(TAG, "retry: "+e.getMessage());
+        }
+
 
     }
 
