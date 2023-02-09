@@ -84,9 +84,6 @@ public class GradesFragment extends Fragment {
                 for (GradeLinksModel d : data) {
                     list.add(d.getSemGradeText());
                 }
-//                binding.spinnerSem.clearListSelection();
-//                binding.spinnerSem.setSelected(true);
-//                binding.spinnerSem.setHint(list.get(0));
                 arrayAdapter.notifyDataSetChanged();
 
             }

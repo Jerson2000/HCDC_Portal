@@ -25,6 +25,7 @@ import com.jerson.hcdc_portal.viewmodel.AccountViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class AccountFragment extends Fragment {
     private static final String TAG = "AccountFragment";
@@ -51,7 +52,7 @@ public class AccountFragment extends Fragment {
         binding.spinnerSem.setAdapter(arrayAdapter);
 
         binding.accountRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new AccountAdapter(getActivity(),accList);
+        adapter = new AccountAdapter(getActivity(), accList);
         binding.accountRecyclerView.setAdapter(adapter);
 
         getLinks();
@@ -82,8 +83,9 @@ public class AccountFragment extends Fragment {
     }
 
     void getLinks() {
-        viewModel.getDataLinks().observe(getActivity(), data -> {
-            try {
+        try {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            viewModel.getDataLinks().observe(getActivity(), data -> {
                 if (data != null) {
                     list.clear();
                     semAccountList.clear();
@@ -91,45 +93,54 @@ public class AccountFragment extends Fragment {
                     for (AccountLinksModel d : data) {
                         list.add(d.getSemAccountText());
                     }
-
+                    binding.progressBar.setVisibility(View.GONE);
                     arrayAdapter.notifyDataSetChanged();
                 }
+            });
 
-            } catch (NullPointerException e) {
-                Log.d(TAG, "onCreateView: " + e.getMessage());
-            }
+        } catch (NullPointerException e) {
+            Log.d(TAG, "getLinks: " + e.getMessage());
+        }
 
-
-        });
     }
 
     void getResponse() {
-        viewModel.getResponse().observe(getActivity(), res -> {
-            try {
+        try {
+            viewModel.getResponse().observe(getActivity(), res -> {
+                if (res.toLowerCase(Locale.ROOT).contains("timeout") || res.toLowerCase(Locale.ROOT).contains("fetch")) {
+                    binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
+                    binding.retryLayout.retryBtn.setEnabled(true);
+                    binding.semSelectorLayout.setVisibility(View.GONE);
+                    binding.accountRecyclerView.setVisibility(View.GONE);
+                }
 
-//                if (res != null) {
-//                    binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
-//                    binding.retryLayout.retryBtn.setEnabled(true);
-//                    binding.semSelectorLayout.setVisibility(View.GONE);
-//                    binding.accountRecyclerView.setVisibility(View.GONE);
-//                }
+            });
 
-            } catch (NullPointerException e) {
-                Log.d(TAG, "getResponse: " + e.getMessage());
-            }
+        } catch (NullPointerException e) {
+            Log.d(TAG, "getResponse: " + e.getMessage());
+        }
 
-        });
     }
 
-    void getData(String link){
-        viewModel.getData(link).observe(getActivity(),data->{
-            if(data!=null){
-                accList.addAll(data);
-                adapter.notifyDataSetChanged();
-                binding.dueText.setText(accList.get(0).getDueText());
-                binding.dueAmount.setText(accList.get(0).getDue());
-            }
-        });
+    void getData(String link) {
+        try {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            viewModel.getData(link).observe(getActivity(), data -> {
+                if (data != null) {
+                    accList.clear();
+                    accList.addAll(data);
+                    adapter.notifyDataSetChanged();
+                    binding.dueText.setText(accList.get(0).getDueText());
+                    binding.dueAmount.setText(accList.get(0).getDue());
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.semSelectorLayout.setVisibility(View.VISIBLE);
+                    binding.accountRecyclerView.setVisibility(View.VISIBLE);
+                }
+            });
+        } catch (NullPointerException e) {
+            Log.d(TAG, "getData: " + e.getMessage());
+        }
+
     }
 
 
