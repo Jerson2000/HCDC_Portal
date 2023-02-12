@@ -16,10 +16,10 @@
         android:label="fragment_dashboard"
         tools:layout="@layout/fragment_dashboard" />
     <fragment
-        android:id="@+id/evaluationFragment"
-        android:name="com.jerson.hcdc_portal.ui.fragments.EvaluationFragment"
+        android:id="@+id/enrollHistory"
+        android:name="com.jerson.hcdc_portal.ui.fragments.EnrollmentHistoryFragment"
         android:label="fragment_evaluation"
-        tools:layout="@layout/fragment_evaluation" />
+        tools:layout="@layout/fragment_enrollment_history" />
     <fragment
         android:id="@+id/gradesFragment"
         android:name="com.jerson.hcdc_portal.ui.fragments.GradesFragment"

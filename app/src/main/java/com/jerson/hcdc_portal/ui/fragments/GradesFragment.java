@@ -85,6 +85,8 @@ public class GradesFragment extends Fragment {
                     list.add(d.getSemGradeText());
                 }
                 arrayAdapter.notifyDataSetChanged();
+                binding.semSelectorLayout.setVisibility(View.VISIBLE);
+                binding.progressBar.setVisibility(View.GONE);
 
             }
 

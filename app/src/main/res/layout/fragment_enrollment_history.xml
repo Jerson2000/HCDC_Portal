@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.GradesFragment">
+    tools:context=".ui.fragments.EnrollmentHistoryFragment">
 
     <include
         android:id="@+id/retryLayout"
@@ -14,13 +14,14 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:visibility="gone"
             android:indeterminateTint="@color/md_theme_dark_errorContainer"/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -44,52 +45,15 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/gradeRecyclerView"
+            android:id="@+id/enrHistRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/unitsGradeLayout"
             android:layout_below="@id/semSelectorLayout"
             android:layout_marginStart="@dimen/_5sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_5sdp"
             android:clipToPadding="true" />
 
-        <LinearLayout
-            android:id="@+id/unitsGradeLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_alignParentBottom="true"
-            android:paddingLeft="@dimen/_5sdp"
-            android:paddingRight="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_10sdp"
-            android:orientation="vertical">
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_1sdp"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_5sdp"/>
-
-            <TextView
-                android:id="@+id/earnUnits"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/_16ssp"
-                android:text="Earned Units: "/>
-
-            <TextView
-                android:id="@+id/weightedGrade"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/_16ssp"
-                android:text="Weighted % Ave: "/>
-
-
-        </LinearLayout>
-
-
     </RelativeLayout>
-
 
 </FrameLayout>

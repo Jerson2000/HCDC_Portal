@@ -84,7 +84,6 @@ public class AccountFragment extends Fragment {
 
     void getLinks() {
         try {
-            binding.progressBar.setVisibility(View.VISIBLE);
             viewModel.getDataLinks().observe(getActivity(), data -> {
                 if (data != null) {
                     list.clear();
@@ -94,6 +93,8 @@ public class AccountFragment extends Fragment {
                         list.add(d.getSemAccountText());
                     }
                     binding.progressBar.setVisibility(View.GONE);
+                    binding.semSelectorLayout.setVisibility(View.VISIBLE);
+                    binding.accountRecyclerView.setVisibility(View.VISIBLE);
                     arrayAdapter.notifyDataSetChanged();
                 }
             });
@@ -124,7 +125,6 @@ public class AccountFragment extends Fragment {
 
     void getData(String link) {
         try {
-            binding.progressBar.setVisibility(View.VISIBLE);
             viewModel.getData(link).observe(getActivity(), data -> {
                 if (data != null) {
                     accList.clear();

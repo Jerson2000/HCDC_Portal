@@ -9,6 +9,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.jerson.hcdc_portal.model.AccountLinksModel;
 import com.jerson.hcdc_portal.model.AccountModel;
 import com.jerson.hcdc_portal.model.DashboardModel;
+import com.jerson.hcdc_portal.model.EnrollHistModel;
+import com.jerson.hcdc_portal.model.EnrollLinksModel;
 import com.jerson.hcdc_portal.model.GradeLinksModel;
 import com.jerson.hcdc_portal.model.GradeModel;
 
@@ -98,6 +100,28 @@ public class Clients {
                 Loaders.account(data, response,link);
             } catch (IOException e) {
                 Log.d(TAG, "account: "+e.getMessage());
+                response.postValue(e.getLocalizedMessage());
+            }
+        });
+    }
+
+    public void enrollHistory(MutableLiveData<List<EnrollHistModel>> data,MutableLiveData<String> response,String link){
+        executor.execute(() -> {
+            try {
+                Loaders.enrollHistory(data, response,link);
+            } catch (IOException e) {
+                Log.d(TAG, "enrollHistory: "+e.getMessage());
+                response.postValue(e.getLocalizedMessage());
+            }
+        });
+    }
+
+    public void enrollLink(MutableLiveData<List<EnrollLinksModel>> data, MutableLiveData<String> response){
+        executor.execute(() -> {
+            try {
+                Loaders.enrollLink(data, response);
+            } catch (IOException e) {
+                Log.d(TAG, "enrollLink: "+e.getMessage());
                 response.postValue(e.getLocalizedMessage());
             }
         });

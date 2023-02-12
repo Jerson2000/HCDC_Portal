@@ -36,17 +36,15 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
-//        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
         textChangeListener();
-
         binding.loginBtn.setOnClickListener(v -> {
             if (binding.emailET.getText().toString().equals("")) {
                 binding.emailLayout.setError("Cannot be empty");

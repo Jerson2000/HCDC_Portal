@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.jerson.hcdc_portal.model.AccountLinksModel;
 import com.jerson.hcdc_portal.model.AccountModel;
 import com.jerson.hcdc_portal.model.DashboardModel;
+import com.jerson.hcdc_portal.model.EnrollHistModel;
+import com.jerson.hcdc_portal.model.EnrollLinksModel;
 import com.jerson.hcdc_portal.model.GradeLinksModel;
 import com.jerson.hcdc_portal.model.GradeModel;
 import com.jerson.hcdc_portal.util.AppConstants;
@@ -20,6 +22,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.CacheControl;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class Loaders {
     private static final String TAG = "Loaders";
@@ -372,4 +386,58 @@ public class Loaders {
         data.postValue(accounts);
     }
 
+
+    public static void enrollLink(MutableLiveData<List<EnrollLinksModel>> data, MutableLiveData<String> response) throws IOException {
+        List<EnrollLinksModel> links = new ArrayList<>();
+        Connection.Response gradePage = Jsoup.connect(AppConstants.baseUrl + AppConstants.enrollHistory)
+                .timeout(timeout)
+                .userAgent(AppConstants.userAgent)
+                .headers(headers)
+                .cookies(cookies)
+                .method(Connection.Method.GET)
+                .execute();
+        Document doc = gradePage.parse();
+
+        Elements semList = doc.select("main.app-content ul li.nav-item:gt(0)");
+
+        for (Element list : semList) {
+            String link = list.select("a.nav-link").attr("href");
+            String text = list.select("a.nav-link").text();
+            EnrollLinksModel model = new EnrollLinksModel(link, text);
+            links.add(model);
+
+        }
+
+        data.postValue(links);
+    }
+
+    public static void enrollHistory(MutableLiveData<List<EnrollHistModel>> data, MutableLiveData<String> response, String link) throws IOException {
+        List<EnrollHistModel> history = new ArrayList<>();
+        Connection.Response gradePage = Jsoup.connect(AppConstants.baseUrl + link)
+                .timeout(timeout)
+                .userAgent(AppConstants.userAgent)
+                .headers(headers)
+                .cookies(cookies)
+                .method(Connection.Method.GET)
+                .execute();
+        Document doc = gradePage.parse();
+
+        Elements table = doc.select("div.col-md-9 table > tbody");
+
+
+        for (Element e : table.select("tr")) {
+            System.out.println(e);
+            EnrollHistModel model = new EnrollHistModel
+                    (
+                            e.select("td:eq(0)").text(),
+                            e.select("td:eq(1)").text(),
+                            e.select("td:eq(2)").text(),
+                            e.select("td:eq(3)").text()
+                    );
+
+            history.add(model);
+        }
+
+        data.postValue(history);
+    }
 }

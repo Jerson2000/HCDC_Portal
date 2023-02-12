@@ -29,5 +29,6 @@ public class AppConstants {
     public static final String gradesUrl = "/grade_hed";
     public static final String evaluationsUrl = "/evaluation_hed";
     public static final String accountUrl = "/account_hed";
+    public static final String enrollHistory = "/enrollmentHistory";
 
 }
