@@ -426,7 +426,7 @@ public class Loaders {
 
 
         for (Element e : table.select("tr")) {
-            System.out.println(e);
+
             EnrollHistModel model = new EnrollHistModel
                     (
                             e.select("td:eq(0)").text(),

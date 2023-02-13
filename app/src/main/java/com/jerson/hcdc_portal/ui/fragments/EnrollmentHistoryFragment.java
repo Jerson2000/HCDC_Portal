@@ -9,11 +9,13 @@ import android.widget.ArrayAdapter;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.jerson.hcdc_portal.databinding.FragmentEnrollmentHistoryBinding;
 import com.jerson.hcdc_portal.model.AccountLinksModel;
 import com.jerson.hcdc_portal.model.EnrollHistModel;
 import com.jerson.hcdc_portal.model.EnrollLinksModel;
+import com.jerson.hcdc_portal.ui.adapter.EnrollHistoryAdapter;
 import com.jerson.hcdc_portal.viewmodel.EnrollHistoryViewModel;
 
 import java.util.ArrayList;
@@ -27,7 +29,9 @@ public class EnrollmentHistoryFragment extends Fragment {
     private List<EnrollLinksModel> periodLinks = new ArrayList<>();
     private List<String> list = new ArrayList<>();
     private ArrayAdapter<String> arrayAdapter;
-    private List<EnrollHistModel> data;
+    private List<EnrollHistModel> enrollData = new ArrayList<>();
+    private EnrollHistoryAdapter adapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -40,13 +44,18 @@ public class EnrollmentHistoryFragment extends Fragment {
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerSem.setAdapter(arrayAdapter);
 
+        binding.enrHistRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        adapter = new EnrollHistoryAdapter(getActivity(), enrollData);
+        binding.enrHistRecyclerView.setAdapter(adapter);
+
+
+        getLinks();
+
         binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
             Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " ()" + i);
-            if (i != 0) {
-                binding.progressBar.setVisibility(View.VISIBLE);
-                getData(periodLinks.get(i).getPeriodLink());
-                getResponse();
-            }
+            binding.progressBar.setVisibility(View.VISIBLE);
+            getData(periodLinks.get(i).getPeriodLink());
+            getResponse();
         });
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
@@ -75,7 +84,7 @@ public class EnrollmentHistoryFragment extends Fragment {
 
     }
 
-    void getLinks(){
+    void getLinks() {
         try {
             viewModel.getLinks().observe(getActivity(), data -> {
                 if (data != null) {
@@ -83,7 +92,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                     periodLinks.clear();
                     periodLinks.addAll(data);
                     for (EnrollLinksModel d : data) {
-                        list.add(d.getPeriodLink());
+                        list.add(d.getPeriodText());
                     }
                     binding.progressBar.setVisibility(View.GONE);
                     binding.semSelectorLayout.setVisibility(View.VISIBLE);
@@ -97,12 +106,20 @@ public class EnrollmentHistoryFragment extends Fragment {
         }
     }
 
-    void getData(String link){
-        viewModel.getData(link).observe(getActivity(),data->{
-            if(data!=null){
+    void getData(String link) {
+        try {
+            viewModel.getData(link).observe(getActivity(), data -> {
+                if (data != null) {
+                    enrollData.clear();
+                    enrollData.addAll(data);
+                    adapter.notifyDataSetChanged();
+                    binding.progressBar.setVisibility(View.GONE);
+                }
+            });
+        } catch (NullPointerException e) {
+            Log.d(TAG, "getData: " + e.getStackTrace());
+        }
 
-            }
-        });
     }
 
     public EnrollmentHistoryFragment() {

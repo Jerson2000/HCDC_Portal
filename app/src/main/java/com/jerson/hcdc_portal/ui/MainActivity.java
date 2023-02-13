@@ -65,35 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             default:
                 SnackBarUtil.SnackBarShort(binding.mainLayout, "Is not implemented").show();
         }
-//        toggleIcon(item);
 
         return true;
     }
-
-   /* void toggleIcon(MenuItem item){
-        boolean itemState = !item.isChecked();
-        switch (item.getItemId()){
-            case R.id.dashboard:
-                item.setChecked(itemState);
-                item.setIcon(itemState ? ResourcesCompat.getDrawable(getResources(),R.drawable.ic_dashboard,null) : ResourcesCompat.getDrawable(getResources(),R.drawable.ic_dashboard_outline,null));
-//                item.setIcon(R.drawable.ic_dashboard);
-                break;
-            case R.id.grades:
-                item.setChecked(itemState);
-                item.setIcon(itemState ? ResourcesCompat.getDrawable(getResources(),R.drawable.ic_article,null) : ResourcesCompat.getDrawable(getResources(),R.drawable.ic_article_outline,null));
-//                item.setIcon(R.drawable.ic_article);
-                break;
-            case R.id.evaluation:
-                item.setChecked(itemState);
-                item.setIcon(itemState ? ResourcesCompat.getDrawable(getResources(),R.drawable.ic_person_search,null) : ResourcesCompat.getDrawable(getResources(),R.drawable.ic_person_search_outline,null));
-//                item.setIcon(R.drawable.ic_person_search);
-                break;
-            case R.id.accounts:
-                item.setChecked(itemState);
-                item.setIcon(itemState ? ResourcesCompat.getDrawable(getResources(),R.drawable.ic_account_wallet,null) : ResourcesCompat.getDrawable(getResources(),R.drawable.ic_account_wallet_outline,null));
-//                item.setIcon(R.drawable.ic_account_wallet);
-                break;
-        }
-
-    }*/
 }
