@@ -25,12 +25,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+
 public class DashboardFragment extends Fragment {
 
     FragmentDashboardBinding binding;
     DashboardAdapter adapter;
     List<DashboardModel> dashList = new ArrayList<>();
     DashboardViewModel viewModel;
+    List<DashboardModel> roomDashList = new ArrayList<>();
 
     private static final String TAG = "DashboardFragment";
 
@@ -59,20 +64,22 @@ public class DashboardFragment extends Fragment {
 
     void getData() {
         binding.progressBar.setVisibility(View.VISIBLE);
-        viewModel.getDashboardData().observe(getActivity(),data -> {
+        viewModel.getDashboardData().observe(getActivity(), data -> {
             if (data != null) {
                 try {
                     dashList.clear();
                     dashList.addAll(data);
                     adapter.notifyDataSetChanged();
+                    saveToDatabase();
 
-                    if(binding.progressBar.getVisibility() == View.VISIBLE){
+                    if (binding.progressBar.getVisibility() == View.VISIBLE) {
                         binding.progressBar.setVisibility(View.INVISIBLE);
                         return;
                     }
 
                     binding.retryLayout.getRoot().setVisibility(View.GONE);
                     binding.recyclerView.setVisibility(View.VISIBLE);
+
                 } catch (NullPointerException e) {
                     Log.d(TAG, "getData: " + e.getMessage());
                 }
@@ -82,7 +89,7 @@ public class DashboardFragment extends Fragment {
     }
 
     void getDataRes() {
-        viewModel.getDashboardResponse().observe(getActivity(),res -> {
+        viewModel.getDashboardResponse().observe(getActivity(), res -> {
             Log.d(TAG, "getDataRes: " + res);
             if (res.contains("timeout") || res.contains("error fetching")) {
                 binding.recyclerView.setVisibility(View.GONE);
@@ -96,15 +103,42 @@ public class DashboardFragment extends Fragment {
     }
 
     void retry() {
-        try{
+        try {
             viewModel.getDashboardData();
             binding.progressBar.setVisibility(View.VISIBLE);
             binding.retryLayout.retryBtn.setEnabled(false);
 
-        }catch (NullPointerException e){
-            Log.d(TAG, "retry: "+e.getMessage());
+        } catch (NullPointerException e) {
+            Log.d(TAG, "retry: " + e.getMessage());
         }
 
+
+    }
+
+    void saveToDatabase(){
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(viewModel.insertDashboard(dashList)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    Log.d(TAG, "Data saved: " + dashList.size());
+                },throwable -> {
+                    Log.d(TAG, "getData: "+throwable);
+                })
+        );
+    }
+
+    private void loadWatchList() {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(viewModel.loadDashboard()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> {
+                    // Handle the successful retrieval
+                    Log.d("TAG", "Data retrieved successfully: " + data.toString());
+                }, throwable -> {
+                    // Handle the error
+                    Log.e("TAG", "Error retrieving data", throwable);
+                }));
 
     }
 

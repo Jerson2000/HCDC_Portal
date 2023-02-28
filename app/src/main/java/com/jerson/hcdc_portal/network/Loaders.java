@@ -41,6 +41,27 @@ public class Loaders {
     private static int timeout = 3 * 10000;
     static Map<String, String> headers = new HashMap<>();
 
+    static OkHttpClient client;
+
+
+    public static OkHttpClient getOkhttpInstance() {
+        if (client == null) {
+            client = new OkHttpClient.Builder()
+                    .build();
+        }
+        return client;
+    }
+
+    public static Response GET(String url) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        Response response = getOkhttpInstance().newCall(request).execute();
+        String html = response.body().string();
+        return response;
+    }
+
     public static void login(MutableLiveData<String> response, String email, String password) throws IOException {
         headers.put("accept-encoding", "gzip, deflate");
 
@@ -136,7 +157,7 @@ public class Loaders {
                 Elements lec_lab = rowData.select("td:eq(8)");
 
                 DashboardModel model = new DashboardModel
-                        (
+                        (i,
                                 offerNo.text(),
                                 gClass.text(),
                                 subjCode.text(),

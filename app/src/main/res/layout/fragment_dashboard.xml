@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:indeterminateTint="@color/md_theme_dark_errorContainer"
-            android:visibility="gone" />
+            android:visibility="visible" />
     </RelativeLayout>
 
 

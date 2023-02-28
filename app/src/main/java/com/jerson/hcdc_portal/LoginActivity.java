@@ -1,38 +1,39 @@
 package com.jerson.hcdc_portal;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.jerson.hcdc_portal.databinding.ActivityLoginBinding;
-import com.jerson.hcdc_portal.databinding.ActivityMainBinding;
-import com.jerson.hcdc_portal.model.DashboardModel;
-import com.jerson.hcdc_portal.network.Clients;
+import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.MainActivity;
-import com.jerson.hcdc_portal.util.AppConstants;
-import com.jerson.hcdc_portal.util.Dialog;
 import com.jerson.hcdc_portal.util.SnackBarUtil;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 
-import java.util.List;
+import org.jsoup.nodes.Document;
+
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.FormBody;
 
 public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private LoginViewModel viewModel;
+    private DashboardViewModel dashboardViewModel;
     private static final String TAG = "LoginActivity";
+    String authToken;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(view);
 
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
         textChangeListener();
         binding.loginBtn.setOnClickListener(v -> {
@@ -56,30 +58,33 @@ public class LoginActivity extends AppCompatActivity {
             if (!binding.passET.getText().toString().equals("") && !binding.emailET.getText().toString().equals("")) {
                 binding.progressBar.setVisibility(View.VISIBLE);
                 binding.loginBtn.setEnabled(false);
-                Init(binding.emailET.getText().toString(),binding.passET.getText().toString());
+                Init(binding.emailET.getText().toString(), binding.passET.getText().toString());
 
             }
 
 
         });
 
+        loadWatchList();
+        test();
+
     }
 
     void Init(String email, String pass) {
         viewModel.login(email, pass).observeForever(response -> {
-            if(response.toLowerCase(Locale.ROOT).contains("timeout")||
+            if (response.toLowerCase(Locale.ROOT).contains("timeout") ||
                     response.toLowerCase(Locale.ROOT).contains("error fetching url") ||
-                    response.toLowerCase(Locale.ROOT).contains("time out")){
+                    response.toLowerCase(Locale.ROOT).contains("time out")) {
                 SnackBarUtil.SnackBarIndefiniteDuration(binding.snackBarLayout, "Connection Timeout")
                         .setAction("Retry", view -> {
-                            retry(email,pass);
+                            retry(email, pass);
                         })
                         .show();
                 binding.progressBar.setVisibility(View.GONE);
                 return;
             }
 
-            if(response.toLowerCase(Locale.ROOT).contains("credentials")){
+            if (response.toLowerCase(Locale.ROOT).contains("credentials")) {
                 SnackBarUtil.SnackBarLong(binding.snackBarLayout, response).show();
                 binding.progressBar.setVisibility(View.GONE);
                 binding.loginBtn.setEnabled(true);
@@ -102,8 +107,60 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    void retry(String email,String pass){
-        viewModel.login(email,pass);
+    void test() {
+        HttpClient.getInstance(getApplicationContext()).GET("http://studentportal.hcdc.edu.ph/login", new OnHttpResponseListener<Document>() {
+            @Override
+            public void onResponse(Document response) {
+//                Log.d(TAG, "onResponse: "+response);
+//                System.out.println(response);
+                authToken = response.select("input[name=_token]").first().attr("value");
+                System.out.println(authToken);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e(TAG, "onFailure: ", e.fillInStackTrace());
+            }
+        });
+
+
+    }
+
+    void postTest() {
+        FormBody formBody = new FormBody.Builder()
+
+                .build();
+
+        HttpClient.getInstance(getApplicationContext()).POST("http://studentportal.hcdc.edu.ph/loginPost", formBody, new OnHttpResponseListener<Document>() {
+            @Override
+            public void onResponse(Document response) {
+                System.out.println(response);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                System.out.println(e.getStackTrace());
+            }
+        });
+    }
+
+    // check if the dashboard table have data
+    private void loadWatchList() {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(dashboardViewModel.loadDashboard()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> {
+                    // Handle the successful retrieval
+                    Log.d("TAG", "Data retrieved successfully: " + data.size());
+                }, throwable -> {
+                    // Handle the error
+                    Log.e("TAG", "Error retrieving data", throwable);
+                }));
+    }
+
+    void retry(String email, String pass) {
+        viewModel.login(email, pass);
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.loginBtn.setEnabled(false);
     }

@@ -1,8 +1,14 @@
 package com.jerson.hcdc_portal.model;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "dashboard",primaryKeys = "index")
 public class DashboardModel {
+    private int index;
     private String offerNo;
-    private String gClassCode;
+    private String googleClassCode;
     private String subjCode;
     private String description;
     private String unit;
@@ -11,12 +17,10 @@ public class DashboardModel {
     private String room;
     private String lecLab;
 
-    public DashboardModel() {
-    }
-
-    public DashboardModel(String offerNo, String gClassCode, String subjCode, String description, String unit, String days, String time, String room, String lecLab) {
+    public DashboardModel(int index,String offerNo, String googleClassCode, String subjCode, String description, String unit, String days, String time, String room, String lecLab) {
+        this.index = index;
         this.offerNo = offerNo;
-        this.gClassCode = gClassCode;
+        this.googleClassCode = googleClassCode;
         this.subjCode = subjCode;
         this.description = description;
         this.unit = unit;
@@ -24,6 +28,14 @@ public class DashboardModel {
         this.time = time;
         this.room = room;
         this.lecLab = lecLab;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public String getOfferNo() {
@@ -34,12 +46,12 @@ public class DashboardModel {
         this.offerNo = offerNo;
     }
 
-    public String getgClassCode() {
-        return gClassCode;
+    public String getGoogleClassCode() {
+        return googleClassCode;
     }
 
-    public void setgClassCode(String gClassCode) {
-        this.gClassCode = gClassCode;
+    public void setGoogleClassCode(String googleClassCode) {
+        this.googleClassCode = googleClassCode;
     }
 
     public String getSubjCode() {
