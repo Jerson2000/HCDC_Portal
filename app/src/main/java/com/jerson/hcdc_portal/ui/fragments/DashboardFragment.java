@@ -36,7 +36,6 @@ public class DashboardFragment extends Fragment {
     DashboardAdapter adapter;
     List<DashboardModel> dashList = new ArrayList<>();
     DashboardViewModel viewModel;
-    List<DashboardModel> roomDashList = new ArrayList<>();
 
     private static final String TAG = "DashboardFragment";
 
@@ -53,10 +52,8 @@ public class DashboardFragment extends Fragment {
 
 
         getData(getActivity());
-//        getDataRes();
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
-//            retry();
         });
 
 
@@ -65,8 +62,7 @@ public class DashboardFragment extends Fragment {
 
     void getData(Context context) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        viewModel.getData(context);
-        viewModel.dataS().observe(getActivity(), data -> {
+        viewModel.getData(context).observe(getActivity(), data -> {
             if (data != null) {
                 try {
                     dashList.clear();
@@ -102,19 +98,6 @@ public class DashboardFragment extends Fragment {
 
             }
         });
-    }
-
-    void retry() {
-        try {
-            viewModel.getDashboardData();
-            binding.progressBar.setVisibility(View.VISIBLE);
-            binding.retryLayout.retryBtn.setEnabled(false);
-
-        } catch (NullPointerException e) {
-            Log.d(TAG, "retry: " + e.getMessage());
-        }
-
-
     }
 
     void saveToDatabase(){
@@ -158,5 +141,11 @@ public class DashboardFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        viewModel.getData(getActivity()).removeObservers(this);
     }
 }

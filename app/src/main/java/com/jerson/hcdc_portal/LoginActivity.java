@@ -19,8 +19,6 @@ import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 
 import java.util.Locale;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -31,7 +29,6 @@ public class LoginActivity extends AppCompatActivity {
     private LoginViewModel viewModel;
     private DashboardViewModel dashboardViewModel;
     private static final String TAG = "LoginActivity";
-    private Executor executor;
 
 
     @Override
@@ -40,7 +37,6 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
-        executor = Executors.newSingleThreadExecutor();
 
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
@@ -56,48 +52,40 @@ public class LoginActivity extends AppCompatActivity {
             if (!binding.passET.getText().toString().equals("") && !binding.emailET.getText().toString().equals("")) {
                 binding.progressBar.setVisibility(View.VISIBLE);
                 binding.loginBtn.setEnabled(false);
-                login(binding.emailET.getText().toString(), binding.passET.getText().toString(),getApplicationContext());
+                login(binding.emailET.getText().toString(), binding.passET.getText().toString(), getApplicationContext());
 
             }
 
 
         });
 
-        loadDatabase();
-
 
     }
 
 
-
     void login(String email, String pass, Context context) {
-        viewModel.Login(email, pass, getApplicationContext());
-        viewModel.getRes().observe(this, res -> {
+        viewModel.Login(email, pass, getApplicationContext()).observe(this, res -> {
             System.out.println(res);
-
             if (res.toLowerCase(Locale.ROOT).contains("timeout") ||
                     res.toLowerCase(Locale.ROOT).contains("error fetching url") ||
                     res.toLowerCase(Locale.ROOT).contains("time out")) {
                 SnackBarUtil.SnackBarIndefiniteDuration(binding.snackBarLayout, "Connection Timeout")
                         .setAction("Retry", view -> {
-                            retry(email, pass,context);
+                            retry(email, pass, context);
                         })
                         .show();
                 binding.progressBar.setVisibility(View.GONE);
-                return;
             }
 
             if (res.toLowerCase(Locale.ROOT).contains("credentials")) {
                 SnackBarUtil.SnackBarLong(binding.snackBarLayout, res).show();
                 binding.progressBar.setVisibility(View.GONE);
                 binding.loginBtn.setEnabled(true);
-                return;
             }
 
-            binding.progressBar.setVisibility(View.GONE);
-            SnackBarUtil.SnackBarLong(binding.snackBarLayout, res).show();
-
             if (res.toLowerCase(Locale.ROOT).contains("logged in")) {
+                binding.progressBar.setVisibility(View.GONE);
+                SnackBarUtil.SnackBarLong(binding.snackBarLayout, res).show();
                 new Handler().postDelayed(() -> {
                     startActivity(new Intent(this, MainActivity.class));
                 }, 1500);
@@ -122,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     void retry(String email, String pass, Context context) {
-        login(email,pass,context);
+        viewModel.Login(email, pass, context);
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.loginBtn.setEnabled(false);
     }
@@ -160,6 +148,12 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        viewModel.Login("","",getApplicationContext()).removeObservers(this);
     }
 
 

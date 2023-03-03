@@ -28,10 +28,8 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 public class DashboardViewModel extends AndroidViewModel {
-    Clients clients;
     MutableLiveData<String> response = new MutableLiveData<>();
-    MutableLiveData<List<DashboardModel>> dashboardData = new MutableLiveData<>();
-    MutableLiveData<List<DashboardModel>> data = new MutableLiveData<>();
+
     DatabasePortal databasePortal;
 
     public DashboardViewModel(@NonNull Application application) {
@@ -39,13 +37,8 @@ public class DashboardViewModel extends AndroidViewModel {
         databasePortal =  DatabasePortal.getDatabase(application);
 
     }
-
-    public MutableLiveData<List<DashboardModel>> getDashboardData(){
-        clients = new Clients();
-        clients.dashboardData(dashboardData,response);
-        return dashboardData;
-    }
     public MutableLiveData<List<DashboardModel>> getData(Context context){
+        MutableLiveData<List<DashboardModel>> data = new MutableLiveData<>();
         HttpClient.getInstance(context).GET(AppConstants.baseUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
@@ -95,14 +88,12 @@ public class DashboardViewModel extends AndroidViewModel {
             @Override
             public void onFailure(Exception e) {
                 response.postValue(e.getMessage());
+                e.printStackTrace();
             }
         });
         return data;
     }
 
-    public MutableLiveData<List<DashboardModel>> dataS(){
-        return data;
-    }
 
     public MutableLiveData<String> getDashboardResponse(){
         return response;
