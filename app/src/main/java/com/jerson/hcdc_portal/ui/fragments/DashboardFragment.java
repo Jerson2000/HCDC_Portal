@@ -1,5 +1,6 @@
 package com.jerson.hcdc_portal.ui.fragments;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -51,20 +52,21 @@ public class DashboardFragment extends Fragment {
         binding.recyclerView.setAdapter(adapter);
 
 
-        getData();
-        getDataRes();
+        getData(getActivity());
+//        getDataRes();
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
-            retry();
+//            retry();
         });
 
 
         return binding.getRoot();
     }
 
-    void getData() {
+    void getData(Context context) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        viewModel.getDashboardData().observe(getActivity(), data -> {
+        viewModel.getData(context);
+        viewModel.dataS().observe(getActivity(), data -> {
             if (data != null) {
                 try {
                     dashList.clear();
