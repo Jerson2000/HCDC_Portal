@@ -51,8 +51,8 @@ public class GradesFragment extends Fragment {
         binding.spinnerSem.setAdapter(arrayAdapter);
 
         try {
-            getDataLinks();
-
+//            getDataLinks();
+            getLinks();
             binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
                 Log.d(TAG, "onItemClick: " + semGradeList.get(i).getSemGradeLink() + " ()" + i);
                 if (i != 0) {
@@ -90,6 +90,22 @@ public class GradesFragment extends Fragment {
 
             }
 
+        });
+    }
+
+    void getLinks(){
+        viewModel.getLinks(getActivity()).observe(getActivity(),data->{
+            if(data!=null){
+                list.clear();
+                semGradeList.clear();
+                semGradeList.addAll(data);
+                for (GradeLinksModel d : data) {
+                    list.add(d.getSemGradeText());
+                }
+                arrayAdapter.notifyDataSetChanged();
+                binding.semSelectorLayout.setVisibility(View.VISIBLE);
+                binding.progressBar.setVisibility(View.GONE);
+            }
         });
     }
 
