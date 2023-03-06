@@ -24,6 +24,7 @@ public class GradesLinksViewModel extends ViewModel {
     Clients clients;
     MutableLiveData<List<GradeLinksModel>> gradesLink = new MutableLiveData<>();
     MutableLiveData<String> response = new MutableLiveData<>();
+    MutableLiveData<Integer> resCode = new MutableLiveData<>();
 
     public MutableLiveData<String> getResponse() {
         return response;
@@ -33,6 +34,10 @@ public class GradesLinksViewModel extends ViewModel {
         clients = new Clients();
         clients.gradesLinkData(gradesLink,response);
         return gradesLink;
+    }
+
+    public LiveData<Integer> getResCode() {
+        return resCode;
     }
 
     public LiveData<List<GradeLinksModel>> getLinks(Context context){
@@ -51,13 +56,18 @@ public class GradesLinksViewModel extends ViewModel {
                     gradesLinks.add(model);
                 }
 
-                data.postValue(gradesLinks);
+                data.setValue(gradesLinks);
             }
 
             @Override
             public void onFailure(Exception e) {
                 e.printStackTrace();
-                response.postValue(e.getMessage());
+                response.setValue(e.getMessage());
+            }
+
+            @Override
+            public void onResponseCode(int code) {
+                resCode.setValue(code);
             }
         });
 

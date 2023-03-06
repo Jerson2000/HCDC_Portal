@@ -8,14 +8,20 @@ import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
+import com.jerson.hcdc_portal.util.onResponseException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -29,11 +35,20 @@ public class HttpClient {
     private OkHttpClient client;
     private Handler handler;
     private Executor executor;
+    private CacheControl cacheControl;
 
     private HttpClient(Context context) {
+        File cacheDirectory = new File(context.getCacheDir(), "http-cache");
+        int cacheSize = 10 * 1024 * 1024; // 10 MB
+        Cache cache = new Cache(cacheDirectory, cacheSize);
         client = new OkHttpClient.Builder()
                 .addInterceptor(new TimingInterceptor())
                 .cookieJar(new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context)))
+                .cache(cache)
+                .build();
+         cacheControl = new CacheControl.Builder()
+                .maxAge(1, TimeUnit.HOURS)
+                .maxStale(1, TimeUnit.DAYS)
                 .build();
         handler = new Handler(Looper.getMainLooper());
         executor = Executors.newSingleThreadExecutor();
@@ -49,6 +64,7 @@ public class HttpClient {
     public void GET(String url, final OnHttpResponseListener<Document> listener) {
         Request request = new Request.Builder()
                 .url(url)
+                .cacheControl(cacheControl)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -61,11 +77,12 @@ public class HttpClient {
             public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     handler.post(() -> listener.onFailure(new IOException("Unexpected code " + response)));
+                    handler.post(()-> listener.onResponseCode(response.code()));
                     return;
                 }
                 ResponseBody body = response.body();
                 String html = body.string();
-
+                handler.post(()-> listener.onResponseCode(response.code()));
                 handler.post(() -> listener.onResponse(Jsoup.parse(html)));
             }
         });
@@ -102,22 +119,26 @@ public class HttpClient {
                     }
                 }
 
+                Response finalResponse = response;
                 // Handle the final response
                 if (response.isSuccessful()) {
                     // Success
+                    handler.post(()-> listener.onResponseCode(finalResponse.code()));
                     ResponseBody body = response.body();
                     if (body != null) {
                         String responseData = body.string();
                         Document document = Jsoup.parse(responseData);
-//                    System.out.println(document);
-                        listener.onResponse(document);
+                        handler.post(()-> listener.onResponse(document));
                     }
                 } else {
                     // Handle error
+//                    listener.onFailure(new onResponseException(response.code()));
+                    handler.post(()-> listener.onResponseCode(finalResponse.code()));
+                    handler.post(()-> listener.onFailure(new IOException("Unexpected code "+ finalResponse)));
                 }
             } catch (IOException e) {
 //            e.printStackTrace();
-                listener.onFailure(e);
+                handler.post(()-> listener.onFailure(e));
             }
         });
     }

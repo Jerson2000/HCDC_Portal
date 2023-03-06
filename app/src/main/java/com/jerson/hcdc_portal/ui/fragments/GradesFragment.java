@@ -38,11 +38,17 @@ public class GradesFragment extends Fragment {
 
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(getActivity()).get(GradesLinksViewModel.class);
+        getLinks();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentGradesBinding.inflate(inflater, container, false);
 
-        viewModel = new ViewModelProvider(getActivity()).get(GradesLinksViewModel.class);
         gradesViewModel = new ViewModelProvider(getActivity()).get(GradesViewModel.class);
 
         // Material TextField Autocomplete - simply known as dropdown
@@ -50,21 +56,18 @@ public class GradesFragment extends Fragment {
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerSem.setAdapter(arrayAdapter);
 
-        try {
+
 //            getDataLinks();
-            getLinks();
-            binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
-                Log.d(TAG, "onItemClick: " + semGradeList.get(i).getSemGradeLink() + " ()" + i);
-                if (i != 0) {
-                    position = i;
-                    binding.progressBar.setVisibility(View.VISIBLE);
-                    getGrades(semGradeList.get(i).getSemGradeLink(), i);
-                    getGradesResponse();
-                }
-            });
-        } catch (NullPointerException e) {
-            Log.d(TAG, "onCreateView: " + e.getMessage());
-        }
+        binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
+            Log.d(TAG, "onItemClick: " + semGradeList.get(i).getSemGradeLink() + " ()" + i);
+            if (i != 0) {
+                position = i;
+                binding.progressBar.setVisibility(View.VISIBLE);
+//                getGrades(semGradeList.get(i).getSemGradeLink(), i);
+//                getGradesResponse();
+                getGrade(semGradeList.get(i).getSemGradeLink());
+            }
+        });
 
 
         // RecyclerView Instance
@@ -93,9 +96,9 @@ public class GradesFragment extends Fragment {
         });
     }
 
-    void getLinks(){
-        viewModel.getLinks(getActivity()).observe(getActivity(),data->{
-            if(data!=null){
+    void getLinks() {
+        viewModel.getLinks(getActivity()).observe(getActivity(), data -> {
+            if (data != null) {
                 list.clear();
                 semGradeList.clear();
                 semGradeList.addAll(data);
@@ -106,20 +109,25 @@ public class GradesFragment extends Fragment {
                 binding.semSelectorLayout.setVisibility(View.VISIBLE);
                 binding.progressBar.setVisibility(View.GONE);
             }
+
+            Log.d(TAG, "getLinkResCode: "+viewModel.getResCode().getValue());
+            Log.d(TAG, "getLinkResCode: hasObservers? "+viewModel.getResCode().hasObservers());
+            Log.d(TAG, "getLinks: hasObservers? "+viewModel.getLinks(getActivity()).hasObservers());
+            Log.d(TAG, "getLinks: hasObservers? "+gradesViewModel.gradeData("",getActivity()).hasObservers());
         });
     }
 
-    void getGrades(String link, int pos) {
-        gradesViewModel.getData(link).observe(getActivity(),data -> {
+    void getGrade(String link){
+        gradesViewModel.gradeData(link,getActivity()).observe(getActivity(),data->{
             if (data != null) {
-                try{
+                try {
                     String w = "Weighted % Ave: ";
                     String e = "Earned Units: ";
                     gradeList.clear();
                     gradeList.addAll(data);
                     adapter.notifyDataSetChanged();
-                    String earn = gradeList.get(pos).getEarnedUnits();
-                    String ave = gradeList.get(pos).getAverage();
+                    String earn = gradeList.get(0).getEarnedUnits();
+                    String ave = gradeList.get(0).getAverage();
                     binding.earnUnits.setText(e.concat(earn));
                     binding.weightedGrade.setText(w.concat(ave));
                     binding.unitsGradeLayout.setVisibility(View.VISIBLE);
@@ -128,10 +136,8 @@ public class GradesFragment extends Fragment {
 
                     binding.progressBar.setVisibility(View.GONE);
 
-                    Log.d(TAG, "getGrades: " + data.get(pos).getAverage() + "-" + data.get(pos).getEarnedUnits());
-                }
-                catch (Exception e){
-                    Log.d(TAG, "getGrades: "+e.getMessage());
+                } catch (Exception e) {
+                    Log.d(TAG, "getGrades: " + e.getMessage());
                 }
 
             }
@@ -139,7 +145,7 @@ public class GradesFragment extends Fragment {
     }
 
     void getGradesResponse() {
-        gradesViewModel.getResponse().observe(getActivity(),response -> {
+        gradesViewModel.getResponse().observe(getActivity(), response -> {
             Log.d(TAG, "getGradesResponse: " + response);
             if (response == null) {
                 binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
@@ -154,14 +160,15 @@ public class GradesFragment extends Fragment {
     public GradesFragment() {
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         binding = null;
+        viewModel.getLinks(getActivity()).removeObservers(this);
+        viewModel.getResCode().removeObservers(this);
+        gradesViewModel.gradeData("",getActivity()).removeObservers(this);
+        super.onDestroyView();
     }
+
 }

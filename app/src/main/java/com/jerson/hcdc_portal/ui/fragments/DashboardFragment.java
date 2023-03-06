@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -24,6 +25,7 @@ import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -36,31 +38,34 @@ public class DashboardFragment extends Fragment {
     DashboardAdapter adapter;
     List<DashboardModel> dashList = new ArrayList<>();
     DashboardViewModel viewModel;
+    private int responseCode = 0;
 
     private static final String TAG = "DashboardFragment";
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
+        loadDatabaseDATA();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
 
-        viewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new DashboardAdapter(getActivity(), dashList);
         binding.recyclerView.setAdapter(adapter);
 
-
-        getData(getActivity());
-
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
         });
-
 
         return binding.getRoot();
     }
 
-    void getData(Context context) {
+    void loadData(Context context) {
         binding.progressBar.setVisibility(View.VISIBLE);
         viewModel.getData(context).observe(getActivity(), data -> {
             if (data != null) {
@@ -68,6 +73,7 @@ public class DashboardFragment extends Fragment {
                     dashList.clear();
                     dashList.addAll(data);
                     adapter.notifyDataSetChanged();
+                    tableDelete();
                     saveToDatabase();
 
                     if (binding.progressBar.getVisibility() == View.VISIBLE) {
@@ -79,17 +85,24 @@ public class DashboardFragment extends Fragment {
                     binding.recyclerView.setVisibility(View.VISIBLE);
 
                 } catch (NullPointerException e) {
-                    Log.d(TAG, "getData: " + e.getMessage());
+                    Log.d(TAG, "loadData: " + e.getMessage());
                 }
 
             }
+
+            Log.d(TAG, "getResCode: " + viewModel.getResCode().getValue());
+            Log.d(TAG, "getResCode: hasActiveObservers? " + viewModel.getResCode().hasObservers());
+            Log.d(TAG, "loadData: hasActiveObservers? " + viewModel.getData(getActivity()).hasObservers());
+
+
+            getResCode();
         });
     }
 
-    void getDataRes() {
+    /*void getDataRes() {
         viewModel.getDashboardResponse().observe(getActivity(), res -> {
             Log.d(TAG, "getDataRes: " + res);
-            if (res.contains("timeout") || res.contains("error fetching")) {
+            if (res.contains("error") || res.contains("error fetching")) {
                 binding.recyclerView.setVisibility(View.GONE);
                 binding.progressBar.setVisibility(View.INVISIBLE);
                 binding.retryLayout.getRoot().setBackgroundColor(Color.WHITE);
@@ -98,31 +111,63 @@ public class DashboardFragment extends Fragment {
 
             }
         });
+    }*/
+
+    void getResCode() {
+        if (responseCode != 200) {
+            binding.recyclerView.setVisibility(View.GONE);
+            binding.progressBar.setVisibility(View.INVISIBLE);
+            binding.retryLayout.getRoot().setBackgroundColor(Color.WHITE);
+            binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
+            binding.retryLayout.retryBtn.setEnabled(true);
+        }
     }
 
-    void saveToDatabase(){
+    void saveToDatabase() {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.insertDashboard(dashList)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     Log.d(TAG, "Data saved: " + dashList.size());
-                },throwable -> {
-                    Log.d(TAG, "getData: "+throwable);
+                }, throwable -> {
+                    Log.d(TAG, "getData: " + throwable);
                 })
         );
     }
 
-    private void loadWatchList() {
+    void tableDelete() {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(viewModel.deleteAll()
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    Log.d(TAG, "Data deleted: Success");
+                }, throwable -> {
+                    Log.d(TAG, "Data deleted:: " + throwable);
+                })
+        );
+    }
+
+    private void loadDatabaseDATA() {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.loadDashboard()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
                     // Handle the successful retrieval
-                    Log.d("TAG", "Data retrieved successfully: " + data.toString());
+                    Log.d(TAG, "Data retrieved successfully: " + data.size());
+                    if (data.size() > 0) {
+                        dashList.clear();
+                        dashList.addAll(data);
+                        adapter.notifyDataSetChanged();
+                        binding.progressBar.setVisibility(View.INVISIBLE);
+                        binding.recyclerView.setVisibility(View.VISIBLE);
+
+                    } else {
+                        loadData(getActivity());
+                    }
                 }, throwable -> {
                     // Handle the error
-                    Log.e("TAG", "Error retrieving data", throwable);
+                    Log.e(TAG, "Error retrieving data", throwable);
                 }));
 
     }
@@ -132,20 +177,12 @@ public class DashboardFragment extends Fragment {
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         binding = null;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
         viewModel.getData(getActivity()).removeObservers(this);
+        viewModel.getResCode().removeObservers(this);
+        super.onDestroyView();
     }
 }

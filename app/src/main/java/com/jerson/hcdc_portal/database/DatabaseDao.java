@@ -16,6 +16,9 @@ public interface DatabaseDao {
     @Query("select * from dashboard")
     Flowable<List<DashboardModel>> getDashboard();
 
+    @Query("delete from dashboard")
+    Completable deleteAll();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertDashboard(List<DashboardModel> dashboard);
 }

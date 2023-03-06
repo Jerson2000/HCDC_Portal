@@ -15,6 +15,7 @@ import org.jsoup.nodes.Document;
 import okhttp3.FormBody;
 
 public class LoginViewModel extends ViewModel {
+    MutableLiveData<Integer> resCode = new MutableLiveData<>();
 
     public LiveData<String> Login(String email, String password, Context context) {
         MutableLiveData<String> res = new MutableLiveData<>();
@@ -45,12 +46,21 @@ public class LoginViewModel extends ViewModel {
                         e.printStackTrace();
                     }
 
+                    @Override
+                    public void onResponseCode(int code) {
+                        resCode.setValue(code);
+                    }
+
                 });
 
             }
         });
 
         return res;
+    }
+
+    public MutableLiveData<Integer> getResCode() {
+        return resCode;
     }
 
     MutableLiveData<String> getToken(Context context) {
@@ -66,6 +76,11 @@ public class LoginViewModel extends ViewModel {
             public void onFailure(Exception e) {
                 s.postValue(e.getMessage());
                 e.printStackTrace();
+            }
+
+            @Override
+            public void onResponseCode(int code) {
+                resCode.setValue(code);
             }
 
 

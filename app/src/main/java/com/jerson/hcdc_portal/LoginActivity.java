@@ -59,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
 
         });
 
-
     }
 
 
@@ -102,10 +101,22 @@ public class LoginActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
                     // Handle the successful retrieval
-                    Log.d("TAG", "Data retrieved successfully: " + data.size());
+                    Log.d(TAG, "Data retrieved successfully: " + data.size());
                 }, throwable -> {
                     // Handle the error
-                    Log.e("TAG", "Error retrieving data", throwable);
+                    Log.e(TAG, "Error retrieving data", throwable);
+                }));
+    }
+
+    void deleteDatabase(){
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(dashboardViewModel.deleteAll()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(()->{
+                    Log.d(TAG, "deleteDatabase: Success!");
+                },throwable -> {
+                    Log.d(TAG, "deleteDatabase: "+throwable);
                 }));
     }
 
@@ -155,6 +166,4 @@ public class LoginActivity extends AppCompatActivity {
         super.onDestroy();
         viewModel.Login("","",getApplicationContext()).removeObservers(this);
     }
-
-
 }
