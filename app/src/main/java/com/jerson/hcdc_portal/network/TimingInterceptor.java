@@ -20,11 +20,12 @@ public class TimingInterceptor implements Interceptor {
 
         Request request = chain.request();
         Response response = chain.proceed(request);
+        String reqUrl = request.url().toString();
 
         long endTime = System.nanoTime();
         long duration = (endTime - startTime) / 1000000; // convert to milliseconds
 
-        Log.d(TAG, "Request took: " + duration + " ms");
+        Log.d(TAG, "Request took: " + duration + " ms"+" [URL Request]: "+reqUrl);
 
         return response;
     }

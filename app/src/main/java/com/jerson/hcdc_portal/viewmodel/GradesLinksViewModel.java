@@ -10,6 +10,7 @@ import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
 import com.jerson.hcdc_portal.model.GradeLinksModel;
 import com.jerson.hcdc_portal.network.Clients;
 import com.jerson.hcdc_portal.network.HttpClient;
+import com.jerson.hcdc_portal.repo.GradeRepo;
 import com.jerson.hcdc_portal.util.AppConstants;
 
 import org.jsoup.nodes.Document;
@@ -21,19 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GradesLinksViewModel extends ViewModel {
-    Clients clients;
-    MutableLiveData<List<GradeLinksModel>> gradesLink = new MutableLiveData<>();
     MutableLiveData<String> response = new MutableLiveData<>();
     MutableLiveData<Integer> resCode = new MutableLiveData<>();
+    GradeRepo repo;
+    public GradesLinksViewModel(){
+        repo = new GradeRepo();
+    }
 
     public MutableLiveData<String> getResponse() {
         return response;
-    }
-
-    public MutableLiveData<List<GradeLinksModel>> getGradesLink() {
-        clients = new Clients();
-        clients.gradesLinkData(gradesLink,response);
-        return gradesLink;
     }
 
     public LiveData<Integer> getResCode() {
@@ -41,36 +38,7 @@ public class GradesLinksViewModel extends ViewModel {
     }
 
     public LiveData<List<GradeLinksModel>> getLinks(Context context){
-        MutableLiveData<List<GradeLinksModel>> data = new MutableLiveData<>();
-
-        HttpClient.getInstance(context).GET(AppConstants.baseUrl + AppConstants.gradesUrl, new OnHttpResponseListener<Document>() {
-            @Override
-            public void onResponse(Document response) {
-                List<GradeLinksModel> gradesLinks = new ArrayList<>();
-                Elements semList = response.select("main.app-content ul li.nav-item");
-
-                for (Element list : semList) {
-                    String link = list.select("a.nav-link").attr("href");
-                    String text = list.select("a.nav-link").text();
-                    GradeLinksModel model = new GradeLinksModel(link, text);
-                    gradesLinks.add(model);
-                }
-
-                data.setValue(gradesLinks);
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                e.printStackTrace();
-                response.setValue(e.getMessage());
-            }
-
-            @Override
-            public void onResponseCode(int code) {
-                resCode.setValue(code);
-            }
-        });
-
-        return data;
+        return repo.getLinks(context,response,resCode);
     }
+
 }

@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.FragmentDashboardBinding;
 import com.jerson.hcdc_portal.model.DashboardModel;
+import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
 import com.jerson.hcdc_portal.util.SnackBarUtil;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
@@ -31,9 +32,9 @@ import java.util.concurrent.ExecutionException;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import okhttp3.Call;
 
 public class DashboardFragment extends Fragment {
-
     FragmentDashboardBinding binding;
     DashboardAdapter adapter;
     List<DashboardModel> dashList = new ArrayList<>();
@@ -46,7 +47,8 @@ public class DashboardFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
-        loadDatabaseDATA();
+
+//        loadDatabaseDATA();
     }
 
     @Override
@@ -55,26 +57,26 @@ public class DashboardFragment extends Fragment {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
 
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new DashboardAdapter(getActivity(), dashList);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
+        adapter = new DashboardAdapter(requireActivity(), dashList);
         binding.recyclerView.setAdapter(adapter);
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
         });
-
+        loadData(requireActivity());
         return binding.getRoot();
     }
 
     void loadData(Context context) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        viewModel.getData(context).observe(getActivity(), data -> {
+        viewModel.getData(context).observe(requireActivity(), data -> {
             if (data != null) {
                 try {
                     dashList.clear();
                     dashList.addAll(data);
                     adapter.notifyDataSetChanged();
-                    tableDelete();
-                    saveToDatabase();
+//                    tableDelete();
+//                    saveToDatabase();
 
                     if (binding.progressBar.getVisibility() == View.VISIBLE) {
                         binding.progressBar.setVisibility(View.INVISIBLE);
@@ -89,29 +91,9 @@ public class DashboardFragment extends Fragment {
                 }
 
             }
-
-            Log.d(TAG, "getResCode: " + viewModel.getResCode().getValue());
-            Log.d(TAG, "getResCode: hasActiveObservers? " + viewModel.getResCode().hasObservers());
-            Log.d(TAG, "loadData: hasActiveObservers? " + viewModel.getData(getActivity()).hasObservers());
-
-
             getResCode();
         });
     }
-
-    /*void getDataRes() {
-        viewModel.getDashboardResponse().observe(getActivity(), res -> {
-            Log.d(TAG, "getDataRes: " + res);
-            if (res.contains("error") || res.contains("error fetching")) {
-                binding.recyclerView.setVisibility(View.GONE);
-                binding.progressBar.setVisibility(View.INVISIBLE);
-                binding.retryLayout.getRoot().setBackgroundColor(Color.WHITE);
-                binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
-                binding.retryLayout.retryBtn.setEnabled(true);
-
-            }
-        });
-    }*/
 
     void getResCode() {
         if (responseCode != 200) {
@@ -178,11 +160,4 @@ public class DashboardFragment extends Fragment {
     }
 
 
-    @Override
-    public void onDestroyView() {
-        binding = null;
-        viewModel.getData(getActivity()).removeObservers(this);
-        viewModel.getResCode().removeObservers(this);
-        super.onDestroyView();
-    }
 }

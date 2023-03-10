@@ -63,29 +63,50 @@ public class HttpClient {
 
     public void GET(String url, final OnHttpResponseListener<Document> listener) {
         Request request = new Request.Builder()
-                .url(url)
-                .cacheControl(cacheControl)
-                .build();
+            .url(url)
+            .cacheControl(cacheControl)
+            .build();
+        executor.execute(()->{
+            try {
+                Response response = client.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    // Handle successful response
+                    ResponseBody body = response.body();
+                    String html = body.string();
+                    handler.post(()-> listener.onResponseCode(response.code()));
+                    handler.post(() -> listener.onResponse(Jsoup.parse(html)));
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
+                } else {
+                    // Handle unsuccessful response
+                    handler.post(()-> listener.onResponseCode(response.code()));
+                }
+            } catch (IOException e) {
+                // Handle network or IO errors
                 handler.post(() -> listener.onFailure(e));
             }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    handler.post(() -> listener.onFailure(new IOException("Unexpected code " + response)));
-                    handler.post(()-> listener.onResponseCode(response.code()));
-                    return;
-                }
-                ResponseBody body = response.body();
-                String html = body.string();
-                handler.post(()-> listener.onResponseCode(response.code()));
-                handler.post(() -> listener.onResponse(Jsoup.parse(html)));
-            }
         });
+
+
+
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                handler.post(() -> listener.onFailure(e));
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                if (!response.isSuccessful()) {
+//                    handler.post(() -> listener.onFailure(new IOException("Unexpected code " + response)));
+//                    handler.post(()-> listener.onResponseCode(response.code()));
+//                    return;
+//                }
+//                ResponseBody body = response.body();
+//                String html = body.string();
+//                handler.post(()-> listener.onResponseCode(response.code()));
+//                handler.post(() -> listener.onResponse(Jsoup.parse(html)));
+//            }
+//        });
     }
 
     public void POST(String url, FormBody formBody, OnHttpResponseListener<Document> listener) {

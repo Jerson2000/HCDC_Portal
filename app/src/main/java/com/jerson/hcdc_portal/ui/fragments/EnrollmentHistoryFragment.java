@@ -32,6 +32,11 @@ public class EnrollmentHistoryFragment extends Fragment {
     private List<EnrollHistModel> enrollData = new ArrayList<>();
     private EnrollHistoryAdapter adapter;
 
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(EnrollHistoryViewModel.class);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -55,7 +60,7 @@ public class EnrollmentHistoryFragment extends Fragment {
             Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " ()" + i);
             binding.progressBar.setVisibility(View.VISIBLE);
             getData(periodLinks.get(i).getPeriodLink());
-            getResponse();
+//            getResponse();
         });
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
@@ -68,7 +73,7 @@ public class EnrollmentHistoryFragment extends Fragment {
 
     void getResponse() {
         try {
-            viewModel.getResponse().observe(getActivity(), res -> {
+            viewModel.getResponse().observe(requireActivity(), res -> {
                 if (res.toLowerCase(Locale.ROOT).contains("timeout") || res.toLowerCase(Locale.ROOT).contains("fetch")) {
                     binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
                     binding.retryLayout.retryBtn.setEnabled(true);
@@ -86,7 +91,7 @@ public class EnrollmentHistoryFragment extends Fragment {
 
     void getLinks() {
         try {
-            viewModel.getLinks().observe(getActivity(), data -> {
+            viewModel.getLinks(requireActivity()).observe(requireActivity(), data -> {
                 if (data != null) {
                     list.clear();
                     periodLinks.clear();
@@ -108,7 +113,7 @@ public class EnrollmentHistoryFragment extends Fragment {
 
     void getData(String link) {
         try {
-            viewModel.getData(link).observe(getActivity(), data -> {
+            viewModel.getData(link,requireActivity()).observe(requireActivity(), data -> {
                 if (data != null) {
                     enrollData.clear();
                     enrollData.addAll(data);
@@ -117,7 +122,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                 }
             });
         } catch (NullPointerException e) {
-            Log.d(TAG, "getData: " + e.getStackTrace());
+            Log.d(TAG, "getData: " + e.getMessage());
         }
 
     }
@@ -126,7 +131,5 @@ public class EnrollmentHistoryFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+
 }
