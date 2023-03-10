@@ -56,22 +56,15 @@ public class AccountFragment extends Fragment {
         binding.accountRecyclerView.setAdapter(adapter);
 
         getLinks();
-        getResponse();
 
-        try {
-            getLinks();
-
-            binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
-                Log.d(TAG, "onItemClick: " + semAccountList.get(i).getSemAccountLink() + " ()" + i);
-                if (i != 0) {
-                    binding.progressBar.setVisibility(View.VISIBLE);
-                    getData(semAccountList.get(i).getSemAccountLink());
-                    getResponse();
-                }
-            });
-        } catch (NullPointerException e) {
-            Log.d(TAG, "onCreateView: " + e.getMessage());
-        }
+        binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
+            Log.d(TAG, "onItemClick: " + semAccountList.get(i).getSemAccountLink() + " ()" + i);
+            if (i != 0) {
+                binding.progressBar.setVisibility(View.VISIBLE);
+                getData(semAccountList.get(i).getSemAccountLink());
+//                getResponse();
+            }
+        });
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
             getLinks();
@@ -84,7 +77,7 @@ public class AccountFragment extends Fragment {
 
     void getLinks() {
         try {
-            viewModel.getDataLinks().observe(getActivity(), data -> {
+            viewModel.getLinks(requireActivity()).observe(getActivity(), data -> {
                 if (data != null) {
                     list.clear();
                     semAccountList.clear();
@@ -125,7 +118,7 @@ public class AccountFragment extends Fragment {
 
     void getData(String link) {
         try {
-            viewModel.getData(link).observe(getActivity(), data -> {
+            viewModel.getData(link, requireActivity()).observe(requireActivity(), data -> {
                 if (data != null) {
                     accList.clear();
                     accList.addAll(data);
