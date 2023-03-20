@@ -48,7 +48,7 @@ public class DashboardFragment extends Fragment {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
 
-//        loadDatabaseDATA();
+        loadDatabaseDATA();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class DashboardFragment extends Fragment {
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
         });
-        loadData(requireActivity());
+//        loadData(requireActivity());
         return binding.getRoot();
     }
 
@@ -145,7 +145,7 @@ public class DashboardFragment extends Fragment {
                         binding.recyclerView.setVisibility(View.VISIBLE);
 
                     } else {
-                        loadData(getActivity());
+                        loadData(requireActivity());
                     }
                 }, throwable -> {
                     // Handle the error
