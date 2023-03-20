@@ -1,5 +1,7 @@
 # HCDC_Portal
 HCDC Student Portal for Android ( for fun )
+> Only the Holy Cross of Davao College Student are able to use this app.
+
 
 ### DONE
 > DISPLAY
@@ -8,7 +10,7 @@ HCDC Student Portal for Android ( for fun )
 > * Enrollment History
 > * Accountabilities
 ## GOAL
-* Offline Capability ( to be implemented )
+* Offline Capability ( in progress (#busy) )
 * Better UI/UX ( Bad at design :< )
 
 ### Library Use
@@ -19,5 +21,5 @@ HCDC Student Portal for Android ( for fun )
 > * Navigation
 > * Scalable Unit ( dp and sp )
 
-### Disclaimer:
-Educational Purpose only, I just bored and want to make an app that could help me to view my schedules and some stuff even I don't have internet; this serve as my learning process of building android application.
+<!----### Disclaimer:
+Educational Purpose only, I just bored and want to make an app that could help me to view my schedules and some stuff even I don't have internet; this serve as my learning process of building android application.-->
