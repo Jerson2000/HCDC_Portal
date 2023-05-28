@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 
@@ -15,13 +13,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.ActivityLoginBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
-import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.ui.MainActivity;
 import com.jerson.hcdc_portal.util.SnackBarUtil;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 
-import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -163,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
 
     void deleteData(DynamicListener<Boolean> isDeleted) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(dashboardViewModel.deleteAll()
+        compositeDisposable.add(dashboardViewModel.deleteDashboardData()
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     isDeleted.dynamicListener(true);

@@ -127,6 +127,8 @@ public class DashboardFragment extends Fragment {
         if (object) {
             getSubjectToday();
             getTotalSubject();
+        }else{
+            binding.progressBar.setVisibility(View.INVISIBLE);
         }
 
     };

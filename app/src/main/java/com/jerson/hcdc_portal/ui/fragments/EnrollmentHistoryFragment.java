@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.jerson.hcdc_portal.databinding.FragmentEnrollmentHistoryBinding;
+import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.EnrollHistModel;
 import com.jerson.hcdc_portal.ui.adapter.EnrollHistoryAdapter;
 import com.jerson.hcdc_portal.viewmodel.EnrollHistoryViewModel;
@@ -25,7 +26,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class EnrollmentHistoryFragment extends Fragment {
-    private static final String TAG = "EnrollmentHistoryFragme";
+    private static final String TAG = "EnrollmentHistoryFragment";
     FragmentEnrollmentHistoryBinding binding;
     private EnrollHistoryViewModel viewModel;
     private List<EnrollHistModel.Link> periodLinks = new ArrayList<>();
@@ -45,25 +46,35 @@ public class EnrollmentHistoryFragment extends Fragment {
 
         binding = FragmentEnrollmentHistoryBinding.inflate(inflater, container, false);
 
-        viewModel = new ViewModelProvider(this).get(EnrollHistoryViewModel.class);
+        init();
 
-        // Material TextField Autocomplete - simply known as dropdown
+        return binding.getRoot();
+    }
+
+    void init() {
+
+        // dropdown/spinner
         arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, list);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerSem.setAdapter(arrayAdapter);
+
 
         binding.enrHistRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new EnrollHistoryAdapter(getActivity(), enrollData);
         binding.enrHistRecyclerView.setAdapter(adapter);
 
 
-        getLinks();
+        loadEnrollHistoryLink(linkRetrieved);
+        /*loadEnrollHistory();*/
 
         binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
-            Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " ()" + i);
+            Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " ["+ periodLinks.get(i).getId()+"] " );
             binding.progressBar.setVisibility(View.VISIBLE);
-            getData(periodLinks.get(i).getPeriodLink(),periodLinks.get(i).getId());
-//            getResponse();
+            loadEnrollHistory(periodLinks.get(i).getId(), object -> {
+                if (!object) {
+                    getData(periodLinks.get(i).getPeriodLink(), periodLinks.get(i).getId());
+                }
+            });
 
         });
 
@@ -72,9 +83,7 @@ public class EnrollmentHistoryFragment extends Fragment {
             binding.retryLayout.retryBtn.setEnabled(false);
         });
 //        loadEnrollHistory();
-        loadEnrollHistoryLink();
 
-        return binding.getRoot();
     }
 
     void getResponse() {
@@ -99,18 +108,19 @@ public class EnrollmentHistoryFragment extends Fragment {
         try {
             viewModel.getLinks().observe(requireActivity(), data -> {
                 if (data != null) {
-
                     list.clear();
                     periodLinks.clear();
                     periodLinks.addAll(data);
                     for (EnrollHistModel.Link d : data) {
                         list.add(d.getPeriodText());
                     }
-                    binding.progressBar.setVisibility(View.GONE);
-                    binding.semSelectorLayout.setVisibility(View.VISIBLE);
-                    binding.enrHistRecyclerView.setVisibility(View.VISIBLE);
-                    arrayAdapter.notifyDataSetChanged();
-//                    saveEnrollHistoryLink();
+                    deleteEnrollHistoryLinkData(object -> {
+                        if (object) {
+                            saveEnrollHistoryLink();
+                        }
+                    });
+
+
                 }
             });
 
@@ -121,19 +131,21 @@ public class EnrollmentHistoryFragment extends Fragment {
 
 
     void saveEnrollHistory(int link_id) {
-        enrollData.get(0).setLink_id(link_id);
+        for(int i=0;i<enrollData.size();i++){
+            enrollData.get(i).setLink_id(link_id);
+        }
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.insertEnrollHistory(enrollData)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     Log.w(TAG, "saveEnrollHistory Data saved: " + enrollData.size());
                 }, throwable -> {
-                    Log.d(TAG, "getData: " + throwable);
+                    Log.d(TAG, "saveEnrollHistory: " + throwable);
                 })
         );
     }
 
-    void saveEnrollHistoryLink(){
+    void saveEnrollHistoryLink() {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.insertEnrollHistoryLink(periodLinks)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
@@ -145,19 +157,23 @@ public class EnrollmentHistoryFragment extends Fragment {
         );
     }
 
-    private void loadEnrollHistory() {
+    private void loadEnrollHistory(int link_id, DynamicListener<Boolean> isLoadEnrollHistory) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.loadEnrollHistory()
+        compositeDisposable.add(viewModel.loadEnrollHistory(link_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    // Handle the successful retrieval
                     Log.d(TAG, "Data retrieved successfully: " + data.size());
-                    List<EnrollHistModel> s = data;
-                    System.out.println(s.get(0).getLink_id() +" ~~~~~"+s.get(0).getSubjCode());
-                    System.out.println(s.get(1).getLink_id() +" ~~~~~"+s.get(1).getSubjCode());
-                    System.out.println(s.get(2).getLink_id() +" ~~~~~"+s.get(2).getSubjCode());
 
+                    if (data.size() > 0) {
+                        enrollData.clear();
+                        enrollData.addAll(data);
+                        adapter.notifyDataSetChanged();
+                        binding.progressBar.setVisibility(View.GONE);
+                        isLoadEnrollHistory.dynamicListener(true);
+                    } else {
+                        isLoadEnrollHistory.dynamicListener(false);
+                    }
 
                 }, throwable -> {
                     // Handle the error
@@ -165,30 +181,102 @@ public class EnrollmentHistoryFragment extends Fragment {
                 }));
 
     }
-    private void loadEnrollHistoryLink() {
+
+
+    /*private void loadEnrollHistory() {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(viewModel.loadEnrollHistory()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(data -> {
+                    Log.d(TAG, "loadEnrollHistory Data retrieved successfully: " + data.size());
+
+                    *//*for (EnrollHistModel d : data) {
+                        System.out.println("["+d.getLink_id()+"] => "+d.getId() + " =>>" +d.getOfferNo());
+                    }*//*
+
+                }, throwable -> {
+                    // Handle the error
+                    Log.e(TAG, "Error retrieving data", throwable);
+                }));
+
+    }*/
+
+    private void loadEnrollHistoryLink(DynamicListener<Boolean> linkRetrieved) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.loadEnrollHistoryLink()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
                     // Handle the successful retrieval
-                    Log.d(TAG, "Data retrieved successfully: " + data.size());
-                    List<EnrollHistModel.Link> s = data;
-                    System.out.println(s.get(0).getId() + "  ~~~~~~~~~~~   "+s.get(0).getPeriodText());
-                    System.out.println(s.get(1).getId() + "  ~~~~~~~~~~~   "+s.get(1).getPeriodText());
-                    System.out.println(s.get(2).getId() + "  ~~~~~~~~~~~   "+s.get(3).getPeriodText());
+                    Log.d(TAG, "LoadEnrollHistoryLink data retrieved: " + data.size());
+                    if (data.size() > 0) {
+                        list.clear();
+                        periodLinks.clear();
+                        periodLinks.addAll(data);
+                        linkRetrieved.dynamicListener(true);
+                        for (EnrollHistModel.Link d : data) {
+                            list.add(d.getPeriodText());
 
+                          /*  System.out.println(d.getId() + " =>>" +d.getPeriodText());*/
+                        }
+
+                    } else {
+                        linkRetrieved.dynamicListener(false);
+                    }
 
                 }, throwable -> {
                     // Handle the error
-                    Log.e(TAG, "Error retrieving data", throwable);
+                    Log.e(TAG, "LoadEnrollHistoryLink error retrieving data", throwable);
                 }));
 
     }
 
+    void deleteEnrollHistoryLinkData(DynamicListener<Boolean> isDeleted) {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(viewModel.deleteEnrollHistoryLinkData()
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    isDeleted.dynamicListener(true);
+                    Log.d(TAG, "deleteEnrollHistoryLinkData: success");
+                }, throwable -> {
+                    isDeleted.dynamicListener(false);
+                    Log.e(TAG, "deleteEnrollHistoryLinkData: ", throwable);
+                })
+        );
+    }
+
+    void deleteEnrollHistoryData(int link_id,DynamicListener<Boolean> isDeleted) {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(viewModel.deleteEnrollHistoryData(link_id)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    isDeleted.dynamicListener(true);
+                    Log.d(TAG, "deleteEnrollHistoryData: success");
+                }, throwable -> {
+                    isDeleted.dynamicListener(false);
+                    Log.e(TAG, "deleteEnrollHistoryData: ", throwable);
+                })
+        );
+    }
+
+    DynamicListener<Boolean> linkRetrieved = new DynamicListener<Boolean>() {
+        @Override
+        public void dynamicListener(Boolean object) {
+            if (object) {
+
+                binding.progressBar.setVisibility(View.GONE);
+                binding.semSelectorLayout.setVisibility(View.VISIBLE);
+                binding.enrHistRecyclerView.setVisibility(View.VISIBLE);
+                arrayAdapter.notifyDataSetChanged();
+            } else {
+                getLinks();
+            }
+        }
+    };
 
 
-    void getData(String link,int id) {
+    void getData(String link, int id) {
         try {
             viewModel.getData(link).observe(requireActivity(), data -> {
                 if (data != null) {
@@ -197,7 +285,12 @@ public class EnrollmentHistoryFragment extends Fragment {
                     adapter.notifyDataSetChanged();
                     binding.progressBar.setVisibility(View.GONE);
 
-                    saveEnrollHistory(id);
+                    deleteEnrollHistoryData(id, object -> {
+                        if (object) {
+                            saveEnrollHistory(id);
+                        }
+                    });
+
                 }
             });
         } catch (NullPointerException e) {

@@ -12,7 +12,6 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import kotlinx.coroutines.flow.Flow;
 
 @Dao
 public interface DatabaseDao {
@@ -22,15 +21,13 @@ public interface DatabaseDao {
     Flowable<List<DashboardModel>> getDashboard();
 
     @Query("delete from dashboard")
-    Completable deleteAll();
+    Completable deleteDashboardData();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertDashboard(List<DashboardModel> dashboard);
 
 
     /* EnrollmentHistory */
-
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertEnrollHistory(List<EnrollHistModel> enrollHistory);
 
@@ -40,6 +37,9 @@ public interface DatabaseDao {
     @Query("select * from enrollhist where link_id=:link_id")
     Flowable<List<EnrollHistModel>> getEnrollHistory(int link_id);
 
+    @Query("delete from enrollhist where link_id=:link_id")
+    Completable deleteEnrollHistoryData(int link_id);
+
     // link
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertEnrollHistoryLink(List<EnrollHistModel.Link> enrollHistoryLink);
@@ -47,6 +47,9 @@ public interface DatabaseDao {
     @Query("select * from enrollhistlink")
     Flowable<List<EnrollHistModel.Link>> getEnrollHistoryLinks();
 
+    @Query("delete from enrollhistlink")
+    Completable deleteEnrollHistoryLinkData();
 
+    /* Grade */
 
 }
