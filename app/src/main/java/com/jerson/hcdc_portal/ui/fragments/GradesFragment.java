@@ -70,7 +70,7 @@ public class GradesFragment extends Fragment {
     }
 
     void getLinks() {
-        viewModel.getLinks(requireActivity()).observe(requireActivity(), data -> {
+        viewModel.getLinks().observe(requireActivity(), data -> {
             if (data != null) {
                 list.clear();
                 semGradeList.clear();
@@ -87,7 +87,7 @@ public class GradesFragment extends Fragment {
     }
 
     void getGrade(String link){
-        viewModel.gradeData(link,requireActivity()).observe(requireActivity(),data->{
+        viewModel.gradeData(link).observe(requireActivity(),data->{
             if (data != null) {
                 try {
                     String w = "Weighted % Ave: ";

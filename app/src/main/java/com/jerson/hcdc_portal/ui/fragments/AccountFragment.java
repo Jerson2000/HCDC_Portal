@@ -77,7 +77,7 @@ public class AccountFragment extends Fragment {
 
     void getLinks() {
         try {
-            viewModel.getLinks(requireActivity()).observe(getActivity(), data -> {
+            viewModel.getLinks().observe(getActivity(), data -> {
                 if (data != null) {
                     list.clear();
                     semAccountList.clear();
@@ -118,7 +118,7 @@ public class AccountFragment extends Fragment {
 
     void getData(String link) {
         try {
-            viewModel.getData(link, requireActivity()).observe(requireActivity(), data -> {
+            viewModel.getData(link).observe(requireActivity(), data -> {
                 if (data != null) {
                     accList.clear();
                     accList.addAll(data);

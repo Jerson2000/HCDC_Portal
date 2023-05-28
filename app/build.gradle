@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.jerson.hcdc_portal"
-        minSdk 22
+        minSdk 24
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -22,14 +22,23 @@ android {
 
     buildTypes {
         debug {
-            shrinkResources true
-            minifyEnabled true
+//            shrinkResources true
+//            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    /* Lint  */
+    allprojects {
+        gradle.projectsEvaluated {
+            tasks.withType(JavaCompile) {
+                options.compilerArgs << "-Xlint:deprecation"
+            }
+        }
     }
 }
 
@@ -52,9 +61,6 @@ dependencies {
 //    Scalable Unit
     implementation 'com.intuit.sdp:sdp-android:1.1.0'
     implementation 'com.intuit.ssp:ssp-android:1.1.0'
-////    RxJava
-//    implementation "io.reactivex.rxjava2:rxjava:2.1.1"
-//    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
 //    Okhttp
     implementation "com.squareup.okhttp3:okhttp:4.10.0"
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
@@ -68,5 +74,8 @@ dependencies {
 
     // RxJava
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
+    // Picasso
+    implementation 'com.squareup.picasso:picasso:2.8'
 
 }

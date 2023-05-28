@@ -1,29 +1,28 @@
 package com.jerson.hcdc_portal.network;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.os.Handler;
 import android.os.Looper;
 
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
+import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
-import com.jerson.hcdc_portal.util.onResponseException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
 import okhttp3.CacheControl;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -37,13 +36,13 @@ public class HttpClient {
     private Executor executor;
     private CacheControl cacheControl;
 
-    private HttpClient(Context context) {
-        File cacheDirectory = new File(context.getCacheDir(), "http-cache");
+    private HttpClient() {
+        File cacheDirectory = new File(PortalApp.getAppContext().getCacheDir(), "http-cache");
         int cacheSize = 10 * 1024 * 1024; // 10 MB
         Cache cache = new Cache(cacheDirectory, cacheSize);
         client = new OkHttpClient.Builder()
                 .addInterceptor(new TimingInterceptor())
-                .cookieJar(new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context)))
+                .cookieJar(new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(PortalApp.getAppContext())))
                 .cache(cache)
                 .build();
          cacheControl = new CacheControl.Builder()
@@ -54,114 +53,115 @@ public class HttpClient {
         executor = Executors.newSingleThreadExecutor();
     }
 
-    public static synchronized HttpClient getInstance(Context context) {
+
+    private boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) PortalApp.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkCapabilities networkCapabilities = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+        }
+        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+    }
+
+
+    public static synchronized HttpClient getInstance() {
         if (instance == null) {
-            instance = new HttpClient(context);
+            instance = new HttpClient();
         }
         return instance;
     }
 
     public void GET(String url, final OnHttpResponseListener<Document> listener) {
-        Request request = new Request.Builder()
-            .url(url)
-            .cacheControl(cacheControl)
-            .build();
-        executor.execute(()->{
-            try {
-                Response response = client.newCall(request).execute();
-                if (response.isSuccessful()) {
-                    // Handle successful response
-                    ResponseBody body = response.body();
-                    String html = body.string();
-                    handler.post(()-> listener.onResponseCode(response.code()));
-                    handler.post(() -> listener.onResponse(Jsoup.parse(html)));
+        if(isConnected()){
+            Request request = new Request.Builder()
+                    .url(url)
+                    .cacheControl(cacheControl)
+                    .build();
+            executor.execute(()->{
+                try {
+                    Response response = client.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        // Handle successful response
+                        ResponseBody body = response.body();
+                        String html = body.string();
+                        handler.post(()-> listener.onResponseCode(response.code()));
+                        handler.post(() -> listener.onResponse(Jsoup.parse(html)));
 
-                } else {
-                    // Handle unsuccessful response
-                    handler.post(()-> listener.onResponseCode(response.code()));
+                    } else {
+                        // Handle unsuccessful response
+                        handler.post(()-> listener.onResponseCode(response.code()));
+                    }
+                } catch (IOException e) {
+                    // Handle network or IO errors
+                    handler.post(() -> listener.onFailure(e));
                 }
-            } catch (IOException e) {
-                // Handle network or IO errors
-                handler.post(() -> listener.onFailure(e));
-            }
-        });
+            });
+        }else{
+            listener.onFailure(new IOException("No internet connection"));
+        }
 
 
 
-//        client.newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                handler.post(() -> listener.onFailure(e));
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                if (!response.isSuccessful()) {
-//                    handler.post(() -> listener.onFailure(new IOException("Unexpected code " + response)));
-//                    handler.post(()-> listener.onResponseCode(response.code()));
-//                    return;
-//                }
-//                ResponseBody body = response.body();
-//                String html = body.string();
-//                handler.post(()-> listener.onResponseCode(response.code()));
-//                handler.post(() -> listener.onResponse(Jsoup.parse(html)));
-//            }
-//        });
     }
 
     public void POST(String url, FormBody formBody, OnHttpResponseListener<Document> listener) {
-        executor.execute(()->{
-            try {
-                Request request = new Request.Builder()
-                        .url(url)
-                        .post(formBody)
-                        .build();
+        if(isConnected()){
+            executor.execute(()->{
+                try {
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(formBody)
+                            .build();
 
-                Response response = client.newCall(request).execute();
+                    Response response = client.newCall(request).execute();
 
-                System.out.println(response.code()+" - "+response.message());
+                    System.out.println(response.code()+" - "+response.message());
 
-                while (response.isRedirect()) {
-                    if (response.code() == 302 || response.code() == 307) {
-                        request = request.newBuilder()
-                                .url(response.header("Location"))
-                                .post(formBody)
-                                .build();
+                    while (response.isRedirect()) {
+                        if (response.code() == 302 || response.code() == 307) {
+                            request = request.newBuilder()
+                                    .url(response.header("Location"))
+                                    .post(formBody)
+                                    .build();
 
-                        response = client.newCall(request).execute();
+                            response = client.newCall(request).execute();
+                        }
+                        // Handle other redirects
+                        else {
+                            request = request.newBuilder()
+                                    .url(response.header("Location"))
+                                    .build();
+
+                            response = client.newCall(request).execute();
+                        }
                     }
-                    // Handle other redirects
-                    else {
-                        request = request.newBuilder()
-                                .url(response.header("Location"))
-                                .build();
 
-                        response = client.newCall(request).execute();
-                    }
-                }
-
-                Response finalResponse = response;
-                // Handle the final response
-                if (response.isSuccessful()) {
-                    // Success
-                    handler.post(()-> listener.onResponseCode(finalResponse.code()));
-                    ResponseBody body = response.body();
-                    if (body != null) {
-                        String responseData = body.string();
-                        Document document = Jsoup.parse(responseData);
-                        handler.post(()-> listener.onResponse(document));
-                    }
-                } else {
-                    // Handle error
+                    Response finalResponse = response;
+                    // Handle the final response
+                    if (response.isSuccessful()) {
+                        // Success
+                        handler.post(()-> listener.onResponseCode(finalResponse.code()));
+                        ResponseBody body = response.body();
+                        if (body != null) {
+                            String responseData = body.string();
+                            Document document = Jsoup.parse(responseData);
+                            handler.post(()-> listener.onResponse(document));
+                        }
+                    } else {
+                        // Handle error
 //                    listener.onFailure(new onResponseException(response.code()));
-                    handler.post(()-> listener.onResponseCode(finalResponse.code()));
-                    handler.post(()-> listener.onFailure(new IOException("Unexpected code "+ finalResponse)));
-                }
-            } catch (IOException e) {
+                        handler.post(()-> listener.onResponseCode(finalResponse.code()));
+                        handler.post(()-> listener.onFailure(new IOException("Unexpected code "+ finalResponse)));
+                    }
+                } catch (IOException e) {
 //            e.printStackTrace();
-                handler.post(()-> listener.onFailure(e));
-            }
-        });
+                    handler.post(()-> listener.onFailure(e));
+                }
+            });
+        }else{
+            listener.onFailure(new IOException("No internet connection"));
+        }
+
     }
 
 

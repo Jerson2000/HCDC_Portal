@@ -6,13 +6,18 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.jerson.hcdc_portal.model.DashboardModel;
+import com.jerson.hcdc_portal.model.EnrollHistModel;
 
 import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import kotlinx.coroutines.flow.Flow;
+
 @Dao
 public interface DatabaseDao {
+
+    /* Dashboard */
     @Query("select * from dashboard")
     Flowable<List<DashboardModel>> getDashboard();
 
@@ -21,4 +26,27 @@ public interface DatabaseDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertDashboard(List<DashboardModel> dashboard);
+
+
+    /* EnrollmentHistory */
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    Completable insertEnrollHistory(List<EnrollHistModel> enrollHistory);
+
+    @Query("select * from enrollhist")
+    Flowable<List<EnrollHistModel>> getEnrollHistory();
+
+    @Query("select * from enrollhist where link_id=:link_id")
+    Flowable<List<EnrollHistModel>> getEnrollHistory(int link_id);
+
+    // link
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    Completable insertEnrollHistoryLink(List<EnrollHistModel.Link> enrollHistoryLink);
+
+    @Query("select * from enrollhistlink")
+    Flowable<List<EnrollHistModel.Link>> getEnrollHistoryLinks();
+
+
+
 }

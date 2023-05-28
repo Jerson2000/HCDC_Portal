@@ -1,24 +1,17 @@
 package com.jerson.hcdc_portal.ui;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ActivityMainBinding;
-import com.jerson.hcdc_portal.network.Clients;
-import com.jerson.hcdc_portal.util.AppConstants;
 import com.jerson.hcdc_portal.util.SnackBarUtil;
 
 public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
@@ -63,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 navController.navigate(R.id.accountFragment);
                 break;
             default:
-                SnackBarUtil.SnackBarShort(binding.mainLayout, "Is not implemented").show();
+
         }
 
         return true;

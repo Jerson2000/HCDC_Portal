@@ -7,14 +7,23 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.jerson.hcdc_portal.model.DashboardModel;
+import com.jerson.hcdc_portal.model.EnrollHistModel;
 
-@Database(entities = {DashboardModel.class}, version = 1,exportSchema = false)
-public abstract class DatabasePortal extends RoomDatabase
-{
+@Database(
+        entities = {
+                DashboardModel.class,
+                EnrollHistModel.class,
+                EnrollHistModel.Link.class
+        },
+
+        version = 1,
+        exportSchema = false)
+
+public abstract class DatabasePortal extends RoomDatabase {
     private static DatabasePortal databasePortal;
 
-    public static synchronized DatabasePortal getDatabase(Context context){
-        if(databasePortal == null){
+    public static synchronized DatabasePortal getDatabase(Context context) {
+        if (databasePortal == null) {
             databasePortal = Room.databaseBuilder(
                     context,
                     DatabasePortal.class,

@@ -9,22 +9,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.jerson.hcdc_portal.database.DatabasePortal;
-import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
-import com.jerson.hcdc_portal.network.Clients;
-import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.repo.DashboardRepo;
-import com.jerson.hcdc_portal.util.AppConstants;
 
 
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -47,14 +36,9 @@ public class DashboardViewModel extends AndroidViewModel {
         return resCode;
     }
 
-    public LiveData<List<DashboardModel>> getData(Context context){
-        return repo.getDashData(context,resCode,response);
+    public LiveData<List<DashboardModel>> getData(){
+        return repo.getDashData(resCode,response);
     }
-
-    public LiveData<String> getDashboardResponse(){
-        return response;
-    }
-
 
     public Completable insertDashboard(List<DashboardModel> dashboardModel){
         return databasePortal.databaseDao().insertDashboard(dashboardModel);
