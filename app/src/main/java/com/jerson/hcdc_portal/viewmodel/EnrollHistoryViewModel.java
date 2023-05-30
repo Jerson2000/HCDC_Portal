@@ -39,6 +39,8 @@ public class EnrollHistoryViewModel extends ViewModel {
         return repo.getEnrollLinks(response,resCode);
     }
 
+    /* database */
+
     public Completable insertEnrollHistory(List<EnrollHistModel> enrollHistory){
         return databasePortal.databaseDao().insertEnrollHistory(enrollHistory);
     }

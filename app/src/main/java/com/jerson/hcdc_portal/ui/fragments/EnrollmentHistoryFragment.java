@@ -38,6 +38,7 @@ public class EnrollmentHistoryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(EnrollHistoryViewModel.class);
+        loadEnrollHistoryLink(linkRetrieved);
     }
 
     @Override
@@ -64,11 +65,11 @@ public class EnrollmentHistoryFragment extends Fragment {
         binding.enrHistRecyclerView.setAdapter(adapter);
 
 
-        loadEnrollHistoryLink(linkRetrieved);
+
         /*loadEnrollHistory();*/
 
         binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
-            Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " ["+ periodLinks.get(i).getId()+"] " );
+            Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " [" + periodLinks.get(i).getId() + "] ");
             binding.progressBar.setVisibility(View.VISIBLE);
             loadEnrollHistory(periodLinks.get(i).getId(), object -> {
                 if (!object) {
@@ -131,7 +132,7 @@ public class EnrollmentHistoryFragment extends Fragment {
 
 
     void saveEnrollHistory(int link_id) {
-        for(int i=0;i<enrollData.size();i++){
+        for (int i = 0; i < enrollData.size(); i++) {
             enrollData.get(i).setLink_id(link_id);
         }
         CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -152,7 +153,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                 .subscribe(() -> {
                     Log.w(TAG, "saveEnrollHistoryLink Data saved: " + periodLinks.size());
                 }, throwable -> {
-                    Log.d(TAG, "getData: " + throwable);
+                    Log.d(TAG, "saveEnrollHistoryLink: " + throwable);
                 })
         );
     }
@@ -163,7 +164,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    Log.d(TAG, "Data retrieved successfully: " + data.size());
+                    Log.d(TAG, "LoadEnrollHistory data retrieved successfully: " + data.size());
 
                     if (data.size() > 0) {
                         enrollData.clear();
@@ -177,7 +178,7 @@ public class EnrollmentHistoryFragment extends Fragment {
 
                 }, throwable -> {
                     // Handle the error
-                    Log.e(TAG, "Error retrieving data", throwable);
+                    Log.e(TAG, "LoadEnrollHistory error retrieving data", throwable);
                 }));
 
     }
@@ -218,7 +219,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                         for (EnrollHistModel.Link d : data) {
                             list.add(d.getPeriodText());
 
-                          /*  System.out.println(d.getId() + " =>>" +d.getPeriodText());*/
+                            /*  System.out.println(d.getId() + " =>>" +d.getPeriodText());*/
                         }
 
                     } else {
@@ -246,7 +247,7 @@ public class EnrollmentHistoryFragment extends Fragment {
         );
     }
 
-    void deleteEnrollHistoryData(int link_id,DynamicListener<Boolean> isDeleted) {
+    void deleteEnrollHistoryData(int link_id, DynamicListener<Boolean> isDeleted) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.deleteEnrollHistoryData(link_id)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
@@ -277,25 +278,22 @@ public class EnrollmentHistoryFragment extends Fragment {
 
 
     void getData(String link, int id) {
-        try {
-            viewModel.getData(link).observe(requireActivity(), data -> {
-                if (data != null) {
-                    enrollData.clear();
-                    enrollData.addAll(data);
-                    adapter.notifyDataSetChanged();
-                    binding.progressBar.setVisibility(View.GONE);
+        viewModel.getData(link).observe(requireActivity(), data -> {
+            if (data != null) {
+                enrollData.clear();
+                enrollData.addAll(data);
+                adapter.notifyDataSetChanged();
+                binding.progressBar.setVisibility(View.GONE);
 
-                    deleteEnrollHistoryData(id, object -> {
-                        if (object) {
-                            saveEnrollHistory(id);
-                        }
-                    });
+                deleteEnrollHistoryData(id, object -> {
+                    if (object) {
+                        saveEnrollHistory(id);
+                    }
+                });
 
-                }
-            });
-        } catch (NullPointerException e) {
-            Log.d(TAG, "getData: " + e.getMessage());
-        }
+            }
+        });
+
 
     }
 

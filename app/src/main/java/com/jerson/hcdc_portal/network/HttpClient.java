@@ -165,4 +165,47 @@ public class HttpClient {
     }
 
 
+    public void GET_Redirection(String url, final OnHttpResponseListener<Document> listener) {
+        executor.execute(() -> {
+            try {
+                Request request = new Request.Builder()
+                        .url(url)
+                        .cacheControl(cacheControl)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+
+                System.out.println(response.code() + " - " + response.message());
+
+                while (response.isRedirect()) {
+                    if(response.code() == 302){
+                        request = request.newBuilder()
+                                .url(response.header("Location"))
+                                .build();
+
+                        response = client.newCall(request).execute();
+                    }
+                }
+
+                Response finalResponse = response;
+                // Handle the final response
+                if (response.isSuccessful()) {
+                    ResponseBody body = response.body();
+                    if (body != null) {
+                        String responseData = body.string();
+                        Document document = Jsoup.parse(responseData);
+                        handler.post(() -> listener.onResponse(document));
+                        handler.post(()->listener.onResponseCode(finalResponse.code()));
+                    }
+                } else {
+                    handler.post(() -> listener.onFailure(new IOException("Unexpected code " + finalResponse)));
+                }
+            } catch (IOException e) {
+                handler.post(() -> listener.onFailure(e));
+            }
+        });
+
+    }
+
+
 }

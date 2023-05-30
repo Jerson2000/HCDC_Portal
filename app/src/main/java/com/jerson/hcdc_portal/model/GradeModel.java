@@ -1,6 +1,15 @@
 package com.jerson.hcdc_portal.model;
 
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "grade")
 public class GradeModel {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+    @ForeignKey(entity = GradeModel.Link.class, parentColumns = "id", childColumns = "grade")
+    private int link_id;
     private String code;
     private String subject;
     private String description;
@@ -13,8 +22,7 @@ public class GradeModel {
     private String earnedUnits;
     private String average;
 
-    public GradeModel() {
-    }
+
 
     public GradeModel(String code, String subject, String description, String unit, String midGrade, String midRemark, String finalGrade, String finalRemark, String teacher,String earnedUnits, String average) {
         this.code = code;
@@ -28,6 +36,22 @@ public class GradeModel {
         this.teacher = teacher;
         this.earnedUnits = earnedUnits;
         this.average = average;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getLink_id() {
+        return link_id;
+    }
+
+    public void setLink_id(int link_id) {
+        this.link_id = link_id;
     }
 
     public String getCode() {
@@ -116,5 +140,43 @@ public class GradeModel {
 
     public void setAverage(String average) {
         this.average = average;
+    }
+
+
+    @Entity(tableName = "gradelink")
+    public static class Link{
+        @PrimaryKey(autoGenerate = true)
+        private int id;
+        private String link;
+        private String text;
+
+        public Link(String link, String text) {
+            this.link = link;
+            this.text = text;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getLink() {
+            return link;
+        }
+
+        public void setLink(String link) {
+            this.link = link;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
     }
 }

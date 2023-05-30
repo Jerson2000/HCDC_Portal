@@ -20,19 +20,19 @@ import java.util.List;
 
 public class GradeRepo {
 
-    public LiveData<List<GradeLinksModel>> getLinks( MutableLiveData<String> response,MutableLiveData<Integer> resCode){
-        MutableLiveData<List<GradeLinksModel>> data = new MutableLiveData<>();
+    public LiveData<List<GradeModel.Link>> getLinks( MutableLiveData<String> response,MutableLiveData<Integer> resCode){
+        MutableLiveData<List<GradeModel.Link>> data = new MutableLiveData<>();
 
         HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.gradesUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
-                List<GradeLinksModel> gradesLinks = new ArrayList<>();
+                List<GradeModel.Link> gradesLinks = new ArrayList<>();
                 Elements semList = response.select("main.app-content ul li.nav-item");
 
                 for (Element list : semList) {
                     String link = list.select("a.nav-link").attr("href");
                     String text = list.select("a.nav-link").text();
-                    GradeLinksModel model = new GradeLinksModel(link, text);
+                    GradeModel.Link model = new GradeModel.Link(link, text);
                     gradesLinks.add(model);
                 }
 

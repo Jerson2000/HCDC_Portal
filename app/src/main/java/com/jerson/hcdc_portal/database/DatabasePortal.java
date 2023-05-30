@@ -8,12 +8,15 @@ import androidx.room.RoomDatabase;
 
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.model.EnrollHistModel;
+import com.jerson.hcdc_portal.model.GradeModel;
 
 @Database(
         entities = {
                 DashboardModel.class,
                 EnrollHistModel.class,
-                EnrollHistModel.Link.class
+                EnrollHistModel.Link.class,
+                GradeModel.class,
+                GradeModel.Link.class
         },
 
         version = 1,

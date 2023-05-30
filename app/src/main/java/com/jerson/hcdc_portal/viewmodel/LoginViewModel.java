@@ -1,10 +1,14 @@
 package com.jerson.hcdc_portal.viewmodel;
 
+import android.content.Context;
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.jerson.hcdc_portal.PortalApp;
+import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.network.HttpClient;
@@ -95,6 +99,25 @@ public class LoginViewModel extends ViewModel {
 
         });
         return s;
+    }
+
+    public void checkSession(DynamicListener<Boolean> listener){
+        HttpClient.getInstance().GET_Redirection(PortalApp.baseUrl + PortalApp.gradesUrl, new OnHttpResponseListener<Document>() {
+            @Override
+            public void onResponse(Document response) {
+                boolean isLoginPage = response.body().text().contains("CROSSIAN LOG-IN");
+                listener.dynamicListener(isLoginPage);
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("LoginViewModel", "onFailure: ",e );
+            }
+
+            @Override
+            public void onResponseCode(int code) {
+                Log.e("LoginViewModel", "onResponseCode: "+code);
+            }
+        });
     }
 
 }

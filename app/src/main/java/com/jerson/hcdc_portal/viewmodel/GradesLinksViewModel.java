@@ -27,8 +27,8 @@ public class GradesLinksViewModel extends ViewModel {
         return resCode;
     }
 
-    public LiveData<List<GradeLinksModel>> getLinks(){
+    /*public LiveData<List<GradeLinksModel>> getLinks(){
         return repo.getLinks(response,resCode);
-    }
+    }*/
 
 }
