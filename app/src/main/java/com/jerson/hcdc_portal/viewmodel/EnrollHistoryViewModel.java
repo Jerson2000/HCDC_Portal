@@ -42,32 +42,32 @@ public class EnrollHistoryViewModel extends ViewModel {
     /* database */
 
     public Completable insertEnrollHistory(List<EnrollHistModel> enrollHistory){
-        return databasePortal.databaseDao().insertEnrollHistory(enrollHistory);
+        return databasePortal.enrollHistoryDao().insertEnrollHistory(enrollHistory);
     }
 
     public Flowable<List<EnrollHistModel>> loadEnrollHistory(){
-        return databasePortal.databaseDao().getEnrollHistory();
+        return databasePortal.enrollHistoryDao().getEnrollHistory();
     }
 
     public Flowable<List<EnrollHistModel>> loadEnrollHistory(int link_id){
-        return databasePortal.databaseDao().getEnrollHistory(link_id);
+        return databasePortal.enrollHistoryDao().getEnrollHistory(link_id);
     }
 
     public Completable insertEnrollHistoryLink(List<EnrollHistModel.Link> enrollHistoryLink){
-        return databasePortal.databaseDao().insertEnrollHistoryLink(enrollHistoryLink);
+        return databasePortal.enrollHistoryDao().insertEnrollHistoryLink(enrollHistoryLink);
     }
 
 
     public Flowable<List<EnrollHistModel.Link>> loadEnrollHistoryLink(){
-        return databasePortal.databaseDao().getEnrollHistoryLinks();
+        return databasePortal.enrollHistoryDao().getEnrollHistoryLinks();
     }
 
     public Completable deleteEnrollHistoryData(int link_id){
-        return databasePortal.databaseDao().deleteEnrollHistoryData(link_id);
+        return databasePortal.enrollHistoryDao().deleteEnrollHistoryData(link_id);
     }
 
     public Completable deleteEnrollHistoryLinkData(){
-        return databasePortal.databaseDao().deleteEnrollHistoryLinkData();
+        return databasePortal.enrollHistoryDao().deleteEnrollHistoryLinkData();
     }
 
 

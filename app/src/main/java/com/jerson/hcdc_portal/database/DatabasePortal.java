@@ -36,5 +36,7 @@ public abstract class DatabasePortal extends RoomDatabase {
         return databasePortal;
     }
 
-    public abstract DatabaseDao databaseDao();
+    public abstract DashboardDao dashboardDao();
+    public abstract EnrollHistoryDao enrollHistoryDao();
+    public abstract GradeDao gradeDao();
 }

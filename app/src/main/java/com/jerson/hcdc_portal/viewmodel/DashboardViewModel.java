@@ -40,15 +40,15 @@ public class DashboardViewModel extends AndroidViewModel {
     }
 
     public Completable insertDashboard(List<DashboardModel> dashboardModel){
-        return databasePortal.databaseDao().insertDashboard(dashboardModel);
+        return databasePortal.dashboardDao().insertDashboard(dashboardModel);
     }
 
     public Flowable<List<DashboardModel>> loadDashboard(){
-        return databasePortal.databaseDao().getDashboard();
+        return databasePortal.dashboardDao().getDashboard();
     }
 
     public Completable deleteDashboardData(){
-        return databasePortal.databaseDao().deleteDashboardData();
+        return databasePortal.dashboardDao().deleteDashboardData();
     }
 
 }

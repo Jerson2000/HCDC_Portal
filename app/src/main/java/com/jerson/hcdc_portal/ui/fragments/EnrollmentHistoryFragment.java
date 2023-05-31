@@ -184,24 +184,7 @@ public class EnrollmentHistoryFragment extends Fragment {
     }
 
 
-    /*private void loadEnrollHistory() {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.loadEnrollHistory()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
-                    Log.d(TAG, "loadEnrollHistory Data retrieved successfully: " + data.size());
 
-                    *//*for (EnrollHistModel d : data) {
-                        System.out.println("["+d.getLink_id()+"] => "+d.getId() + " =>>" +d.getOfferNo());
-                    }*//*
-
-                }, throwable -> {
-                    // Handle the error
-                    Log.e(TAG, "Error retrieving data", throwable);
-                }));
-
-    }*/
 
     private void loadEnrollHistoryLink(DynamicListener<Boolean> linkRetrieved) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();

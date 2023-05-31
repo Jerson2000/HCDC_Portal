@@ -14,6 +14,7 @@ import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.ActivityLoginBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.ui.MainActivity;
+import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.util.SnackBarUtil;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
@@ -29,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginViewModel viewModel;
     private DashboardViewModel dashboardViewModel;
     private static final String TAG = "LoginActivity";
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,12 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+
+        preferenceManager = new PreferenceManager(this);
+
+        if(preferenceManager.getBoolean(PortalApp.KEY_IS_LOGIN)){
+            finish();
+        }
 
         init();
         listeners();
@@ -104,6 +112,11 @@ public class LoginActivity extends AppCompatActivity {
                             saveData(); /* then saving it */
                         }
                     });
+
+                    preferenceManager.putBoolean(PortalApp.KEY_IS_LOGIN,true);
+                    preferenceManager.putString(PortalApp.KEY_EMAIL,email);
+                    preferenceManager.putString(PortalApp.KEY_PASSWORD,pass);
+
 
                     SnackBarUtil.SnackBarLong(binding.snackBarLayout, res).show();
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {

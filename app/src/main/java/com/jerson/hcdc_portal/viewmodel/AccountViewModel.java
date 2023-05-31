@@ -35,4 +35,8 @@ public class AccountViewModel extends ViewModel {
     public LiveData<List<AccountModel>> getData(String link) {
         return repo.getData(link,response,resCode);
     }
+    public LiveData<List<AccountModel>> getData() {
+        return repo.getData();
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.jerson.hcdc_portal.viewmodel;
 
-import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;

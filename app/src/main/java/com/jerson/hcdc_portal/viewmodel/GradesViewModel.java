@@ -48,26 +48,26 @@ public class GradesViewModel extends ViewModel {
     /* database */
 
     public Completable insertGrade(List<GradeModel> grade) {
-        return databasePortal.databaseDao().insertGrade(grade);
+        return databasePortal.gradeDao().insertGrade(grade);
     }
 
     public Flowable<List<GradeModel>> loadGrade(int link_id) {
-        return databasePortal.databaseDao().getGrade(link_id);
+        return databasePortal.gradeDao().getGrade(link_id);
     }
     public Completable deleteGrade(int link_id){
-        return databasePortal.databaseDao().deleteGradeData(link_id);
+        return databasePortal.gradeDao().deleteGradeData(link_id);
     }
 
     public Completable insertGradeLink(List<GradeModel.Link> grade) {
-        return databasePortal.databaseDao().insertGradeLink(grade);
+        return databasePortal.gradeDao().insertGradeLink(grade);
     }
 
     public Flowable<List<GradeModel.Link>> loadGradeLink() {
-        return databasePortal.databaseDao().getGradeLink();
+        return databasePortal.gradeDao().getGradeLink();
     }
 
     public Completable deleteGradeLink(){
-        return databasePortal.databaseDao().deleteGradeLink();
+        return databasePortal.gradeDao().deleteGradeLink();
     }
 
 }

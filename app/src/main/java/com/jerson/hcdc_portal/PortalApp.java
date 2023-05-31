@@ -40,7 +40,7 @@ public class PortalApp extends Application {
     public static final String KEY_EMAIL = "email";
     public static final String KEY_PASSWORD = "password";
     public static final String KEY_STUDENT_ID = "studentID";
-    public static final Boolean KEY_IS_LOGIN = false;
+    public static final String KEY_IS_LOGIN = "isLogin";
 
 
     // App

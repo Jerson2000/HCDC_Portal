@@ -11,11 +11,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentGradesBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.EnrollHistModel;
 import com.jerson.hcdc_portal.model.GradeModel;
 import com.jerson.hcdc_portal.ui.adapter.GradeAdapter;
+import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.GradesViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 
@@ -39,6 +41,7 @@ public class GradesFragment extends Fragment {
     private ArrayAdapter<String> arrayAdapter;
 
     private LoginViewModel loginViewModel;
+    private PreferenceManager preferenceManager;
 
 
     @Override
@@ -46,6 +49,7 @@ public class GradesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(GradesViewModel.class);
         loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+        preferenceManager = new PreferenceManager(requireActivity());
         loadGradeLink(linkListener);
     }
 
@@ -72,17 +76,21 @@ public class GradesFragment extends Fragment {
             Log.d(TAG, "onItemClick: " + semGradeList.get(i).getLink() + "[" + semGradeList.get(i).getId()+"]");
             if (i != 0) {
                 binding.progressBar.setVisibility(View.VISIBLE);
-                loadGrade(semGradeList.get(i).getId(),object -> {
-                    if(!object){
-                        getGrade(semGradeList.get(i).getId(),semGradeList.get(i).getLink());
-                    }
+                checkSession(object -> {
+                        if(object){
+                            loadGrade(semGradeList.get(i).getId(),object1 -> {
+                                if(!object1){
+                                    getGrade(semGradeList.get(i).getId(),semGradeList.get(i).getLink());
+                                }
+                            });
+                        }
                 });
+
 
             }
         });
 
 
-        // RecyclerView Instance
         binding.gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new GradeAdapter(gradeList, requireActivity());
         binding.gradeRecyclerView.setAdapter(adapter);
@@ -143,19 +151,20 @@ public class GradesFragment extends Fragment {
         });
     }
 
-    void checkSession() {
+    void checkSession(DynamicListener<Boolean> listener) {
         loginViewModel.checkSession(object -> {
             if (object) {
-                loginViewModel.Login("jersonray.desierto@hcdc.edu.ph", "fuckingheadshot").observe(requireActivity(), data -> {
+                loginViewModel.Login(preferenceManager.getString(PortalApp.KEY_EMAIL), PortalApp.KEY_PASSWORD).observe(requireActivity(), data -> {
                     Log.e(TAG, "dynamicListener: " + data);
                     if (data.toLowerCase(Locale.ROOT).contains("logged")) {
-                        checkSession();
+                        checkSession(listener);
                     }
                 });
-            } else {
-                getLink();
-            }
+
+            }else listener.dynamicListener(true);
+
         });
+
     }
 
     /* database */
@@ -183,7 +192,11 @@ public class GradesFragment extends Fragment {
 
     DynamicListener<Boolean> linkListener = object -> {
         if (!object) {
-            checkSession();
+            checkSession(object1 -> {
+                if(object1){
+                    getLink();
+                }
+            });
         } else {
             arrayAdapter.notifyDataSetChanged();
             binding.semSelectorLayout.setVisibility(View.VISIBLE);
