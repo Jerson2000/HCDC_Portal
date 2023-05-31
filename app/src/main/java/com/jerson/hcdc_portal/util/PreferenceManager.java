@@ -3,11 +3,13 @@ package com.jerson.hcdc_portal.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.jerson.hcdc_portal.PortalApp;
+
 public class PreferenceManager {
     private final SharedPreferences sharedPreferences;
 
     public PreferenceManager(Context context){
-        sharedPreferences = context.getSharedPreferences(AppConstants.KEY_SHARED,Context.MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences(PortalApp.KEY_SHARED,Context.MODE_PRIVATE);
     }
 
     public void putBoolean(String key, Boolean value){

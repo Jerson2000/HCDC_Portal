@@ -1,38 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FDEFEF"
     tools:context=".ui.fragments.DashboardFragment">
 
-    <include
-        android:id="@+id/retryLayout"
-        layout="@layout/retry_layout"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="true"
-        tools:listitem="@layout/item_container_dashboard" />
+            <LinearLayout
+                android:id="@+id/cardLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginTop="@dimen/_25sdp"
+                android:padding="@dimen/_3sdp"
+                app:layout_constraintTop_toTopOf="parent">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:layout_height="wrap_content">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:indeterminateTint="@color/md_theme_dark_errorContainer"
-            android:visibility="visible" />
-    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- Media -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_50sdp"
+                            app:srcCompat="@drawable/book"
+                            android:scaleType="centerCrop"
+                            />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Subjects"
+                                android:textAppearance="?attr/textAppearanceHeadline6"
+                                />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:text="No. of enrolled subjects."
+                                android:textAppearance="?attr/textAppearanceBody2"
+                                android:textColor="?android:attr/textColorSecondary"
+                                />
+                            <TextView
+                                android:id="@+id/totalSubTV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="0"
+                                android:textSize="@dimen/_25ssp"
+                                android:layout_gravity="center"
+                                android:textAppearance="?attr/textAppearanceBody2"
+                                android:textColor="?android:attr/textColorSecondary"
+                                />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:layout_height="wrap_content">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <!-- Media -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_50sdp"
+                            app:srcCompat="@drawable/book"
+                            android:scaleType="centerCrop"
+                            />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Subjects"
+                                android:textAppearance="?attr/textAppearanceHeadline6"
+                                />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:text="No. of enrolled subjects."
+                                android:textAppearance="?attr/textAppearanceBody2"
+                                android:textColor="?android:attr/textColorSecondary"
+                                />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="0"
+                                android:textSize="@dimen/_25ssp"
+                                android:layout_gravity="center"
+                                android:textAppearance="?attr/textAppearanceBody2"
+                                android:textColor="?android:attr/textColorSecondary"
+                                />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/todayTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Today's subject/s."
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                app:layout_constraintTop_toBottomOf="@id/cardLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_3sdp"
+                app:layout_constraintTop_toBottomOf="@id/todayTV"/>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_50sdp"
+                app:layout_constraintTop_toBottomOf="@id/recyclerView"/>
+
+
+
+
+
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                android:indeterminate="true"
+                style="@style/Widget.Material3.CircularProgressIndicator"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
 
 
 </FrameLayout>

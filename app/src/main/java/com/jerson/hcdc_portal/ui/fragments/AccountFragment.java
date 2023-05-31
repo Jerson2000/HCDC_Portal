@@ -55,16 +55,17 @@ public class AccountFragment extends Fragment {
         adapter = new AccountAdapter(getActivity(), accList);
         binding.accountRecyclerView.setAdapter(adapter);
 
-        getLinks();
+        /*getLinks();*/
+        getData();
 
-        binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
+        /*binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
             Log.d(TAG, "onItemClick: " + semAccountList.get(i).getSemAccountLink() + " ()" + i);
             if (i != 0) {
                 binding.progressBar.setVisibility(View.VISIBLE);
                 getData(semAccountList.get(i).getSemAccountLink());
 //                getResponse();
             }
-        });
+        });*/
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
             getLinks();
@@ -77,7 +78,7 @@ public class AccountFragment extends Fragment {
 
     void getLinks() {
         try {
-            viewModel.getLinks(requireActivity()).observe(getActivity(), data -> {
+            viewModel.getLinks().observe(requireActivity(), data -> {
                 if (data != null) {
                     list.clear();
                     semAccountList.clear();
@@ -118,7 +119,7 @@ public class AccountFragment extends Fragment {
 
     void getData(String link) {
         try {
-            viewModel.getData(link, requireActivity()).observe(requireActivity(), data -> {
+            viewModel.getData(link).observe(requireActivity(), data -> {
                 if (data != null) {
                     accList.clear();
                     accList.addAll(data);
@@ -134,6 +135,21 @@ public class AccountFragment extends Fragment {
             Log.d(TAG, "getData: " + e.getMessage());
         }
 
+    }
+
+    void getData(){
+        viewModel.getData().observe(requireActivity(),data->{
+            if(data!=null){
+                accList.clear();
+                accList.addAll(data);
+                adapter.notifyDataSetChanged();
+                binding.dueText.setText(accList.get(0).getDueText());
+                binding.dueAmount.setText(accList.get(0).getDue());
+                binding.progressBar.setVisibility(View.GONE);
+                binding.semSelectorLayout.setVisibility(View.VISIBLE);
+                binding.accountRecyclerView.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
 

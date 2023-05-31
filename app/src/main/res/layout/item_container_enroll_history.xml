@@ -1,107 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:elevation="@dimen/_10sdp"
-    app:cardCornerRadius="@dimen/_20sdp">
+    android:padding="@dimen/_2sdp"
+    android:layout_margin="1.5dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?colorOnSurfaceInverse"
-        android:paddingBottom="@dimen/_5sdp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/_2sdp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="10">
+
+            <TextView
+                android:id="@+id/offerNo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.5"
+                android:gravity="center"
+                android:text="123"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+            <TextView
+                android:id="@+id/subjCode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:gravity="center"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="123"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+            <TextView
+                android:id="@+id/unit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.5"
+                android:gravity="center"
+                android:text="123"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="10">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.5"
+                android:gravity="center"
+                android:text="Offer No."
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/_8sdp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:gravity="center"
+                android:text="Subject Code"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/_8sdp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.5"
+                android:gravity="center"
+                android:text="Unit"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/_8sdp" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <TextView
-                android:id="@+id/subjCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"
-                android:text="Subject Code"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_8ssp"
-                android:text="Subject Code"/>
+
             <TextView
                 android:id="@+id/desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/md_theme_dark_primary"
-                android:textSize="@dimen/_16ssp"
-                android:text="Description"/>
+                android:text="123"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_8ssp"
-                android:background="@color/md_theme_dark_primary"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/_8sdp"
+                android:gravity="center"
                 android:text="Description"/>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_5sdp"
-                android:paddingRight="@dimen/_5sdp">
-
-                <TextView
-                    android:id="@+id/offerNo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:text="Offer No."
-                    android:textSize="@dimen/_16ssp" />
-
-                <TextView
-                    android:id="@+id/unit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginStart="232dp"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:text="Unit"
-                    android:textSize="@dimen/_16ssp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_5sdp"
-                android:paddingRight="@dimen/_5sdp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Offer No."
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_alignParentStart="true"
-                    android:textSize="@dimen/_8ssp"
-                    android:layout_marginStart="@dimen/_15sdp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Unit"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_alignParentEnd="true"
-                    android:textSize="@dimen/_8ssp"
-                    android:layout_marginEnd="@dimen/_15sdp"/>
-
-            </RelativeLayout>
 
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

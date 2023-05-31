@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.jerson.hcdc_portal.model.AccountLinksModel;
 import com.jerson.hcdc_portal.model.AccountModel;
-import com.jerson.hcdc_portal.network.Clients;
 import com.jerson.hcdc_portal.repo.AccountRepo;
 
 import java.util.List;
@@ -29,11 +28,15 @@ public class AccountViewModel extends ViewModel {
         return resCode;
     }
 
-    public LiveData<List<AccountLinksModel>> getLinks(Context context) {
-        return repo.getLinks(context,response,resCode);
+    public LiveData<List<AccountLinksModel>> getLinks() {
+        return repo.getLinks(response,resCode);
     }
 
-    public LiveData<List<AccountModel>> getData(String link,Context context) {
-        return repo.getData(link,context,response,resCode);
+    public LiveData<List<AccountModel>> getData(String link) {
+        return repo.getData(link,response,resCode);
     }
+    public LiveData<List<AccountModel>> getData() {
+        return repo.getData();
+    }
+
 }

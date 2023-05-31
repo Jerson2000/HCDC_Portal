@@ -1,182 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="@dimen/_5sdp"
-    android:elevation="@dimen/_10sdp"
-    app:cardCornerRadius="@dimen/_20sdp">
+    android:layout_margin="@dimen/_3sdp"
+    android:padding="@dimen/_2sdp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?colorOnSurfaceInverse"
-        android:paddingBottom="@dimen/_5sdp">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="6">
 
+        <ImageView
+            android:id="@+id/bookIV"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:padding="@dimen/_3sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginStart="@dimen/_3sdp"/>
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/_3sdp"
             android:orientation="vertical">
-            <TextView
-                android:id="@+id/subjCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"
-                android:text="Subject Code"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_8ssp"
-                android:text="Subject Code"/>
+
             <TextView
                 android:id="@+id/desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/md_theme_dark_primary"
-                android:textSize="@dimen/_16ssp"
-                android:text="Description"/>
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="@dimen/_12ssp"
+                android:text="Subject Description"
+                android:textAppearance="?attr/textAppearanceHeadline6"/>
             <TextView
+                android:id="@+id/subjCode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_8ssp"
-                android:background="@color/md_theme_dark_primary"
-                android:text="Description"/>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_5sdp"
-                android:paddingRight="@dimen/_5sdp">
+                android:text="SubjectCode"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/_8ssp"/>
 
-                <TextView
-                    android:id="@+id/offerNo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:text="Offer No."
-                    android:textSize="@dimen/_16ssp" />
-
-                <TextView
-                    android:id="@+id/unit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginStart="232dp"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:text="Unit"
-                    android:textSize="@dimen/_16ssp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_5sdp"
-                android:paddingRight="@dimen/_5sdp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Offer No."
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_alignParentStart="true"
-                    android:textSize="@dimen/_8ssp"
-                    android:layout_marginStart="@dimen/_15sdp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Unit"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_alignParentEnd="true"
-                    android:textSize="@dimen/_8ssp"
-                    android:layout_marginEnd="@dimen/_15sdp"/>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/md_theme_dark_primary">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/days"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/_16ssp"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:text="Days"/>
-
-                    <TextView
-                        android:id="@+id/time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/_16ssp"
-                        android:text="Time"
-                        android:layout_marginEnd="@dimen/_5sdp"
-                        android:layout_alignParentEnd="true"/>
-                </RelativeLayout>
-
-
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/md_theme_dark_primary"
-                android:paddingLeft="@dimen/_5sdp"
-                android:paddingRight="@dimen/_5sdp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Days"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_alignParentStart="true"
-                    android:textSize="@dimen/_8ssp"
-                    android:layout_marginStart="@dimen/_15sdp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Time"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_alignParentEnd="true"
-                    android:textSize="@dimen/_8ssp"
-                    android:layout_marginEnd="@dimen/_15sdp"/>
-
-            </RelativeLayout>
-
-            <TextView
-                android:id="@+id/room"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_16ssp"
-                android:text="Room"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_8ssp"
-                android:text="Room"/>
 
         </LinearLayout>
 
-    </RelativeLayout>
 
-</androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+
+
+
+</com.google.android.material.card.MaterialCardView>

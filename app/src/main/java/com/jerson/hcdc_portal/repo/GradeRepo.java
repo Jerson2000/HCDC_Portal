@@ -5,11 +5,11 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
 import com.jerson.hcdc_portal.model.GradeLinksModel;
 import com.jerson.hcdc_portal.model.GradeModel;
 import com.jerson.hcdc_portal.network.HttpClient;
-import com.jerson.hcdc_portal.util.AppConstants;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,19 +20,19 @@ import java.util.List;
 
 public class GradeRepo {
 
-    public LiveData<List<GradeLinksModel>> getLinks(Context context,MutableLiveData<String> response,MutableLiveData<Integer> resCode){
-        MutableLiveData<List<GradeLinksModel>> data = new MutableLiveData<>();
+    public LiveData<List<GradeModel.Link>> getLinks( MutableLiveData<String> response,MutableLiveData<Integer> resCode){
+        MutableLiveData<List<GradeModel.Link>> data = new MutableLiveData<>();
 
-        HttpClient.getInstance(context).GET(AppConstants.baseUrl + AppConstants.gradesUrl, new OnHttpResponseListener<Document>() {
+        HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.gradesUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
-                List<GradeLinksModel> gradesLinks = new ArrayList<>();
+                List<GradeModel.Link> gradesLinks = new ArrayList<>();
                 Elements semList = response.select("main.app-content ul li.nav-item");
 
                 for (Element list : semList) {
                     String link = list.select("a.nav-link").attr("href");
                     String text = list.select("a.nav-link").text();
-                    GradeLinksModel model = new GradeLinksModel(link, text);
+                    GradeModel.Link model = new GradeModel.Link(link, text);
                     gradesLinks.add(model);
                 }
 
@@ -53,10 +53,10 @@ public class GradeRepo {
         return data;
     }
 
-    public LiveData<List<GradeModel>> gradeData (String link, Context context,MutableLiveData<String> response,MutableLiveData<Integer> resCode){
+    public LiveData<List<GradeModel>> gradeData (String link,MutableLiveData<String> response,MutableLiveData<Integer> resCode){
         MutableLiveData<List<GradeModel>> dat = new MutableLiveData<>();
 
-        HttpClient.getInstance(context).GET(AppConstants.baseUrl+ link, new OnHttpResponseListener<Document>() {
+        HttpClient.getInstance().GET(PortalApp.baseUrl+ link, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
                 List<GradeModel> gradeModelList = new ArrayList<>();

@@ -1,6 +1,6 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+
+<resources>
     <style name="Theme.HCDC_Portal" parent="Theme.Material3.Light.NoActionBar">
-        <item name="android:forceDarkAllowed" tools:targetApi="Q">false</item>
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>

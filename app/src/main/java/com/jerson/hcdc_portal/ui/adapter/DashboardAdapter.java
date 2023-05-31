@@ -8,8 +8,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ItemContainerDashboardBinding;
 import com.jerson.hcdc_portal.model.DashboardModel;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -33,13 +35,9 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
     public void onBindViewHolder(@NonNull DashboardAdapter.ViewHolder holder, int position) {
         DashboardModel model = list.get(position);
 
-        holder.binding.offerNo.setText(model.getOfferNo());
         holder.binding.desc.setText(model.getDescription());
-        holder.binding.days.setText(model.getDays());
-        holder.binding.time.setText(model.getTime());
-        holder.binding.room.setText(model.getRoom());
         holder.binding.subjCode.setText(model.getSubjCode());
-        holder.binding.unit.setText(model.getUnit());
+        Picasso.get().load(R.drawable.v2_book).into(holder.binding.bookIV);
 
     }
 

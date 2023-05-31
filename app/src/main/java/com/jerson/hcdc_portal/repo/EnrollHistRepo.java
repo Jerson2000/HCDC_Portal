@@ -5,14 +5,11 @@ import android.content.Context;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
 import com.jerson.hcdc_portal.model.EnrollHistModel;
-import com.jerson.hcdc_portal.model.EnrollLinksModel;
 import com.jerson.hcdc_portal.network.HttpClient;
-import com.jerson.hcdc_portal.util.AppConstants;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -22,18 +19,18 @@ import java.util.List;
 
 public class EnrollHistRepo {
 
-    public LiveData<List<EnrollLinksModel>> getEnrollLinks(Context context, MutableLiveData<String> response,MutableLiveData<Integer> resCode){
-        MutableLiveData<List<EnrollLinksModel>> data = new MutableLiveData<>();
-        HttpClient.getInstance(context).GET(AppConstants.baseUrl + AppConstants.enrollHistory, new OnHttpResponseListener<Document>() {
+    public LiveData<List<EnrollHistModel.Link>> getEnrollLinks(MutableLiveData<String> response, MutableLiveData<Integer> resCode){
+        MutableLiveData<List<EnrollHistModel.Link>> data = new MutableLiveData<>();
+        HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.enrollHistory, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
-                List<EnrollLinksModel> links = new ArrayList<>();
+                List<EnrollHistModel.Link> links = new ArrayList<>();
                 Elements semList = response.select("main.app-content ul li.nav-item:gt(0)");
 
                 for (Element list : semList) {
                     String link = list.select("a.nav-link").attr("href");
                     String text = list.select("a.nav-link").text();
-                    EnrollLinksModel model = new EnrollLinksModel(link, text);
+                    EnrollHistModel.Link model = new EnrollHistModel.Link(link, text);
                     links.add(model);
 
                 }
@@ -58,10 +55,10 @@ public class EnrollHistRepo {
     }
 
 
-    public LiveData<List<EnrollHistModel>> getEnrollData(String link, Context context, MutableLiveData<String> response, MutableLiveData<Integer> resCode){
+    public LiveData<List<EnrollHistModel>> getEnrollData(String link, MutableLiveData<String> response, MutableLiveData<Integer> resCode){
         MutableLiveData<List<EnrollHistModel>> data = new MutableLiveData<>();
 
-        HttpClient.getInstance(context).GET(AppConstants.baseUrl + link, new OnHttpResponseListener<Document>() {
+        HttpClient.getInstance().GET(PortalApp.baseUrl + link, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
                 List<EnrollHistModel> history = new ArrayList<>();

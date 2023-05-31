@@ -1,25 +1,31 @@
 package com.jerson.hcdc_portal.viewmodel;
 
-import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.jerson.hcdc_portal.PortalApp;
+import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
+import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.network.HttpClient;
-import com.jerson.hcdc_portal.util.AppConstants;
+import com.jerson.hcdc_portal.repo.DashboardRepo;
 
 import org.jsoup.nodes.Document;
+
+import java.util.List;
 
 import okhttp3.FormBody;
 
 public class LoginViewModel extends ViewModel {
     MutableLiveData<Integer> resCode = new MutableLiveData<>();
+    MutableLiveData<List<DashboardModel>> dashboardData = new MutableLiveData<>();
 
-    public LiveData<String> Login(String email, String password, Context context) {
+    public LiveData<String> Login(String email, String password) {
         MutableLiveData<String> res = new MutableLiveData<>();
-        getToken(context).observeForever(resp -> {
+        getToken().observeForever(resp -> {
             if (resp != null) {
                 FormBody formBody = new FormBody.Builder()
                         .add("_token", resp)
@@ -27,10 +33,12 @@ public class LoginViewModel extends ViewModel {
                         .add("password", password)
                         .build();
 
-                HttpClient.getInstance(context).POST(AppConstants.baseUrl + AppConstants.loginPostUrl, formBody, new OnHttpResponseListener<Document>() {
+                HttpClient.getInstance().POST(PortalApp.baseUrl + PortalApp.loginPostUrl, formBody, new OnHttpResponseListener<Document>() {
                     @Override
                     public void onResponse(Document response) {
                         boolean wrongPass = response.body().text().contains("CROSSIAN LOG-IN");
+
+                        dashboardData.postValue(DashboardRepo.parseDashboard(response));
 
                         if (wrongPass) {
                             res.postValue("Incorrect Credentials!");
@@ -63,9 +71,13 @@ public class LoginViewModel extends ViewModel {
         return resCode;
     }
 
-    MutableLiveData<String> getToken(Context context) {
+    public LiveData<List<DashboardModel>> getDashboard(){
+        return dashboardData;
+    }
+
+    MutableLiveData<String> getToken() {
         MutableLiveData<String> s = new MutableLiveData<>();
-        HttpClient.getInstance(context).GET(AppConstants.baseUrl + AppConstants.loginUrl, new OnHttpResponseListener<Document>() {
+        HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.loginUrl, new OnHttpResponseListener<Document>() {
 
             @Override
             public void onResponse(Document response) {
@@ -87,4 +99,24 @@ public class LoginViewModel extends ViewModel {
         });
         return s;
     }
+
+    public void checkSession(DynamicListener<Boolean> listener){
+        HttpClient.getInstance().GET_Redirection(PortalApp.baseUrl + PortalApp.gradesUrl, new OnHttpResponseListener<Document>() {
+            @Override
+            public void onResponse(Document response) {
+                boolean isLoginPage = response.body().text().contains("CROSSIAN LOG-IN");
+                listener.dynamicListener(isLoginPage);
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("LoginViewModel", "onFailure: ",e );
+            }
+
+            @Override
+            public void onResponseCode(int code) {
+                Log.e("LoginViewModel", "onResponseCode: "+code);
+            }
+        });
+    }
+
 }

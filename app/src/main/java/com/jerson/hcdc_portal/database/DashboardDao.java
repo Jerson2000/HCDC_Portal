@@ -11,13 +11,14 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+
 @Dao
-public interface DatabaseDao {
+public interface DashboardDao {
     @Query("select * from dashboard")
     Flowable<List<DashboardModel>> getDashboard();
 
     @Query("delete from dashboard")
-    Completable deleteAll();
+    Completable deleteDashboardData();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertDashboard(List<DashboardModel> dashboard);
