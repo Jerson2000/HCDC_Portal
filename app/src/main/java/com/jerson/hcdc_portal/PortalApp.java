@@ -21,10 +21,7 @@ public class PortalApp extends Application {
 
     public static boolean isConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) PortalApp.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkCapabilities networkCapabilities = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-        }
+        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
         return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
     }
 
@@ -41,6 +38,10 @@ public class PortalApp extends Application {
     public static final String KEY_PASSWORD = "password";
     public static final String KEY_STUDENT_ID = "studentID";
     public static final String KEY_IS_LOGIN = "isLogin";
+    public static final String KEY_IS_ENROLLED = "isEnrolled";
+    public static final String KEY_ENROLL_ANNOUNCE = "enrollAnnounce";
+    public static final String KEY_STUDENT_NAME = "studentName";
+    public static final String KEY_STUDENT_COURSE = "studentCourse";
 
 
     // App

@@ -3,6 +3,8 @@ package com.jerson.hcdc_portal.util;
 import android.app.AlertDialog;
 import android.content.Context;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 
 public class Dialog {
     public static void AlertDialog(String sTitle, String sMessage, final Context myContext)
@@ -14,5 +16,12 @@ public class Dialog {
                 .setMessage(sMessage)
                 .setCancelable(true)
                 .show();
+    }
+
+    /* Material Dialog */
+    public static MaterialAlertDialogBuilder Dialog(String sTitle, String sMessage, final Context context) {
+        return new MaterialAlertDialogBuilder(context)
+                .setTitle(sTitle)
+                .setMessage(sMessage);
     }
 }

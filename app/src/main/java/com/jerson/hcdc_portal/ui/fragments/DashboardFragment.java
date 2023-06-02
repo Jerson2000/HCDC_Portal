@@ -1,6 +1,8 @@
 package com.jerson.hcdc_portal.ui.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,10 +14,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentDashboardBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
+import com.jerson.hcdc_portal.ui.activity.LoginActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
+import com.jerson.hcdc_portal.util.Dialog;
+import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 
 import java.text.SimpleDateFormat;
@@ -41,7 +47,7 @@ public class DashboardFragment extends Fragment {
     List<DashboardModel> dashList = new ArrayList<>();
     List<DashboardModel> todayList = new ArrayList<>();
     DashboardViewModel viewModel;
-    private int responseCode = 0;
+    PreferenceManager preferenceManager;
 
     private static final String TAG = "DashboardFragment";
 
@@ -49,6 +55,7 @@ public class DashboardFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
+        preferenceManager = new PreferenceManager(requireActivity());
 
         loadDashboard(isRetrieved);
     }
@@ -69,6 +76,37 @@ public class DashboardFragment extends Fragment {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         adapter = new DashboardAdapter(requireActivity(), todayList);
         binding.recyclerView.setAdapter(adapter);
+
+        if(!preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE).equals("")){
+            binding.enrollAnnounceLayout.setVisibility(View.VISIBLE);
+            binding.enrollAnnounce.setText(preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE));
+        }
+        binding.enrolledTV.setText(preferenceManager.getString(PortalApp.KEY_IS_ENROLLED));
+
+        String pDetails ="ID number: " + preferenceManager.getString(PortalApp.KEY_STUDENT_ID)+"\n" +
+                "Name: "+preferenceManager.getString(PortalApp.KEY_STUDENT_NAME).toLowerCase(Locale.ROOT)+"\n" +
+                "Course: "+preferenceManager.getString(PortalApp.KEY_STUDENT_COURSE);
+        binding.btnProfile.setOnClickListener(v->{
+            Dialog.Dialog("Student Info.",pDetails,requireActivity()).show();
+        });
+        binding.btnLogout.setOnClickListener(v->{
+            Dialog.Dialog("WARNING!","Are you sure you want to logout?",requireActivity())
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            preferenceManager.clear();
+                            startActivity(new Intent(requireActivity(),LoginActivity.class));
+                            requireActivity().finish();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        });
+
 
     }
 
@@ -96,14 +134,7 @@ public class DashboardFragment extends Fragment {
 
                 }
             }
-            if (todayList.size() > 0) {
-                adapter.notifyDataSetChanged();
-//                binding.progressBar.setVisibility(View.GONE);
-//                binding.noSubject.setVisibility(View.GONE);
-            } else {
-//                binding.noSubject.setVisibility(View.VISIBLE);
-//                binding.progressBar.setVisibility(View.GONE);
-            }
+            if (todayList.size() > 0)  adapter.notifyDataSetChanged();
 
         }
 
@@ -114,7 +145,7 @@ public class DashboardFragment extends Fragment {
         List<DashboardModel> distinctList = dashList.stream()
                 .filter(distinctList(DashboardModel::getOfferNo))
                 .collect(Collectors.toList());
-        binding.totalSubTV.setText(""+distinctList.size());
+        binding.totalSubTV.setText(String.valueOf(distinctList.size()));
 
     }
 
@@ -135,104 +166,27 @@ public class DashboardFragment extends Fragment {
 
 
 
-
-    /*void getData() {
-        binding.progressBar.setVisibility(View.VISIBLE);
-        viewModel.getData().observe(requireActivity(), data -> {
-            if (data != null) {
-                try {
-                    dashList.clear();
-                    dashList.addAll(data);
-                    adapter.notifyDataSetChanged();
-
-                    deleteData(object -> {
-
-                        if(object){
-                            saveData();
-                        }
-
-                    });
-
-
-                    if (binding.progressBar.getVisibility() == View.VISIBLE) {
-                        binding.progressBar.setVisibility(View.INVISIBLE);
-                        return;
-                    }
-
-                    binding.retryLayout.getRoot().setVisibility(View.GONE);
-                    binding.recyclerView.setVisibility(View.VISIBLE);
-
-                } catch (NullPointerException e) {
-                    Log.d(TAG, "loadData: " + e.getMessage());
-                }
-
-            }
-
-        });
-    }*/
-
-    /*
-    void getResCode() {
-        if (responseCode != 200) {
-            binding.recyclerView.setVisibility(View.GONE);
-            binding.progressBar.setVisibility(View.INVISIBLE);
-            binding.retryLayout.getRoot().setBackgroundColor(Color.WHITE);
-            binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
-            binding.retryLayout.retryBtn.setEnabled(true);
-        }
-    }*/
-
-    /*void saveData() {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.insertDashboard(dashList)
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    Log.d(TAG, "saveData: saved");
-                }, throwable -> {
-                    Log.e(TAG, "saveData: ", throwable);
-                })
-        );
-    }*/
-
-    /*void deleteData(DynamicListener<Boolean> isDeleted) {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.deleteAll()
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    isDeleted.dynamicListener(true);
-                    Log.d(TAG, "deleteData: success");
-                }, throwable -> {
-                    isDeleted.dynamicListener(false);
-                    Log.e(TAG, "deleteData: ", throwable);
-                })
-        );
-    }*/
-
     private void loadDashboard(DynamicListener<Boolean> isRetrieved) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.loadDashboard()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    // Handle the successful retrieval
-                    Log.d(TAG, "Data retrieved successfully: " + data.size());
+                    Log.d(TAG, "loadDashboard: " + data.size());
                     if (data.size() > 0) {
                         dashList.clear();
                         dashList.addAll(data);
                         isRetrieved.dynamicListener(true);
-//                        adapter.notifyDataSetChanged();
                         binding.progressBar.setVisibility(View.INVISIBLE);
                         binding.recyclerView.setVisibility(View.VISIBLE);
 
                     } else {
                         if (data.size() == 0 && dashList.size() == 0) {
                             isRetrieved.dynamicListener(false);
-//                            getData();
                         }
                     }
                 }, throwable -> {
-                    // Handle the error
-                    Log.e(TAG, "Error retrieving data", throwable);
+                    Log.e(TAG, "loadDashboard", throwable);
                     isRetrieved.dynamicListener(false);
                 }));
 

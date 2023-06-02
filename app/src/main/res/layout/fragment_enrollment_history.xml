@@ -49,10 +49,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/semSelectorLayout"
+            android:layout_above="@id/spaceView"
             android:layout_marginStart="@dimen/_5sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_5sdp"
             android:clipToPadding="true" />
+
+
+        <View
+            android:id="@+id/spaceView"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_alignParentBottom="true"
+            />
 
     </RelativeLayout>
 

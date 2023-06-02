@@ -76,15 +76,20 @@ public class GradesFragment extends Fragment {
             Log.d(TAG, "onItemClick: " + semGradeList.get(i).getLink() + "[" + semGradeList.get(i).getId()+"]");
             if (i != 0) {
                 binding.progressBar.setVisibility(View.VISIBLE);
-                checkSession(object -> {
-                        if(object){
-                            loadGrade(semGradeList.get(i).getId(),object1 -> {
-                                if(!object1){
+                binding.gradeLayout.setVisibility(View.GONE);
+                binding.gradeRecyclerView.setVisibility(View.GONE);
+                if(PortalApp.isConnected()){
+                    loadGrade(semGradeList.get(i).getId(), object -> {
+                        if(!object){
+                            checkSession(object2 -> {
+                                if(object2){
                                     getGrade(semGradeList.get(i).getId(),semGradeList.get(i).getLink());
                                 }
                             });
                         }
-                });
+                    });
+                }
+
 
 
             }
@@ -125,8 +130,6 @@ public class GradesFragment extends Fragment {
     void getGrade(int link_id,String link) {
         viewModel.gradeData(link).observe(requireActivity(), data -> {
             if (data != null) {
-                String w = "Weighted % Ave: ";
-                String e = "Earned Units: ";
                 gradeList.clear();
                 gradeList.addAll(data);
                 adapter.notifyDataSetChanged();
@@ -139,9 +142,10 @@ public class GradesFragment extends Fragment {
 
                 String earn = gradeList.get(0).getEarnedUnits();
                 String ave = gradeList.get(0).getAverage();
-                binding.earnUnits.setText(e.concat(earn));
-                binding.weightedGrade.setText(w.concat(ave));
-                binding.unitsGradeLayout.setVisibility(View.VISIBLE);
+                binding.earnUnits.setText(earn);
+                binding.weightedAve.setText(ave);
+
+                binding.gradeLayout.setVisibility(View.VISIBLE);
                 binding.semSelectorLayout.setVisibility(View.VISIBLE);
                 binding.gradeRecyclerView.setVisibility(View.VISIBLE);
 
@@ -154,7 +158,7 @@ public class GradesFragment extends Fragment {
     void checkSession(DynamicListener<Boolean> listener) {
         loginViewModel.checkSession(object -> {
             if (object) {
-                loginViewModel.Login(preferenceManager.getString(PortalApp.KEY_EMAIL), PortalApp.KEY_PASSWORD).observe(requireActivity(), data -> {
+                loginViewModel.Login(preferenceManager.getString(PortalApp.KEY_EMAIL), preferenceManager.getString(PortalApp.KEY_PASSWORD)).observe(requireActivity(), data -> {
                     Log.e(TAG, "dynamicListener: " + data);
                     if (data.toLowerCase(Locale.ROOT).contains("logged")) {
                         checkSession(listener);
@@ -238,16 +242,15 @@ public class GradesFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
                     if(data.size()>0){
-                        String w = "Weighted % Ave: ";
-                        String e = "Earned Units: ";
                         gradeList.clear();
                         gradeList.addAll(data);
                         adapter.notifyDataSetChanged();
                         String earn = gradeList.get(0).getEarnedUnits();
                         String ave = gradeList.get(0).getAverage();
-                        binding.earnUnits.setText(e.concat(earn));
-                        binding.weightedGrade.setText(w.concat(ave));
-                        binding.unitsGradeLayout.setVisibility(View.VISIBLE);
+                        binding.earnUnits.setText(earn);
+                        binding.weightedAve.setText(ave);
+
+                        binding.gradeLayout.setVisibility(View.VISIBLE);
                         binding.semSelectorLayout.setVisibility(View.VISIBLE);
                         binding.gradeRecyclerView.setVisibility(View.VISIBLE);
 

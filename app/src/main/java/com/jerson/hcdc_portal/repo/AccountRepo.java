@@ -20,42 +20,6 @@ import java.util.List;
 
 public class AccountRepo {
 
-    public LiveData<List<AccountLinksModel>> getLinks(MutableLiveData<String> response,MutableLiveData<Integer> resCode){
-        MutableLiveData<List<AccountLinksModel>> data = new MutableLiveData<>();
-        HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.accountUrl, new OnHttpResponseListener<Document>() {
-            @Override
-            public void onResponse(Document response) {
-                List<AccountLinksModel> links = new ArrayList<>();
-
-                System.out.println(response.body());
-
-                Elements semList = response.select("main.app-content ul li.nav-item");
-
-                for (Element list : semList) {
-                    String link = list.select("a.nav-link").attr("href");
-                    String text = list.select("a.nav-link").text();
-                    AccountLinksModel model = new AccountLinksModel(link, text);
-                    links.add(model);
-
-                }
-
-                data.setValue(links);
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                e.printStackTrace();
-                response.setValue(e.getMessage());
-            }
-
-            @Override
-            public void onResponseCode(int code) {
-                resCode.setValue(code);
-            }
-        });
-
-        return data;
-    }
 
     public LiveData<List<AccountModel>> getData(String link, MutableLiveData<String> response, MutableLiveData<Integer> resCode){
         MutableLiveData<List<AccountModel>> data = new MutableLiveData<>();
@@ -153,7 +117,6 @@ public class AccountRepo {
             @Override
             public void onResponse(Document response) {
 
-                System.out.println(response.body());
                 List<AccountModel> accounts = new ArrayList<>();
 
                 Elements table = response.select("div.col-md-9 section.invoice tbody");

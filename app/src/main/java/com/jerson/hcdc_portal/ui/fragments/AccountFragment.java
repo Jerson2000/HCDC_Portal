@@ -30,10 +30,7 @@ import java.util.Locale;
 public class AccountFragment extends Fragment {
     private static final String TAG = "AccountFragment";
     private FragmentAccountBinding binding;
-    private List<AccountLinksModel> semAccountList = new ArrayList<>();
-    private List<String> list = new ArrayList<>();
-    private ArrayAdapter<String> arrayAdapter;
-    private AccountViewModel viewModel;
+       private AccountViewModel viewModel;
     private AccountAdapter adapter;
     private List<AccountModel> accList = new ArrayList<>();
 
@@ -41,101 +38,22 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = FragmentAccountBinding.inflate(inflater, container, false);
 
-        viewModel = new ViewModelProvider(getActivity()).get(AccountViewModel.class);
-
-        // Material TextField Autocomplete - simply known as dropdown
-        arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, list);
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spinnerSem.setAdapter(arrayAdapter);
+        viewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
 
         binding.accountRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new AccountAdapter(getActivity(), accList);
         binding.accountRecyclerView.setAdapter(adapter);
 
-        /*getLinks();*/
+
         getData();
-
-        /*binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
-            Log.d(TAG, "onItemClick: " + semAccountList.get(i).getSemAccountLink() + " ()" + i);
-            if (i != 0) {
-                binding.progressBar.setVisibility(View.VISIBLE);
-                getData(semAccountList.get(i).getSemAccountLink());
-//                getResponse();
-            }
-        });*/
-
-        binding.retryLayout.retryBtn.setOnClickListener(v -> {
-            getLinks();
-            binding.retryLayout.retryBtn.setEnabled(false);
-        });
+        getResponse();
 
 
         return binding.getRoot();
     }
 
-    void getLinks() {
-        try {
-            viewModel.getLinks().observe(requireActivity(), data -> {
-                if (data != null) {
-                    list.clear();
-                    semAccountList.clear();
-                    semAccountList.addAll(data);
-                    for (AccountLinksModel d : data) {
-                        list.add(d.getSemAccountText());
-                    }
-                    binding.progressBar.setVisibility(View.GONE);
-                    binding.semSelectorLayout.setVisibility(View.VISIBLE);
-                    binding.accountRecyclerView.setVisibility(View.VISIBLE);
-                    arrayAdapter.notifyDataSetChanged();
-                }
-            });
-
-        } catch (NullPointerException e) {
-            Log.d(TAG, "getLinks: " + e.getMessage());
-        }
-
-    }
-
-    void getResponse() {
-        try {
-            viewModel.getResponse().observe(getActivity(), res -> {
-                if (res.toLowerCase(Locale.ROOT).contains("timeout") || res.toLowerCase(Locale.ROOT).contains("fetch")) {
-                    binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
-                    binding.retryLayout.retryBtn.setEnabled(true);
-                    binding.semSelectorLayout.setVisibility(View.GONE);
-                    binding.accountRecyclerView.setVisibility(View.GONE);
-                }
-
-            });
-
-        } catch (NullPointerException e) {
-            Log.d(TAG, "getResponse: " + e.getMessage());
-        }
-
-    }
-
-    void getData(String link) {
-        try {
-            viewModel.getData(link).observe(requireActivity(), data -> {
-                if (data != null) {
-                    accList.clear();
-                    accList.addAll(data);
-                    adapter.notifyDataSetChanged();
-                    binding.dueText.setText(accList.get(0).getDueText());
-                    binding.dueAmount.setText(accList.get(0).getDue());
-                    binding.progressBar.setVisibility(View.GONE);
-                    binding.semSelectorLayout.setVisibility(View.VISIBLE);
-                    binding.accountRecyclerView.setVisibility(View.VISIBLE);
-                }
-            });
-        } catch (NullPointerException e) {
-            Log.d(TAG, "getData: " + e.getMessage());
-        }
-
-    }
 
     void getData(){
         viewModel.getData().observe(requireActivity(),data->{
@@ -149,6 +67,16 @@ public class AccountFragment extends Fragment {
                 binding.semSelectorLayout.setVisibility(View.VISIBLE);
                 binding.accountRecyclerView.setVisibility(View.VISIBLE);
             }
+        });
+    }
+
+    void getResponse(){
+        viewModel.getResponse().observe(requireActivity(),res->{
+            Log.d(TAG, "getResponse: "+res);
+        });
+
+        viewModel.getResCode().observe(requireActivity(),code->{
+            Log.d(TAG, "getResponse: "+code);
         });
     }
 

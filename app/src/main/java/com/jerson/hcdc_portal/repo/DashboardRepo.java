@@ -22,14 +22,12 @@ public class DashboardRepo {
         HttpClient.getInstance().GET(PortalApp.baseUrl+PortalApp.dashboardUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
-
                 data.setValue( parseDashboard(response));
             }
 
             @Override
             public void onFailure(Exception e) {
                 response.setValue(e.getMessage());
-                e.printStackTrace();
             }
 
             @Override

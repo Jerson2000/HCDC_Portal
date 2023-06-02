@@ -14,16 +14,10 @@ public class SnackBarUtil {
         return Snackbar.make(view,msg,Snackbar.LENGTH_LONG);
     }
 
-    /*
-    * @param int duration set duration in milliseconds, eg. 1 second = 1000 millisecond
-    * */
     public static Snackbar SnackBarCustomDuration(View view,String msg,int duration){
         return Snackbar.make(view,msg,duration);
     }
 
-    /*
-    * No duration, SnackBar will show infinite duration
-    * */
     public static Snackbar SnackBarIndefiniteDuration(View view,String msg){
         return Snackbar.make(view,msg,Snackbar.LENGTH_INDEFINITE);
     }

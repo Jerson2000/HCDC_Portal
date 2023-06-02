@@ -38,7 +38,7 @@ public class HttpClient {
 
     private HttpClient() {
         File cacheDirectory = new File(PortalApp.getAppContext().getCacheDir(), "http-cache");
-        int cacheSize = 10 * 1024 * 1024; // 10 MB
+        int cacheSize = 100 * 1024 * 1024; // 10 MB
         Cache cache = new Cache(cacheDirectory, cacheSize);
         client = new OkHttpClient.Builder()
                 .addInterceptor(new TimingInterceptor())
@@ -46,22 +46,13 @@ public class HttpClient {
                 .cache(cache)
                 .build();
          cacheControl = new CacheControl.Builder()
-                .maxAge(1, TimeUnit.HOURS)
+                .maxAge(5, TimeUnit.HOURS)
                 .maxStale(1, TimeUnit.DAYS)
                 .build();
         handler = new Handler(Looper.getMainLooper());
         executor = Executors.newSingleThreadExecutor();
     }
 
-
-    private boolean isConnected() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) PortalApp.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkCapabilities networkCapabilities = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-        }
-        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-    }
 
 
     public static synchronized HttpClient getInstance() {
@@ -72,7 +63,7 @@ public class HttpClient {
     }
 
     public void GET(String url, final OnHttpResponseListener<Document> listener) {
-        if(isConnected()){
+        if(PortalApp.isConnected()){
             Request request = new Request.Builder()
                     .url(url)
                     .cacheControl(cacheControl)
@@ -105,7 +96,7 @@ public class HttpClient {
     }
 
     public void POST(String url, FormBody formBody, OnHttpResponseListener<Document> listener) {
-        if(isConnected()){
+        if(PortalApp.isConnected()){
             executor.execute(()->{
                 try {
                     Request request = new Request.Builder()
@@ -127,6 +118,13 @@ public class HttpClient {
                             response = client.newCall(request).execute();
                         }
                         // Handle other redirects
+                        else if(response.code() >= 500){
+                            request = request.newBuilder()
+                                    .url(PortalApp.baseUrl)
+                                    .build();
+
+                            response = client.newCall(request).execute();
+                        }
                         else {
                             request = request.newBuilder()
                                     .url(response.header("Location"))
@@ -149,12 +147,9 @@ public class HttpClient {
                         }
                     } else {
                         // Handle error
-//                    listener.onFailure(new onResponseException(response.code()));
                         handler.post(()-> listener.onResponseCode(finalResponse.code()));
-                        handler.post(()-> listener.onFailure(new IOException("Unexpected code "+ finalResponse)));
                     }
                 } catch (IOException e) {
-//            e.printStackTrace();
                     handler.post(()-> listener.onFailure(e));
                 }
             });
@@ -198,7 +193,7 @@ public class HttpClient {
                         handler.post(()->listener.onResponseCode(finalResponse.code()));
                     }
                 } else {
-                    handler.post(() -> listener.onFailure(new IOException("Unexpected code " + finalResponse)));
+                    handler.post(()->listener.onResponseCode(finalResponse.code()));
                 }
             } catch (IOException e) {
                 handler.post(() -> listener.onFailure(e));

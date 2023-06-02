@@ -40,6 +40,9 @@ public class GradeAdapter extends RecyclerView.Adapter<GradeAdapter.ViewHolder> 
         holder.binding.midRemark.setText(model.getMidRemark());
         holder.binding.finalGrade.setText(model.getFinalGrade());
         holder.binding.finalRemark.setText(model.getFinalRemark());
+        holder.binding.teacher.setText(model.getTeacher());
+        holder.binding.unit.setText(model.getUnit());
+        holder.binding.subject.setText(model.getSubject());
     }
 
     @Override

@@ -11,7 +11,6 @@ import com.jerson.hcdc_portal.database.DatabasePortal;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.repo.DashboardRepo;
 
-
 import java.util.List;
 
 import io.reactivex.Completable;

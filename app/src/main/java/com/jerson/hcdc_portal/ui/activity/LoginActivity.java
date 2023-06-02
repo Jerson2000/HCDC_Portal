@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,6 +20,7 @@ import com.jerson.hcdc_portal.util.SnackBarUtil;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 
+import java.util.HashMap;
 import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -41,7 +43,8 @@ public class LoginActivity extends AppCompatActivity {
 
         preferenceManager = new PreferenceManager(this);
 
-        if(preferenceManager.getBoolean(PortalApp.KEY_IS_LOGIN)){
+        if (preferenceManager.getBoolean(PortalApp.KEY_IS_LOGIN)) {
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         }
 
@@ -61,7 +64,14 @@ public class LoginActivity extends AppCompatActivity {
 
         binding.loginBtn.setOnClickListener(v -> {
             if (PortalApp.isConnected()) {
+
+                if (binding.emailET.getText().toString().equals("") || binding.passET.getText().toString().equals("")) {
+                    SnackBarUtil.SnackBarLong(binding.snackBarLayout, "Some field/s are empty.").show();
+                } else {
+
+                }
                 login();
+
             } else {
                 SnackBarUtil.SnackBarLong(binding.snackBarLayout, "No internet connection.").show();
             }
@@ -76,64 +86,62 @@ public class LoginActivity extends AppCompatActivity {
         String email = binding.emailET.getText().toString();
         String pass = binding.passET.getText().toString();
 
-        if (binding.emailET.getText().toString().equals("") || binding.passET.getText().toString().equals("")) {
-            SnackBarUtil.SnackBarLong(binding.snackBarLayout, "Some field/s are empty.").show();
-        }
 
-        if (!binding.passET.getText().toString().equals("") && !binding.emailET.getText().toString().equals("")) {
-
-            isLoading(true, false);
-
-            viewModel.Login(email, pass).observe(this, res -> {
-                System.out.println(res);
-                if (res.toLowerCase(Locale.ROOT).contains("timeout") ||
-                        res.toLowerCase(Locale.ROOT).contains("error fetching url") ||
-                        res.toLowerCase(Locale.ROOT).contains("time out")) {
-                    SnackBarUtil.SnackBarIndefiniteDuration(binding.snackBarLayout, "Connection Timeout")
-                            .setAction("Retry", view -> {
-                                retry(email, pass);
-                                isLoading(false, true);
-                            })
-                            .show();
-                    binding.progressBar.setVisibility(View.GONE);
-                }
-
-                if (res.toLowerCase(Locale.ROOT).contains("credentials")) {
-                    SnackBarUtil.SnackBarLong(binding.snackBarLayout, res).show();
-                    isLoading(false, true);
-                }
-
-                if (res.toLowerCase(Locale.ROOT).contains("logged in")) {
-                    binding.progressBar.setVisibility(View.GONE);
-
-                    /* deleting all data in dashboard table */
-                    deleteData(object -> {
-                        if(object){
-                            saveData(); /* then saving it */
-                        }
-                    });
-
-                    preferenceManager.putBoolean(PortalApp.KEY_IS_LOGIN,true);
-                    preferenceManager.putString(PortalApp.KEY_EMAIL,email);
-                    preferenceManager.putString(PortalApp.KEY_PASSWORD,pass);
-
-
-                    SnackBarUtil.SnackBarLong(binding.snackBarLayout, res).show();
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        startActivity(new Intent(this, MainActivity.class));
-                    }, 1300);
-
-
-                }
-            });
-        }
-
-    }
-
-
-    void retry(String email, String pass) {
-        viewModel.Login(email, pass);
         isLoading(true, false);
+        viewModel.Login(email, pass);
+
+        viewModel.getResponse().observe(this, res -> {
+            if (res.toLowerCase(Locale.ROOT).contains("timeout") ||
+                    res.toLowerCase(Locale.ROOT).contains("error fetching url") ||
+                    res.toLowerCase(Locale.ROOT).contains("time out")) {
+                SnackBarUtil.SnackBarIndefiniteDuration(binding.snackBarLayout, "Connection Timeout")
+                        .setAction("Retry", view -> {
+                            viewModel.Login(email,pass);
+                            isLoading(false, false);
+                        })
+                        .show();
+                isLoading(false, false);
+            }
+
+            if (res.toLowerCase(Locale.ROOT).contains("credentials")) {
+                SnackBarUtil.SnackBarLong(binding.snackBarLayout, res).show();
+                isLoading(false, true);
+            }
+
+            if (res.toLowerCase(Locale.ROOT).contains("logged in")) {
+                binding.progressBar.setVisibility(View.GONE);
+
+                /* deleting all data in dashboard table */
+                deleteData(object -> {
+                    if (object) {
+                        saveData(); /* then saving it */
+                    }
+                });
+
+                preferenceManager.putBoolean(PortalApp.KEY_IS_LOGIN, true);
+                preferenceManager.putString(PortalApp.KEY_EMAIL, email);
+                preferenceManager.putString(PortalApp.KEY_PASSWORD, pass);
+
+
+                SnackBarUtil.SnackBarLong(binding.snackBarLayout, res).show();
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    startActivity(new Intent(this, MainActivity.class));
+                }, 1300);
+
+
+            }
+        });
+
+        viewModel.getResCode().observe(this,code->{
+            if(code!=null){
+                if(code >= 500){
+                    SnackBarUtil.SnackBarIndefiniteDuration(binding.snackBarLayout,"Server Unavailable").show();
+                }
+                Log.d(TAG, "login response code: "+code);
+            }
+        });
+
+
     }
 
 
@@ -154,13 +162,13 @@ public class LoginActivity extends AppCompatActivity {
 
     /* Saving dashboard data in database*/
     void saveData() {
-        viewModel.getDashboard().observe(this,data->{
-            if(data!=null){
+        viewModel.getDashboard().observe(this, data -> {
+            if (data != null) {
                 CompositeDisposable compositeDisposable = new CompositeDisposable();
                 compositeDisposable.add(dashboardViewModel.insertDashboard(data)
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                         .subscribe(() -> {
-                            Log.d(TAG, "saveData: saved");
+                            Log.d(TAG, "saveData: saved " + data.size());
                         }, throwable -> {
                             Log.e(TAG, "saveData: ", throwable);
                         })

@@ -20,17 +20,14 @@ public class AccountViewModel extends ViewModel {
         repo = new AccountRepo();
     }
 
-    public MutableLiveData<String> getResponse() {
+    public LiveData<String> getResponse() {
         return response;
     }
 
-    public MutableLiveData<Integer> getResCode() {
+    public LiveData<Integer> getResCode() {
         return resCode;
     }
 
-    public LiveData<List<AccountLinksModel>> getLinks() {
-        return repo.getLinks(response,resCode);
-    }
 
     public LiveData<List<AccountModel>> getData(String link) {
         return repo.getData(link,response,resCode);

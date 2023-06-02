@@ -24,23 +24,12 @@ public class EnrollHistRepo {
         HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.enrollHistory, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
-                List<EnrollHistModel.Link> links = new ArrayList<>();
-                Elements semList = response.select("main.app-content ul li.nav-item:gt(0)");
 
-                for (Element list : semList) {
-                    String link = list.select("a.nav-link").attr("href");
-                    String text = list.select("a.nav-link").text();
-                    EnrollHistModel.Link model = new EnrollHistModel.Link(link, text);
-                    links.add(model);
-
-                }
-
-                data.setValue(links);
+                data.setValue(parseLink(response));
             }
 
             @Override
             public void onFailure(Exception e) {
-                e.printStackTrace();
                 response.setValue(e.getMessage());
             }
 
@@ -52,6 +41,21 @@ public class EnrollHistRepo {
 
 
         return data;
+    }
+
+    public static List<EnrollHistModel.Link> parseLink(Document response){
+        List<EnrollHistModel.Link> links = new ArrayList<>();
+        Elements semList = response.select("main.app-content ul li.nav-item:gt(0)");
+
+        for (Element list : semList) {
+            String link = list.select("a.nav-link").attr("href");
+            String text = list.select("a.nav-link").text();
+            EnrollHistModel.Link model = new EnrollHistModel.Link(link, text);
+            links.add(model);
+
+        }
+
+        return links;
     }
 
 
@@ -83,7 +87,6 @@ public class EnrollHistRepo {
 
             @Override
             public void onFailure(Exception e) {
-                e.printStackTrace();
                 response.setValue(e.getMessage());
             }
 

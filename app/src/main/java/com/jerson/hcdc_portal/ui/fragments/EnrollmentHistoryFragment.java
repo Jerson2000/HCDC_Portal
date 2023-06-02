@@ -11,11 +11,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentEnrollmentHistoryBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.EnrollHistModel;
 import com.jerson.hcdc_portal.ui.adapter.EnrollHistoryAdapter;
+import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.EnrollHistoryViewModel;
+import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +30,21 @@ import io.reactivex.schedulers.Schedulers;
 
 public class EnrollmentHistoryFragment extends Fragment {
     private static final String TAG = "EnrollmentHistoryFragment";
-    FragmentEnrollmentHistoryBinding binding;
+    private FragmentEnrollmentHistoryBinding binding;
     private EnrollHistoryViewModel viewModel;
     private List<EnrollHistModel.Link> periodLinks = new ArrayList<>();
     private List<String> list = new ArrayList<>();
     private ArrayAdapter<String> arrayAdapter;
     private List<EnrollHistModel> enrollData = new ArrayList<>();
     private EnrollHistoryAdapter adapter;
+    private LoginViewModel loginViewModel;
+    private PreferenceManager preferenceManager;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(EnrollHistoryViewModel.class);
+        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        preferenceManager = new PreferenceManager(requireActivity());
         loadEnrollHistoryLink(linkRetrieved);
     }
 
@@ -71,9 +78,14 @@ public class EnrollmentHistoryFragment extends Fragment {
         binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
             Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " [" + periodLinks.get(i).getId() + "] ");
             binding.progressBar.setVisibility(View.VISIBLE);
+            binding.enrHistRecyclerView.setVisibility(View.GONE);
             loadEnrollHistory(periodLinks.get(i).getId(), object -> {
                 if (!object) {
-                    getData(periodLinks.get(i).getPeriodLink(), periodLinks.get(i).getId());
+                    checkSession(object1 -> {
+                        if(object1){
+                            getData(periodLinks.get(i).getPeriodLink(), periodLinks.get(i).getId());
+                        }
+                    });
                 }
             });
 
@@ -171,6 +183,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                         enrollData.addAll(data);
                         adapter.notifyDataSetChanged();
                         binding.progressBar.setVisibility(View.GONE);
+                        binding.enrHistRecyclerView.setVisibility(View.VISIBLE);
                         isLoadEnrollHistory.dynamicListener(true);
                     } else {
                         isLoadEnrollHistory.dynamicListener(false);
@@ -254,7 +267,11 @@ public class EnrollmentHistoryFragment extends Fragment {
                 binding.enrHistRecyclerView.setVisibility(View.VISIBLE);
                 arrayAdapter.notifyDataSetChanged();
             } else {
-                getLinks();
+                checkSession(object1 -> {
+                    if(object1){
+                        getLinks();
+                    }
+                });
             }
         }
     };
@@ -277,6 +294,22 @@ public class EnrollmentHistoryFragment extends Fragment {
             }
         });
 
+
+    }
+
+    void checkSession(DynamicListener<Boolean> listener) {
+        loginViewModel.checkSession(object -> {
+            if (object) {
+                loginViewModel.Login(preferenceManager.getString(PortalApp.KEY_EMAIL), preferenceManager.getString(PortalApp.KEY_PASSWORD)).observe(requireActivity(), data -> {
+                    Log.e(TAG, "dynamicListener: " + data);
+                    if (data.toLowerCase(Locale.ROOT).contains("logged")) {
+                        checkSession(listener);
+                    }
+                });
+
+            }else listener.dynamicListener(true);
+
+        });
 
     }
 

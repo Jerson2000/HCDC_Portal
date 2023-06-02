@@ -28,8 +28,12 @@ public class GradesViewModel extends ViewModel {
         repo = new GradeRepo();
     }
 
-    public MutableLiveData<String> getResponse() {
+    public LiveData<String> getResponse() {
         return response;
+    }
+
+    public LiveData<Integer> getResCode() {
+        return resCode;
     }
 
 
@@ -41,9 +45,6 @@ public class GradesViewModel extends ViewModel {
         return repo.gradeData(link, response, resCode);
     }
 
-    public MutableLiveData<Integer> getResCode() {
-        return resCode;
-    }
 
     /* database */
 
