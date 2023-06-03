@@ -4,7 +4,7 @@ I started working on this project in mid-December, as I was feeling bored and th
 > Only the Holy Cross of Davao College Student are able to use this app.
 
 ### UI
-![7o42az](https://github.com/Jerson2000/HCDC_Portal/assets/78902475/907f1d0a-fd56-41aa-913b-b9815802e478)
+![7o42az](https://github.com/Jerson2000/HCDC_Portal/assets/78902475/f1e2d849-0c26-4468-90fc-42655909948a)
 
 <!-- 
 ### 
