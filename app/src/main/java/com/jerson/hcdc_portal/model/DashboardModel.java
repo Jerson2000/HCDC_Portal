@@ -1,7 +1,6 @@
 package com.jerson.hcdc_portal.model;
 
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "dashboard")

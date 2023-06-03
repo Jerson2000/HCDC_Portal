@@ -6,10 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentGradesBinding;
@@ -42,7 +44,8 @@ public class GradesFragment extends Fragment {
 
     private LoginViewModel loginViewModel;
     private PreferenceManager preferenceManager;
-
+    private int selectedId = 0;
+    private String selectedLink = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,26 +76,45 @@ public class GradesFragment extends Fragment {
 
 
         binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
-            Log.d(TAG, "onItemClick: " + semGradeList.get(i).getLink() + "[" + semGradeList.get(i).getId()+"]");
+            Log.d(TAG, "onItemClick: " + semGradeList.get(i).getLink() + "[" + semGradeList.get(i).getId() + "]");
             if (i != 0) {
                 binding.progressBar.setVisibility(View.VISIBLE);
                 binding.gradeLayout.setVisibility(View.GONE);
                 binding.gradeRecyclerView.setVisibility(View.GONE);
-                if(PortalApp.isConnected()){
-                    loadGrade(semGradeList.get(i).getId(), object -> {
-                        if(!object){
+
+                selectedId = semGradeList.get(i).getId();
+                selectedLink = semGradeList.get(i).getLink();
+
+                loadGrade(semGradeList.get(i).getId(), object -> {
+                    if (!object && !binding.refreshLayout.isRefreshing()) {
+                        if (PortalApp.isConnected()) {
                             checkSession(object2 -> {
-                                if(object2){
-                                    getGrade(semGradeList.get(i).getId(),semGradeList.get(i).getLink());
+                                if (object2) {
+                                    getGrade(semGradeList.get(i).getId(), semGradeList.get(i).getLink());
                                 }
                             });
-                        }
-                    });
-                }
-
+                        } else
+                            Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
 
             }
+        });
+
+        binding.refreshLayout.setOnRefreshListener(() -> {
+            binding.refreshLayout.setRefreshing(true);
+            if (PortalApp.isConnected()) {
+                checkSession(object -> {
+                    if (object) {
+                        getGrade(selectedId, selectedLink);
+                    }
+                });
+            } else{
+                Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
+                binding.refreshLayout.setRefreshing(false);
+            }
+
         });
 
 
@@ -127,7 +149,7 @@ public class GradesFragment extends Fragment {
         });
     }
 
-    void getGrade(int link_id,String link) {
+    void getGrade(int link_id, String link) {
         viewModel.gradeData(link).observe(requireActivity(), data -> {
             if (data != null) {
                 gradeList.clear();
@@ -135,8 +157,12 @@ public class GradesFragment extends Fragment {
                 adapter.notifyDataSetChanged();
 
                 deleteGrade(link_id, object -> {
-                    if(object){
-                        saveGrade(link_id);
+                    if (object) {
+                        saveGrade(link_id, data, object1 -> {
+                            if (object1) {
+                                binding.refreshLayout.setRefreshing(false);
+                            }
+                        });
                     }
                 });
 
@@ -165,7 +191,7 @@ public class GradesFragment extends Fragment {
                     }
                 });
 
-            }else listener.dynamicListener(true);
+            } else listener.dynamicListener(true);
 
         });
 
@@ -185,7 +211,7 @@ public class GradesFragment extends Fragment {
                         for (GradeModel.Link d : data) {
                             list.add(d.getText());
                         }
-                        Log.e(TAG, "loadGradeLink: " + data.size());
+                        /*Log.e(TAG, "loadGradeLink: " + data.size());*/
                         listener.dynamicListener(true);
                     } else listener.dynamicListener(false);
                 }, throwable -> {
@@ -197,7 +223,7 @@ public class GradesFragment extends Fragment {
     DynamicListener<Boolean> linkListener = object -> {
         if (!object) {
             checkSession(object1 -> {
-                if(object1){
+                if (object1) {
                     getLink();
                 }
             });
@@ -214,10 +240,8 @@ public class GradesFragment extends Fragment {
         compositeDisposable.add(viewModel.insertGradeLink(semGradeList)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    Log.w(TAG, "saveGradeLink Data saved: " + semGradeList.size());
-                }, throwable -> {
-                    Log.d(TAG, "saveGradeLink: " + throwable);
-                })
+                    /*Log.w(TAG, "saveGradeLink Data saved: " + semGradeList.size());*/
+                }, throwable -> Log.d(TAG, "saveGradeLink: " + throwable))
         );
 
     }
@@ -227,21 +251,19 @@ public class GradesFragment extends Fragment {
         compositeDisposable.add(viewModel.deleteGradeLink()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    isDeleted.dynamicListener(true);
-                }, throwable -> {
+                .subscribe(() -> isDeleted.dynamicListener(true), throwable -> {
                     Log.e(TAG, "deleteGradeLink: ", throwable);
                     isDeleted.dynamicListener(false);
                 }));
     }
 
-    void loadGrade(int link_id,DynamicListener<Boolean> listener) {
+    void loadGrade(int link_id, DynamicListener<Boolean> listener) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.loadGrade(link_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    if(data.size()>0){
+                    if (data.size() > 0) {
                         gradeList.clear();
                         gradeList.addAll(data);
                         adapter.notifyDataSetChanged();
@@ -258,44 +280,43 @@ public class GradesFragment extends Fragment {
 
                     }
                     listener.dynamicListener(data.size() > 0);
-                    Log.e(TAG, "loadGrade: "+data.size() );
-                }, throwable -> {
-                    Log.e(TAG, "loadGrade: ",throwable );
-                }));
+                    /*Log.e(TAG, "loadGrade: " + data.size());*/
+                }, throwable -> Log.e(TAG, "loadGrade: ", throwable)));
     }
 
-    void saveGrade(int link_id){
-        for (int i = 0; i < gradeList.size(); i++) {
-            gradeList.get(i).setLink_id(link_id);
+    void saveGrade(int link_id, List<GradeModel> list, DynamicListener<Boolean> listener) {
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).setLink_id(link_id);
         }
         CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.insertGrade(gradeList)
+        compositeDisposable.add(viewModel.insertGrade(list)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(()->{
-                    Log.e(TAG, "saveGrade: success");
-                },throwable -> {
+                .subscribe(() -> {
+                    /*Log.e(TAG, "saveGrade: success");*/
+                    listener.dynamicListener(true);
+                }, throwable -> {
                     Log.e(TAG, "saveGrade: ", throwable);
+                    listener.dynamicListener(false);
                 })
 
         );
     }
 
-    void deleteGrade(int link_id,DynamicListener<Boolean> listener){
+    void deleteGrade(int link_id, DynamicListener<Boolean> listener) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.deleteGrade(link_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(()->{
-                    Log.e(TAG, "deleteGrade: success");
+                .subscribe(() -> {
+                    /*Log.e(TAG, "deleteGrade: success");*/
                     listener.dynamicListener(true);
-                },throwable -> {
-                    Log.e(TAG, "deleteGrade: ",throwable );
+                }, throwable -> {
+                    Log.e(TAG, "deleteGrade: ", throwable);
                     listener.dynamicListener(false);
                 })
         );
     }
-
 
 
     public GradesFragment() {

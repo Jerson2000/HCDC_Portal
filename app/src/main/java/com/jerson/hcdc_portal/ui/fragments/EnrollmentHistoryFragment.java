@@ -6,10 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentEnrollmentHistoryBinding;
@@ -39,6 +41,8 @@ public class EnrollmentHistoryFragment extends Fragment {
     private EnrollHistoryAdapter adapter;
     private LoginViewModel loginViewModel;
     private PreferenceManager preferenceManager;
+    private int selectedId = 0;
+    private String selectedLink = "";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,10 +83,14 @@ public class EnrollmentHistoryFragment extends Fragment {
             Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " [" + periodLinks.get(i).getId() + "] ");
             binding.progressBar.setVisibility(View.VISIBLE);
             binding.enrHistRecyclerView.setVisibility(View.GONE);
+
+            selectedId = periodLinks.get(i).getId();
+            selectedLink = periodLinks.get(i).getPeriodLink();
+
             loadEnrollHistory(periodLinks.get(i).getId(), object -> {
-                if (!object) {
+                if (!object && !binding.refreshLayout.isRefreshing()) {
                     checkSession(object1 -> {
-                        if(object1){
+                        if (object1) {
                             getData(periodLinks.get(i).getPeriodLink(), periodLinks.get(i).getId());
                         }
                     });
@@ -90,6 +98,21 @@ public class EnrollmentHistoryFragment extends Fragment {
             });
 
         });
+
+        binding.refreshLayout.setOnRefreshListener(() -> {
+            binding.refreshLayout.setRefreshing(true);
+            if (PortalApp.isConnected()) {
+                checkSession(object -> {
+                    if (object) {
+                        getData(selectedLink, selectedId);
+                    }
+                });
+            }else{
+                Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
+                binding.refreshLayout.setRefreshing(false);
+            }
+        });
+
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
             getLinks();
@@ -143,17 +166,19 @@ public class EnrollmentHistoryFragment extends Fragment {
     }
 
 
-    void saveEnrollHistory(int link_id) {
-        for (int i = 0; i < enrollData.size(); i++) {
-            enrollData.get(i).setLink_id(link_id);
+    void saveEnrollHistory(int link_id, List<EnrollHistModel> list, DynamicListener<Boolean> listener) {
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).setLink_id(link_id);
         }
         CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.insertEnrollHistory(enrollData)
+        compositeDisposable.add(viewModel.insertEnrollHistory(list)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    Log.w(TAG, "saveEnrollHistory Data saved: " + enrollData.size());
+                    /*Log.w(TAG, "saveEnrollHistory Data saved: " + enrollData.size());*/
+                    listener.dynamicListener(true);
                 }, throwable -> {
                     Log.d(TAG, "saveEnrollHistory: " + throwable);
+                    listener.dynamicListener(false);
                 })
         );
     }
@@ -163,7 +188,7 @@ public class EnrollmentHistoryFragment extends Fragment {
         compositeDisposable.add(viewModel.insertEnrollHistoryLink(periodLinks)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    Log.w(TAG, "saveEnrollHistoryLink Data saved: " + periodLinks.size());
+                    /*Log.w(TAG, "saveEnrollHistoryLink Data saved: " + periodLinks.size());*/
                 }, throwable -> {
                     Log.d(TAG, "saveEnrollHistoryLink: " + throwable);
                 })
@@ -176,7 +201,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    Log.d(TAG, "LoadEnrollHistory data retrieved successfully: " + data.size());
+                    /*Log.d(TAG, "LoadEnrollHistory data retrieved successfully: " + data.size());*/
 
                     if (data.size() > 0) {
                         enrollData.clear();
@@ -197,8 +222,6 @@ public class EnrollmentHistoryFragment extends Fragment {
     }
 
 
-
-
     private void loadEnrollHistoryLink(DynamicListener<Boolean> linkRetrieved) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.loadEnrollHistoryLink()
@@ -206,7 +229,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
                     // Handle the successful retrieval
-                    Log.d(TAG, "LoadEnrollHistoryLink data retrieved: " + data.size());
+                    /*Log.d(TAG, "LoadEnrollHistoryLink data retrieved: " + data.size());*/
                     if (data.size() > 0) {
                         list.clear();
                         periodLinks.clear();
@@ -235,7 +258,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     isDeleted.dynamicListener(true);
-                    Log.d(TAG, "deleteEnrollHistoryLinkData: success");
+                    /*Log.d(TAG, "deleteEnrollHistoryLinkData: success");*/
                 }, throwable -> {
                     isDeleted.dynamicListener(false);
                     Log.e(TAG, "deleteEnrollHistoryLinkData: ", throwable);
@@ -249,7 +272,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     isDeleted.dynamicListener(true);
-                    Log.d(TAG, "deleteEnrollHistoryData: success");
+                    /*Log.d(TAG, "deleteEnrollHistoryData: success");*/
                 }, throwable -> {
                     isDeleted.dynamicListener(false);
                     Log.e(TAG, "deleteEnrollHistoryData: ", throwable);
@@ -268,7 +291,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                 arrayAdapter.notifyDataSetChanged();
             } else {
                 checkSession(object1 -> {
-                    if(object1){
+                    if (object1) {
                         getLinks();
                     }
                 });
@@ -287,7 +310,11 @@ public class EnrollmentHistoryFragment extends Fragment {
 
                 deleteEnrollHistoryData(id, object -> {
                     if (object) {
-                        saveEnrollHistory(id);
+                        saveEnrollHistory(id, data, object1 -> {
+                            if (object1) {
+                                binding.refreshLayout.setRefreshing(false);
+                            }
+                        });
                     }
                 });
 
@@ -301,13 +328,13 @@ public class EnrollmentHistoryFragment extends Fragment {
         loginViewModel.checkSession(object -> {
             if (object) {
                 loginViewModel.Login(preferenceManager.getString(PortalApp.KEY_EMAIL), preferenceManager.getString(PortalApp.KEY_PASSWORD)).observe(requireActivity(), data -> {
-                    Log.e(TAG, "dynamicListener: " + data);
+                    /*Log.e(TAG, "dynamicListener: " + data);*/
                     if (data.toLowerCase(Locale.ROOT).contains("logged")) {
                         checkSession(listener);
                     }
                 });
 
-            }else listener.dynamicListener(true);
+            } else listener.dynamicListener(true);
 
         });
 

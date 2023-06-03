@@ -124,16 +124,23 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/gradeRecyclerView"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/spaceView"
-            android:layout_below="@id/gradeLayout"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:clipToPadding="true" />
+            android:layout_below="@id/gradeLayout">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/gradeRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:clipToPadding="true" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
         <View
             android:id="@+id/spaceView"

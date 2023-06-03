@@ -6,6 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.jerson.hcdc_portal.model.AccountModel;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.model.EnrollHistModel;
 import com.jerson.hcdc_portal.model.GradeModel;
@@ -16,7 +17,8 @@ import com.jerson.hcdc_portal.model.GradeModel;
                 EnrollHistModel.class,
                 EnrollHistModel.Link.class,
                 GradeModel.class,
-                GradeModel.Link.class
+                GradeModel.Link.class,
+                AccountModel.class
         },
 
         version = 1,
@@ -39,4 +41,5 @@ public abstract class DatabasePortal extends RoomDatabase {
     public abstract DashboardDao dashboardDao();
     public abstract EnrollHistoryDao enrollHistoryDao();
     public abstract GradeDao gradeDao();
+    public abstract AccountDao accountDao();
 }

@@ -123,18 +123,22 @@
                 android:id="@+id/midGrade"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
+                android:layout_weight="2.5"
                 android:gravity="center"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:text="123"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"/>
 
             <TextView
                 android:id="@+id/midRemark"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
+                android:layout_weight="2.5"
                 android:gravity="center"
                 android:text="123"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2" />

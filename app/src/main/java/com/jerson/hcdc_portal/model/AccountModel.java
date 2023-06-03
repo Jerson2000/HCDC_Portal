@@ -1,6 +1,12 @@
 package com.jerson.hcdc_portal.model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "account")
 public class AccountModel {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
     private String date;
     private String reference;
     private String description;
@@ -21,6 +27,14 @@ public class AccountModel {
         this.runBal = runBal;
         this.dueText = dueText;
         this.due = due;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getDate() {

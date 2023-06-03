@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.database.DatabasePortal;
-import com.jerson.hcdc_portal.model.EnrollHistModel;
-import com.jerson.hcdc_portal.model.GradeLinksModel;
 import com.jerson.hcdc_portal.model.GradeModel;
 import com.jerson.hcdc_portal.repo.GradeRepo;
 

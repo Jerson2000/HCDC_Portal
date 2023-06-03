@@ -132,8 +132,6 @@ public class AccountRepo {
                     String dueTex = null;
                     String dueDat = null;
 
-//                    System.out.println(rowsData.text());
-
                     // Get Due Payment
                     for (Element row : rowsData) {
                         indexDue++;

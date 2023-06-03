@@ -21,20 +21,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:visibility="visible"
-            android:indeterminateTint="@color/md_theme_dark_errorContainer"/>
+            android:indeterminateTint="@color/md_theme_dark_errorContainer"
+            android:visibility="visible" />
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:id="@+id/semSelectorLayout"
-            android:visibility="invisible"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_5sdp"
-            android:hint="Period"
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:elevation="@dimen/_5sdp">
+            android:elevation="@dimen/_5sdp"
+            android:hint="Period"
+            android:visibility="invisible">
 
             <AutoCompleteTextView
                 android:id="@+id/spinnerSem"
@@ -44,24 +44,29 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/enrHistRecyclerView"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/semSelectorLayout"
+            android:layout_height="wrap_content"
             android:layout_above="@id/spaceView"
-            android:layout_marginStart="@dimen/_5sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:clipToPadding="true" />
+            android:layout_below="@id/semSelectorLayout">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/enrHistRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:clipToPadding="false" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <View
             android:id="@+id/spaceView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_30sdp"
-            android:layout_alignParentBottom="true"
-            />
+            android:layout_alignParentBottom="true" />
 
     </RelativeLayout>
 
