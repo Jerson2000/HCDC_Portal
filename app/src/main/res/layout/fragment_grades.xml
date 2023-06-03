@@ -124,10 +124,41 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <LinearLayout
+            android:id="@+id/errLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            android:layout_above="@+id/spaceView"
+            android:layout_below="@id/gradeLayout">
+
+            <TextView
+                android:id="@+id/errEmoji"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="emoji"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+                android:textColor="?colorSecondaryVariant"
+                />
+
+            <TextView
+                android:id="@+id/errText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="text"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+
+        </LinearLayout>
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="visible"
             android:layout_above="@+id/spaceView"
             android:layout_below="@id/gradeLayout">
             <androidx.recyclerview.widget.RecyclerView

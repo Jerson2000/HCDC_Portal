@@ -55,5 +55,8 @@ public class PortalApp extends Application {
     public static final String accountUrl = "/account_hed";
     public static final String enrollHistory = "/enrollmentHistory";
 
+    public static final String[] SAD_EMOJIS = {"(っ °Д °;)っ","(┬┬﹏┬┬)","¯\\_(ツ)_/¯","___*( ￣皿￣)/#____","ಥ_ಥ","(>ლ)"};
+    public static final String[] HAPPY_EMOJIS = {"(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧","(⌐■_■)","✪ ω ✪","( ﾉ ﾟｰﾟ)ﾉ","d=====(￣▽￣*)b","🤝🏻o((>ω< ))o"};
+
 
 }

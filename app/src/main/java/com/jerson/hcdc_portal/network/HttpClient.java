@@ -111,7 +111,8 @@ public class HttpClient {
                     while (response.isRedirect()) {
                         if (response.code() == 302 || response.code() == 307) {
                             request = request.newBuilder()
-                                    .url(response.header("Location"))
+                                    /*.url(response.header("Location"))*/
+                                    .url(PortalApp.baseUrl)
                                     .post(formBody)
                                     .build();
 

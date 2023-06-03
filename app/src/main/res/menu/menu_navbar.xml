@@ -6,6 +6,13 @@
         android:title="Dashboard"
         android:icon="@drawable/selector_dashboard"
         />
+
+    <item
+        android:id="@+id/subjects"
+        android:title="Subjects"
+        android:icon="@drawable/selector_subject"
+        />
+
     <item
         android:id="@+id/grades"
         android:title="Grades"
@@ -23,11 +30,11 @@
         android:icon="@drawable/selector_account"
         />
 
-    <item
+    <!--<item
         android:id="@+id/more"
         android:title="More"
         android:icon="@drawable/ic_more_horiz"
-        />
+        />-->
 
 
 </menu>

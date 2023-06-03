@@ -43,6 +43,10 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 navController.popBackStack();
                 navController.navigate(R.id.dashboardFragment);
                 break;
+            case R.id.subjects:
+                navController.popBackStack();
+                navController.navigate(R.id.subjectsFragment);
+                break;
             case R.id.grades:
                 navController.popBackStack();
                 navController.navigate(R.id.gradesFragment);

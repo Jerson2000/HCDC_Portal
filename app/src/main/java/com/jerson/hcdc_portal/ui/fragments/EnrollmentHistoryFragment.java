@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentEnrollmentHistoryBinding;
@@ -25,6 +24,7 @@ import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -89,11 +89,21 @@ public class EnrollmentHistoryFragment extends Fragment {
 
             loadEnrollHistory(periodLinks.get(i).getId(), object -> {
                 if (!object && !binding.refreshLayout.isRefreshing()) {
-                    checkSession(object1 -> {
-                        if (object1) {
-                            getData(periodLinks.get(i).getPeriodLink(), periodLinks.get(i).getId());
-                        }
-                    });
+                    if(PortalApp.isConnected()){
+                        checkSession(object1 -> {
+                            if (object1) {
+                                getData(periodLinks.get(i).getPeriodLink(), periodLinks.get(i).getId());
+                            }
+                        });
+                    }else{
+                        Random random = new Random();
+                        int n = random.nextInt(6);
+                        binding.progressBar.setVisibility(View.GONE);
+                        binding.errLayout.setVisibility(View.VISIBLE);
+                        binding.errText.setText("No internet connection.");
+                        binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
+                    }
+
                 }
             });
 
@@ -110,6 +120,14 @@ public class EnrollmentHistoryFragment extends Fragment {
             }else{
                 Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
                 binding.refreshLayout.setRefreshing(false);
+                Random random = new Random();
+                int n = random.nextInt(6);
+                binding.enrHistRecyclerView.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.GONE);
+                binding.errLayout.setVisibility(View.VISIBLE);
+                binding.errText.setText("No internet connection.");
+                binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
+
             }
         });
 
@@ -209,6 +227,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                         binding.progressBar.setVisibility(View.GONE);
                         binding.enrHistRecyclerView.setVisibility(View.VISIBLE);
+                        binding.errLayout.setVisibility(View.GONE);
                         isLoadEnrollHistory.dynamicListener(true);
                     } else {
                         isLoadEnrollHistory.dynamicListener(false);
@@ -284,17 +303,26 @@ public class EnrollmentHistoryFragment extends Fragment {
         @Override
         public void dynamicListener(Boolean object) {
             if (object) {
-
                 binding.progressBar.setVisibility(View.GONE);
                 binding.semSelectorLayout.setVisibility(View.VISIBLE);
                 binding.enrHistRecyclerView.setVisibility(View.VISIBLE);
                 arrayAdapter.notifyDataSetChanged();
             } else {
-                checkSession(object1 -> {
-                    if (object1) {
-                        getLinks();
-                    }
-                });
+                if(PortalApp.isConnected()){
+                    checkSession(object1 -> {
+                        if (object1) {
+                            getLinks();
+                        }
+                    });
+                }else{
+                    Random random = new Random();
+                    int n = random.nextInt(6);
+                    binding.progressBar.setVisibility(View.GONE);
+                    binding.errLayout.setVisibility(View.VISIBLE);
+                    binding.errText.setText("No internet connection.");
+                    binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
+                }
+
             }
         }
     };

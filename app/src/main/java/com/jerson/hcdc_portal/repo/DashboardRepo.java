@@ -19,7 +19,7 @@ public class DashboardRepo {
 
     public LiveData<List<DashboardModel>> getDashData(MutableLiveData<Integer> resCode,MutableLiveData<String> response){
         MutableLiveData<List<DashboardModel>> data = new MutableLiveData<>();
-        HttpClient.getInstance().GET(PortalApp.baseUrl+PortalApp.dashboardUrl, new OnHttpResponseListener<Document>() {
+        HttpClient.getInstance().GET(PortalApp.baseUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
                 data.setValue( parseDashboard(response));

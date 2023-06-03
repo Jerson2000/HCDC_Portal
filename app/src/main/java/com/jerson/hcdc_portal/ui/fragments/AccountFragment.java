@@ -25,6 +25,7 @@ import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -76,8 +77,12 @@ public class AccountFragment extends Fragment {
                         getData();
                     }
                 });
-            } else
+            } else{
                 Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
+                binding.refreshLayout.setRefreshing(false);
+            }
+
+
         });
 
     }
@@ -197,9 +202,15 @@ public class AccountFragment extends Fragment {
                         getData();
                     }
                 });
-            } else
-                Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
-
+            }else{
+                Random random = new Random();
+                int n = random.nextInt(6);
+                binding.accountRecyclerView.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.GONE);
+                binding.errLayout.setVisibility(View.VISIBLE);
+                binding.errText.setText("No internet connection.");
+                binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
+            }
         }
     };
 

@@ -25,4 +25,9 @@
         android:name="com.jerson.hcdc_portal.ui.fragments.GradesFragment"
         android:label="fragment_grades"
         tools:layout="@layout/fragment_grades" />
+    <fragment
+        android:id="@+id/subjectsFragment"
+        android:name="com.jerson.hcdc_portal.ui.fragments.SubjectsFragment"
+        android:label="fragment_subjects"
+        tools:layout="@layout/fragment_subjects" />
 </navigation>

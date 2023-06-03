@@ -16,6 +16,7 @@ import java.util.List;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
+/* NOTE: THIS A SUBJECTS VIEWMODEL - In the student portal the subject's schedule is in the dashboard so I just copy the name*/
 public class DashboardViewModel extends AndroidViewModel {
     MutableLiveData<String> response = new MutableLiveData<>();
     MutableLiveData<Integer> resCode = new MutableLiveData<>();

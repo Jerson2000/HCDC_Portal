@@ -3,7 +3,6 @@ package com.jerson.hcdc_portal.ui.fragments;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,11 +26,10 @@ import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -77,25 +75,25 @@ public class DashboardFragment extends Fragment {
         adapter = new DashboardAdapter(requireActivity(), todayList);
         binding.recyclerView.setAdapter(adapter);
 
-        if(!preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE).equals("")){
+        if (!preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE).equals("")) {
             binding.enrollAnnounceLayout.setVisibility(View.VISIBLE);
             binding.enrollAnnounce.setText(preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE));
         }
         binding.enrolledTV.setText(preferenceManager.getString(PortalApp.KEY_IS_ENROLLED));
 
-        String pDetails ="ID number: " + preferenceManager.getString(PortalApp.KEY_STUDENT_ID)+"\n" +
-                "Name: "+preferenceManager.getString(PortalApp.KEY_STUDENT_NAME).toLowerCase(Locale.ROOT)+"\n" +
-                "Course: "+preferenceManager.getString(PortalApp.KEY_STUDENT_COURSE);
-        binding.btnProfile.setOnClickListener(v->{
-            Dialog.Dialog("Student Info.",pDetails,requireActivity()).show();
+        String pDetails = "ID number: " + preferenceManager.getString(PortalApp.KEY_STUDENT_ID) + "\n" +
+                "Name: " + preferenceManager.getString(PortalApp.KEY_STUDENT_NAME).toLowerCase(Locale.ROOT) + "\n" +
+                "Course: " + preferenceManager.getString(PortalApp.KEY_STUDENT_COURSE);
+        binding.btnProfile.setOnClickListener(v -> {
+            Dialog.Dialog("Student Info.", pDetails, requireActivity()).show();
         });
-        binding.btnLogout.setOnClickListener(v->{
-            Dialog.Dialog("WARNING!","Are you sure you want to logout?",requireActivity())
+        binding.btnLogout.setOnClickListener(v -> {
+            Dialog.Dialog("WARNING!", "Are you sure you want to logout?", requireActivity())
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             preferenceManager.clear();
-                            startActivity(new Intent(requireActivity(),LoginActivity.class));
+                            startActivity(new Intent(requireActivity(), LoginActivity.class));
                             requireActivity().finish();
                         }
                     })
@@ -134,9 +132,18 @@ public class DashboardFragment extends Fragment {
 
                 }
             }
-            if (todayList.size() > 0)  adapter.notifyDataSetChanged();
+            if (todayList.size() > 0) adapter.notifyDataSetChanged();
+            else {
+                Random random = new Random();
+                int n = random.nextInt(6);
+                binding.progressBar.setVisibility(View.GONE);
+                binding.errLayout.setVisibility(View.VISIBLE);
+                binding.errText.setText("No subject/s for today.");
+                binding.errEmoji.setText(PortalApp.HAPPY_EMOJIS[n]);
+            }
 
         }
+
 
     }
 
@@ -158,12 +165,16 @@ public class DashboardFragment extends Fragment {
         if (object) {
             getSubjectToday();
             getTotalSubject();
-        }else{
-            binding.progressBar.setVisibility(View.INVISIBLE);
+        } else {
+            Random random = new Random();
+            int n = random.nextInt(6);
+            binding.progressBar.setVisibility(View.GONE);
+            binding.errLayout.setVisibility(View.VISIBLE);
+            binding.errText.setText("No subject/s for today.");
+            binding.errEmoji.setText(PortalApp.HAPPY_EMOJIS[n]);
         }
 
     };
-
 
 
     private void loadDashboard(DynamicListener<Boolean> isRetrieved) {
@@ -181,9 +192,7 @@ public class DashboardFragment extends Fragment {
                         binding.recyclerView.setVisibility(View.VISIBLE);
 
                     } else {
-                        if (data.size() == 0 && dashList.size() == 0) {
-                            isRetrieved.dynamicListener(false);
-                        }
+                        isRetrieved.dynamicListener(false);
                     }
                 }, throwable -> {
                     Log.e(TAG, "loadDashboard", throwable);

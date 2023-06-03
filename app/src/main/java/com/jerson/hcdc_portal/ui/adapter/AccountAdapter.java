@@ -40,6 +40,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
         holder.binding.runBal.setText(model.getRunBal());
         holder.binding.date.setText(model.getDate());
         holder.binding.desc.setText(model.getDescription());
+        holder.binding.period.setText(model.getPeriod());
 
     }
 

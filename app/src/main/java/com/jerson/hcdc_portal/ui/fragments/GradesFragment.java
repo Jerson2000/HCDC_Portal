@@ -11,12 +11,10 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentGradesBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
-import com.jerson.hcdc_portal.model.EnrollHistModel;
 import com.jerson.hcdc_portal.model.GradeModel;
 import com.jerson.hcdc_portal.ui.adapter.GradeAdapter;
 import com.jerson.hcdc_portal.util.PreferenceManager;
@@ -26,6 +24,7 @@ import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -93,8 +92,16 @@ public class GradesFragment extends Fragment {
                                     getGrade(semGradeList.get(i).getId(), semGradeList.get(i).getLink());
                                 }
                             });
-                        } else
+                        } else{
                             Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
+                            Random random = new Random();
+                            int n = random.nextInt(6);
+                            binding.progressBar.setVisibility(View.GONE);
+                            binding.errLayout.setVisibility(View.VISIBLE);
+                            binding.errText.setText("No internet connection.");
+                            binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
+                        }
+
                     }
                 });
 
@@ -113,6 +120,13 @@ public class GradesFragment extends Fragment {
             } else{
                 Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
                 binding.refreshLayout.setRefreshing(false);
+                Random random = new Random();
+                int n = random.nextInt(6);
+                binding.progressBar.setVisibility(View.GONE);
+                binding.gradeRecyclerView.setVisibility(View.GONE);
+                binding.errLayout.setVisibility(View.VISIBLE);
+                binding.errText.setText("No internet connection.");
+                binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
             }
 
         });
@@ -222,11 +236,21 @@ public class GradesFragment extends Fragment {
 
     DynamicListener<Boolean> linkListener = object -> {
         if (!object) {
-            checkSession(object1 -> {
-                if (object1) {
-                    getLink();
-                }
-            });
+            if (PortalApp.isConnected()){
+                checkSession(object1 -> {
+                    if (object1) {
+                        getLink();
+                    }
+                });
+            }else{
+                Random random = new Random();
+                int n = random.nextInt(6);
+                binding.progressBar.setVisibility(View.GONE);
+                binding.errLayout.setVisibility(View.VISIBLE);
+                binding.errText.setText("No internet connection.");
+                binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
+            }
+
         } else {
             arrayAdapter.notifyDataSetChanged();
             binding.semSelectorLayout.setVisibility(View.VISIBLE);
@@ -277,6 +301,7 @@ public class GradesFragment extends Fragment {
                         binding.gradeRecyclerView.setVisibility(View.VISIBLE);
 
                         binding.progressBar.setVisibility(View.GONE);
+                        binding.errLayout.setVisibility(View.GONE);
 
                     }
                     listener.dynamicListener(data.size() > 0);
