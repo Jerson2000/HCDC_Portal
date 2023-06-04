@@ -3,14 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:contentPadding="@dimen/_2sdp"
-    android:layout_margin="@dimen/_2sdp">
+    app:contentPadding="2dp"
+    style="@style/Widget.Material3.CardView.Outlined"
+    android:layout_margin="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/_2sdp">
+        android:padding="2dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,7 +64,7 @@
                 android:text="Code"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp" />
+                android:textSize="8sp" />
 
             <TextView
                 android:layout_width="0dp"
@@ -73,7 +74,7 @@
                 android:text="Subject"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp" />
+                android:textSize="8sp"  />
 
             <TextView
                 android:layout_width="0dp"
@@ -83,7 +84,7 @@
                 android:text="Unit"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp" />
+                android:textSize="8sp"  />
 
         </LinearLayout>
 
@@ -106,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp"
+                android:textSize="8sp"
                 android:gravity="center"
                 android:text="Description"/>
 
@@ -160,7 +161,7 @@
                 android:text="Grade"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp" />
+                android:textSize="8sp" />
 
             <TextView
                 android:layout_width="0dp"
@@ -170,7 +171,7 @@
                 android:text="Midterm Grade"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp" />
+                android:textSize="8sp"  />
 
             <TextView
                 android:layout_width="0dp"
@@ -180,7 +181,7 @@
                 android:text="Remark"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp" />
+                android:textSize="8sp"  />
 
         </LinearLayout>
 
@@ -233,7 +234,7 @@
                 android:text="Grade"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp" />
+                android:textSize="8sp"  />
 
             <TextView
                 android:layout_width="0dp"
@@ -243,7 +244,7 @@
                 android:text="Final Grade"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp" />
+                android:textSize="8sp"  />
 
             <TextView
                 android:layout_width="0dp"
@@ -253,7 +254,7 @@
                 android:text="Remark"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp" />
+                android:textSize="8sp"  />
 
         </LinearLayout>
 
@@ -276,177 +277,12 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="@dimen/_8sdp"
+                android:textSize="8sp"
                 android:gravity="center"
                 android:text="Teacher"/>
 
         </LinearLayout>
 
     </LinearLayout>
-
-    <!--<RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?colorOnSurfaceInverse"
-        android:paddingBottom="@dimen/_5sdp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/subjCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_16ssp"
-                android:textStyle="bold"
-                android:text="Subject Code"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_8ssp"
-                android:text="Subject Code"/>
-            <TextView
-                android:id="@+id/desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/md_theme_dark_primary"
-                android:textSize="@dimen/_16ssp"
-                android:text="Description"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="@dimen/_8ssp"
-                android:background="@color/md_theme_dark_primary"
-                android:text="Description"/>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_5sdp"
-                android:paddingRight="@dimen/_5sdp">
-
-                <TextView
-                    android:id="@+id/midGrade"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_marginStart="@dimen/_15sdp"
-                    android:text="1.99"
-                    android:textSize="@dimen/_16ssp" />
-
-                <TextView
-                    android:id="@+id/midRemark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="@dimen/_15sdp"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:text="Passed"
-                    android:textSize="@dimen/_16ssp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_5sdp"
-                android:paddingRight="@dimen/_5sdp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Midterm Grade"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_alignParentStart="true"
-                    android:textSize="@dimen/_8ssp"
-                    android:layout_marginStart="@dimen/_15sdp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Midterm Remark"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_alignParentEnd="true"
-                    android:textSize="@dimen/_8ssp"
-                    android:layout_marginEnd="@dimen/_15sdp"/>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/md_theme_dark_primary">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/finalGrade"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/_16ssp"
-                        android:layout_alignParentStart="true"
-                        android:paddingLeft="@dimen/_5sdp"
-                        android:paddingRight="@dimen/_5sdp"
-                        android:layout_marginStart="@dimen/_15sdp"
-                        android:text="1.99"/>
-
-                    <TextView
-                        android:id="@+id/finalRemark"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/_16ssp"
-                        android:text="Passed"
-                        android:layout_marginEnd="@dimen/_15sdp"
-                        android:paddingLeft="@dimen/_5sdp"
-                        android:paddingRight="@dimen/_5sdp"
-                        android:layout_alignParentEnd="true"/>
-                </RelativeLayout>
-
-
-            </RelativeLayout>
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/md_theme_dark_primary"
-                android:paddingLeft="@dimen/_5sdp"
-                android:paddingRight="@dimen/_5sdp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Final Grade"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_alignParentStart="true"
-                    android:textSize="@dimen/_8ssp"
-                    android:layout_marginStart="@dimen/_15sdp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Final Remark"
-                    android:paddingLeft="@dimen/_5sdp"
-                    android:paddingRight="@dimen/_5sdp"
-                    android:layout_alignParentEnd="true"
-                    android:textSize="@dimen/_8ssp"
-                    android:layout_marginEnd="@dimen/_15sdp"/>
-
-            </RelativeLayout>
-
-
-
-        </LinearLayout>
-
-    </RelativeLayout>
--->
 
 </com.google.android.material.card.MaterialCardView>

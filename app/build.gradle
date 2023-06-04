@@ -22,8 +22,8 @@ android {
 
     buildTypes {
         debug {
-//            shrinkResources true
-//            minifyEnabled true
+          /*  shrinkResources true
+            minifyEnabled true*/
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -59,8 +59,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.5.3'
     implementation 'androidx.navigation:navigation-ui:2.5.3'
 //    Scalable Unit
-    implementation 'com.intuit.sdp:sdp-android:1.1.0'
-    implementation 'com.intuit.ssp:ssp-android:1.1.0'
+   /* implementation 'com.intuit.sdp:sdp-android:1.1.0'
+    implementation 'com.intuit.ssp:ssp-android:1.1.0'*/
 //    Okhttp
     implementation "com.squareup.okhttp3:okhttp:4.10.0"
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'

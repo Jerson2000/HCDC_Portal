@@ -14,7 +14,7 @@ public class PortalApp extends Application {
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        /*AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);*/
 
     }
 
