@@ -7,13 +7,19 @@ import android.net.NetworkCapabilities;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.jerson.hcdc_portal.util.PreferenceManager;
+
+import org.jsoup.nodes.Document;
+
 
 public class PortalApp extends Application {
     private static Context appContext;
+    private static PreferenceManager preferenceManager;
 
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
+        preferenceManager = new PreferenceManager(PortalApp.getAppContext());
         /*AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);*/
 
     }
@@ -26,6 +32,27 @@ public class PortalApp extends Application {
     }
 
 
+    public static void parseUser(Document response){
+        boolean enrolled = response.body().text().contains("Officially Enrolled");
+
+        String id = response.select(".app-sidebar__user-designation").text().replace("(", " ").replace(")", " ");
+        String[] courseID = id.split(" ");
+        String[] units = response.select(".row div b").eq(0).text().split(" ");
+
+        if (enrolled)
+            preferenceManager.putString(PortalApp.KEY_IS_ENROLLED, response.select(".row div b").eq(1).text());
+        else
+            preferenceManager.putString(PortalApp.KEY_IS_ENROLLED, response.select(".app-title > div > p").text());
+
+        preferenceManager.putString(PortalApp.KEY_STUDENTS_UNITS,units[units.length-1]);
+        preferenceManager.putString(PortalApp.KEY_ENROLL_ANNOUNCE, response.select(".mybox-body > center > h5").text());
+        preferenceManager.putString(PortalApp.KEY_STUDENT_ID, courseID[courseID.length - 1]);
+        preferenceManager.putString(PortalApp.KEY_STUDENT_COURSE, courseID[0]);
+        preferenceManager.putString(PortalApp.KEY_STUDENT_NAME, response.select(".app-sidebar__user-name").text());
+    }
+
+
+
 
     public static Context getAppContext() {
         return appContext;
@@ -36,12 +63,13 @@ public class PortalApp extends Application {
     public static final String KEY_SHARED = "studentPortal";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_PASSWORD = "password";
-    public static final String KEY_STUDENT_ID = "studentID";
     public static final String KEY_IS_LOGIN = "isLogin";
     public static final String KEY_IS_ENROLLED = "isEnrolled";
     public static final String KEY_ENROLL_ANNOUNCE = "enrollAnnounce";
+    public static final String KEY_STUDENT_ID = "studentID";
     public static final String KEY_STUDENT_NAME = "studentName";
     public static final String KEY_STUDENT_COURSE = "studentCourse";
+    public static final String KEY_STUDENTS_UNITS = "units";
 
 
     // App

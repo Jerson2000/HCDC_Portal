@@ -80,6 +80,7 @@ public class DashboardFragment extends Fragment {
             binding.enrollAnnounce.setText(preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE));
         }
         binding.enrolledTV.setText(preferenceManager.getString(PortalApp.KEY_IS_ENROLLED));
+        binding.unitsTV.setText(preferenceManager.getString(PortalApp.KEY_STUDENTS_UNITS));
 
         String pDetails = "ID number: " + preferenceManager.getString(PortalApp.KEY_STUDENT_ID) + "\n" +
                 "Name: " + preferenceManager.getString(PortalApp.KEY_STUDENT_NAME).toLowerCase(Locale.ROOT) + "\n" +
@@ -89,20 +90,12 @@ public class DashboardFragment extends Fragment {
         });
         binding.btnLogout.setOnClickListener(v -> {
             Dialog.Dialog("WARNING!", "Are you sure you want to logout?", requireActivity())
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            preferenceManager.clear();
-                            startActivity(new Intent(requireActivity(), LoginActivity.class));
-                            requireActivity().finish();
-                        }
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        preferenceManager.clear();
+                        startActivity(new Intent(requireActivity(), LoginActivity.class));
+                        requireActivity().finish();
                     })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
+                    .setNegativeButton("No", (dialog, which) -> dialog.dismiss()).show();
         });
 
 
@@ -133,45 +126,33 @@ public class DashboardFragment extends Fragment {
                 }
             }
             if (todayList.size() > 0) adapter.notifyDataSetChanged();
-            else {
-                Random random = new Random();
-                int n = random.nextInt(6);
-                binding.progressBar.setVisibility(View.GONE);
-                binding.errLayout.setVisibility(View.VISIBLE);
-                binding.errText.setText("No subject/s for today.");
-                binding.errEmoji.setText(PortalApp.HAPPY_EMOJIS[n]);
-            }
-
-        }
-
+            else
+                errShow("No subject/s for today.");
+        } else
+            errShow("No subject/s for today.");
 
     }
 
 
     void getTotalSubject() {
-        List<DashboardModel> distinctList = dashList.stream()
-                .filter(distinctList(DashboardModel::getOfferNo))
-                .collect(Collectors.toList());
-        binding.totalSubTV.setText(String.valueOf(distinctList.size()));
 
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < dashList.size(); i++) {
+            if (!list.contains(dashList.get(i).getOfferNo())) {
+                list.add(dashList.get(i).getOfferNo());
+            }
+        }
+
+        binding.totalSubTV.setText(String.valueOf(list.size()));
     }
 
-    public <T> Predicate<T> distinctList(Function<? super T, ?> keyExtractor) {
-        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
-        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
-    }
 
     DynamicListener<Boolean> isRetrieved = object -> {
         if (object) {
             getSubjectToday();
             getTotalSubject();
         } else {
-            Random random = new Random();
-            int n = random.nextInt(6);
-            binding.progressBar.setVisibility(View.GONE);
-            binding.errLayout.setVisibility(View.VISIBLE);
-            binding.errText.setText("No subject/s for today.");
-            binding.errEmoji.setText(PortalApp.HAPPY_EMOJIS[n]);
+            errShow("No subject/s for today.");
         }
 
     };
@@ -188,8 +169,7 @@ public class DashboardFragment extends Fragment {
                         dashList.clear();
                         dashList.addAll(data);
                         isRetrieved.dynamicListener(true);
-                        binding.progressBar.setVisibility(View.INVISIBLE);
-                        binding.recyclerView.setVisibility(View.VISIBLE);
+                        isLoading(false);
 
                     } else {
                         isRetrieved.dynamicListener(false);
@@ -199,6 +179,25 @@ public class DashboardFragment extends Fragment {
                     isRetrieved.dynamicListener(false);
                 }));
 
+    }
+
+    void errShow(String msg) {
+        Random random = new Random();
+        int n = random.nextInt(6);
+        binding.progressBar.setVisibility(View.GONE);
+        binding.errLayout.setVisibility(View.VISIBLE);
+        binding.errText.setText(msg);
+        binding.errEmoji.setText(PortalApp.HAPPY_EMOJIS[n]);
+    }
+
+    void isLoading(boolean loading) {
+        if (loading) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.recyclerView.setVisibility(View.GONE);
+        } else {
+            binding.progressBar.setVisibility(View.GONE);
+            binding.recyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
 

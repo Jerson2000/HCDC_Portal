@@ -17,17 +17,18 @@ import java.util.List;
 
 public class DashboardRepo {
 
-    public LiveData<List<DashboardModel>> getDashData(MutableLiveData<Integer> resCode,MutableLiveData<String> response){
+    public LiveData<List<DashboardModel>> getDashData(MutableLiveData<Integer> resCode,MutableLiveData<Throwable> err){
         MutableLiveData<List<DashboardModel>> data = new MutableLiveData<>();
         HttpClient.getInstance().GET(PortalApp.baseUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
                 data.setValue( parseDashboard(response));
+                PortalApp.parseUser(response);
             }
 
             @Override
             public void onFailure(Exception e) {
-                response.setValue(e.getMessage());
+                err.setValue(e);
             }
 
             @Override

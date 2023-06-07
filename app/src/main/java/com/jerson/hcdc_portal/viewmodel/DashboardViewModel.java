@@ -18,8 +18,8 @@ import io.reactivex.Flowable;
 
 /* NOTE: THIS A SUBJECTS VIEWMODEL - In the student portal the subject's schedule is in the dashboard so I just copy the name*/
 public class DashboardViewModel extends AndroidViewModel {
-    MutableLiveData<String> response = new MutableLiveData<>();
     MutableLiveData<Integer> resCode = new MutableLiveData<>();
+    MutableLiveData<Throwable> err = new MutableLiveData<>();
 
     DatabasePortal databasePortal;
 
@@ -36,7 +36,11 @@ public class DashboardViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<DashboardModel>> getData(){
-        return repo.getDashData(resCode,response);
+        return repo.getDashData(resCode,err);
+    }
+
+    public MutableLiveData<Throwable> getErr() {
+        return err;
     }
 
     public Completable insertDashboard(List<DashboardModel> dashboardModel){

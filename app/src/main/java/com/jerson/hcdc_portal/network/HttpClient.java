@@ -10,6 +10,7 @@ import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.jerson.hcdc_portal.PortalApp;
+import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
 
 import org.jsoup.Jsoup;
@@ -17,6 +18,7 @@ import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -201,6 +203,32 @@ public class HttpClient {
             }
         });
 
+    }
+
+
+    /* user session check */
+    public static void checkSession(DynamicListener<HashMap<String,Object>> listener) {
+        HashMap<String,Object> data = new HashMap<>();
+        HttpClient.getInstance().GET_Redirection(PortalApp.baseUrl + PortalApp.gradesUrl, new OnHttpResponseListener<Document>() {
+            @Override
+            public void onResponse(Document response) {
+                boolean isLoginPage = response.body().text().contains("CROSSIAN LOG-IN");
+                data.put("isLoggedIn",isLoginPage);
+                listener.dynamicListener(data);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                data.put("error",e.getMessage());
+                listener.dynamicListener(data);
+            }
+
+            @Override
+            public void onResponseCode(int code) {
+                data.put("code",code);
+                listener.dynamicListener(data);
+            }
+        });
     }
 
 

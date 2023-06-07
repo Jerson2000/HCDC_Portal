@@ -25,7 +25,7 @@ public class LoginViewModel extends ViewModel {
     MutableLiveData<Integer> resCode = new MutableLiveData<>();
     MutableLiveData<List<DashboardModel>> dashboardData = new MutableLiveData<>();
     MutableLiveData<String> res = new MutableLiveData<>();
-    PreferenceManager preferenceManager = new PreferenceManager(PortalApp.getAppContext());
+    MutableLiveData<Throwable> err = new MutableLiveData<>();
 
     public LiveData<String> Login(String email, String password) {
         getToken().observeForever(resp -> {
@@ -49,16 +49,7 @@ public class LoginViewModel extends ViewModel {
                         }
                         if (!wrongPass) {
                             res.postValue("Logged In!");
-
-                            String id = response.select(".app-sidebar__user-designation").text().replace("(", " ").replace(")", " ");
-                            String[] courseID = id.split(" ");
-
-                            preferenceManager.putString(PortalApp.KEY_IS_ENROLLED,response.select(".app-title > div > p").text());
-                            preferenceManager.putString(PortalApp.KEY_ENROLL_ANNOUNCE,response.select(".mybox-body > center > h5").text());
-                            preferenceManager.putString(PortalApp.KEY_STUDENT_ID,courseID[courseID.length-1]);
-                            preferenceManager.putString(PortalApp.KEY_STUDENT_COURSE,courseID[0]);
-                            preferenceManager.putString(PortalApp.KEY_STUDENT_NAME,response.select(".app-sidebar__user-name").text());
-
+                           PortalApp.parseUser(response);
                         }
 
 
@@ -66,9 +57,7 @@ public class LoginViewModel extends ViewModel {
 
                     @Override
                     public void onFailure(Exception e) {
-                        res.postValue(e.getMessage());
-                        Log.e("onFailure", "onFailure: " + e.getMessage() );
-
+                        err.postValue(e);
                     }
 
                     @Override
@@ -92,10 +81,13 @@ public class LoginViewModel extends ViewModel {
         return res;
     }
 
-    public LiveData<List<DashboardModel>> getDashboard(){
+    public LiveData<List<DashboardModel>> getDashboard() {
         return dashboardData;
     }
 
+    public MutableLiveData<Throwable> getErr() {
+        return err;
+    }
 
     MutableLiveData<String> getToken() {
         MutableLiveData<String> s = new MutableLiveData<>();
@@ -108,8 +100,7 @@ public class LoginViewModel extends ViewModel {
 
             @Override
             public void onFailure(Exception e) {
-                s.postValue(e.getMessage());
-                e.printStackTrace();
+               err.postValue(e);
             }
 
             @Override
@@ -122,16 +113,17 @@ public class LoginViewModel extends ViewModel {
         return s;
     }
 
-    public void checkSession(DynamicListener<Boolean> listener){
+    public void checkSession(DynamicListener<Boolean> listener) {
         HttpClient.getInstance().GET_Redirection(PortalApp.baseUrl + PortalApp.gradesUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
                 boolean isLoginPage = response.body().text().contains("CROSSIAN LOG-IN");
                 listener.dynamicListener(isLoginPage);
             }
+
             @Override
             public void onFailure(Exception e) {
-                Log.e("LoginViewModel", "onFailure: ",e );
+                Log.e("LoginViewModel", "onFailure: ", e);
             }
 
             @Override
