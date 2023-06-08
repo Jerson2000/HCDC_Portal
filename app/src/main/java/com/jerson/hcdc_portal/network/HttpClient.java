@@ -121,16 +121,10 @@ public class HttpClient {
                             response = client.newCall(request).execute();
                         }
                         // Handle other redirects
-                        else if(response.code() >= 500){
-                            request = request.newBuilder()
-                                    .url(PortalApp.baseUrl)
-                                    .build();
-
-                            response = client.newCall(request).execute();
-                        }
                         else {
                             request = request.newBuilder()
-                                    .url(response.header("Location"))
+                                    /*.url(response.header("Location"))*/
+                                    .url(PortalApp.baseUrl)
                                     .build();
 
                             response = client.newCall(request).execute();

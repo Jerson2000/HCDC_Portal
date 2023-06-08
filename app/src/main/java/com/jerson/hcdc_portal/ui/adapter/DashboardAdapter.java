@@ -37,6 +37,8 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
 
         holder.binding.desc.setText(model.getDescription());
         holder.binding.subjCode.setText(model.getSubjCode());
+        holder.binding.schedDays.setText(model.getDays());
+        holder.binding.schedTime.setText(model.getTime());
         Picasso.get().load(R.drawable.v2_book).into(holder.binding.bookIV);
 
     }

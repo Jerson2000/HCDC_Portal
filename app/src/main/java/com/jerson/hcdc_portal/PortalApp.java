@@ -20,7 +20,7 @@ public class PortalApp extends Application {
         super.onCreate();
         appContext = getApplicationContext();
         preferenceManager = new PreferenceManager(PortalApp.getAppContext());
-        /*AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);*/
+        AppCompatDelegate.setDefaultNightMode(preferenceManager.getInteger(PortalApp.KEY_SETTINGS_THEME_MODE));
 
     }
 
@@ -70,6 +70,8 @@ public class PortalApp extends Application {
     public static final String KEY_STUDENT_NAME = "studentName";
     public static final String KEY_STUDENT_COURSE = "studentCourse";
     public static final String KEY_STUDENTS_UNITS = "units";
+
+    public static final String KEY_SETTINGS_THEME_MODE = "themeMode";
 
 
     // App

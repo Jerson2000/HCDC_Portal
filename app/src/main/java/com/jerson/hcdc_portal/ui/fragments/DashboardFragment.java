@@ -18,6 +18,7 @@ import com.jerson.hcdc_portal.databinding.FragmentDashboardBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.ui.activity.LoginActivity;
+import com.jerson.hcdc_portal.ui.activity.SettingsActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
 import com.jerson.hcdc_portal.util.Dialog;
 import com.jerson.hcdc_portal.util.PreferenceManager;
@@ -88,14 +89,8 @@ public class DashboardFragment extends Fragment {
         binding.btnProfile.setOnClickListener(v -> {
             Dialog.Dialog("Student Info.", pDetails, requireActivity()).show();
         });
-        binding.btnLogout.setOnClickListener(v -> {
-            Dialog.Dialog("WARNING!", "Are you sure you want to logout?", requireActivity())
-                    .setPositiveButton("Yes", (dialog, which) -> {
-                        preferenceManager.clear();
-                        startActivity(new Intent(requireActivity(), LoginActivity.class));
-                        requireActivity().finish();
-                    })
-                    .setNegativeButton("No", (dialog, which) -> dialog.dismiss()).show();
+        binding.btnSetting.setOnClickListener(v -> {
+            startActivity(new Intent(requireActivity(), SettingsActivity.class));
         });
 
 

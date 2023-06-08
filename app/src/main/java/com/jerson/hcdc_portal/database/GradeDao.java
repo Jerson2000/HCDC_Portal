@@ -23,6 +23,9 @@ public interface GradeDao {
     @Query("delete from grade where link_id=:link_id")
     Completable deleteGradeData(int link_id);
 
+    @Query("delete from grade")
+    Completable deleteAllGradeData();
+
     // link
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertGradeLink(List<GradeModel.Link> gradeLink);

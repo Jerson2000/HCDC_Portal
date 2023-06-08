@@ -26,6 +26,9 @@ public interface EnrollHistoryDao {
     @Query("delete from enrollhist where link_id=:link_id")
     Completable deleteEnrollHistoryData(int link_id);
 
+    @Query("delete from enrollhist")
+    Completable deleteAllEnrollHistoryData();
+
     // link
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertEnrollHistoryLink(List<EnrollHistModel.Link> enrollHistoryLink);

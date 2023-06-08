@@ -75,6 +75,10 @@ public class EnrollHistoryViewModel extends ViewModel {
         return databasePortal.enrollHistoryDao().deleteEnrollHistoryLinkData();
     }
 
+    public Completable deleteAllEnrollHistoryData(){
+        return databasePortal.enrollHistoryDao().deleteAllEnrollHistoryData();
+    }
+
 
 
 }

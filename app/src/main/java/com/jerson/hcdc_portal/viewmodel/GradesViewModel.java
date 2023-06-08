@@ -73,4 +73,8 @@ public class GradesViewModel extends ViewModel {
         return databasePortal.gradeDao().deleteGradeLink();
     }
 
+    public Completable deleteAllGradeData(){
+        return databasePortal.gradeDao().deleteAllGradeData();
+    }
+
 }
