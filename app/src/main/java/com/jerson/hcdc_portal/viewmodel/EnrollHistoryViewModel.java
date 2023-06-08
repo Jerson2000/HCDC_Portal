@@ -19,6 +19,7 @@ import io.reactivex.Flowable;
 public class EnrollHistoryViewModel extends ViewModel {
     MutableLiveData<String> response = new MutableLiveData<>();
     MutableLiveData<Integer> resCode = new MutableLiveData<>();
+    MutableLiveData<Throwable> err = new MutableLiveData<>();
     EnrollHistRepo repo;
     DatabasePortal databasePortal;
     public EnrollHistoryViewModel(){
@@ -32,11 +33,15 @@ public class EnrollHistoryViewModel extends ViewModel {
     }
 
     public LiveData<List<EnrollHistModel>> getData(String link) {
-       return repo.getEnrollData(link,response,resCode);
+       return repo.getEnrollData(link,err,resCode);
     }
 
     public LiveData<List<EnrollHistModel.Link>> getLinks( ) {
-        return repo.getEnrollLinks(response,resCode);
+        return repo.getEnrollLinks(err,resCode);
+    }
+
+    public LiveData<Throwable> getErr() {
+        return err;
     }
 
     /* database */

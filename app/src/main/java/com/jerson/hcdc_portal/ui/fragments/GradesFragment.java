@@ -73,6 +73,7 @@ public class GradesFragment extends Fragment {
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerSem.setAdapter(arrayAdapter);
 
+        observerErr();
 
         binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
             Log.d(TAG, "onItemClick: " + semGradeList.get(i).getLink() + "[" + semGradeList.get(i).getId() + "]");
@@ -94,12 +95,7 @@ public class GradesFragment extends Fragment {
                             });
                         } else{
                             Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
-                            Random random = new Random();
-                            int n = random.nextInt(6);
-                            binding.progressBar.setVisibility(View.GONE);
-                            binding.errLayout.setVisibility(View.VISIBLE);
-                            binding.errText.setText("No internet connection.");
-                            binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
+                            showErr("No internet connection.");
                         }
 
                     }
@@ -120,13 +116,6 @@ public class GradesFragment extends Fragment {
             } else{
                 Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
                 binding.refreshLayout.setRefreshing(false);
-                Random random = new Random();
-                int n = random.nextInt(6);
-                binding.progressBar.setVisibility(View.GONE);
-                binding.gradeRecyclerView.setVisibility(View.GONE);
-                binding.errLayout.setVisibility(View.VISIBLE);
-                binding.errText.setText("No internet connection.");
-                binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
             }
 
         });
@@ -209,6 +198,16 @@ public class GradesFragment extends Fragment {
 
         });
 
+    }
+
+    void observerErr(){
+        loginViewModel.getErr().observe(requireActivity(),err->{
+            showErr(err.getMessage());
+        });
+
+        viewModel.getErr().observe(requireActivity(),err->{
+            showErr(err.getMessage());
+        });
     }
 
     /* database */
@@ -341,6 +340,17 @@ public class GradesFragment extends Fragment {
                     listener.dynamicListener(false);
                 })
         );
+    }
+
+
+    void showErr(String msg){
+        Random random = new Random();
+        int n = random.nextInt(6);
+        binding.progressBar.setVisibility(View.GONE);
+        binding.gradeRecyclerView.setVisibility(View.GONE);
+        binding.errLayout.setVisibility(View.VISIBLE);
+        binding.errText.setText(msg);
+        binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
     }
 
 

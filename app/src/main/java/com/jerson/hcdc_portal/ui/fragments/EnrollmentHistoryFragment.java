@@ -77,7 +77,7 @@ public class EnrollmentHistoryFragment extends Fragment {
 
 
 
-        /*loadEnrollHistory();*/
+        observeErr();
 
         binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
             Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " [" + periodLinks.get(i).getId() + "] ");
@@ -89,20 +89,15 @@ public class EnrollmentHistoryFragment extends Fragment {
 
             loadEnrollHistory(periodLinks.get(i).getId(), object -> {
                 if (!object && !binding.refreshLayout.isRefreshing()) {
-                    if(PortalApp.isConnected()){
+                    if (PortalApp.isConnected()) {
                         checkSession(object1 -> {
                             if (object1) {
                                 getData(periodLinks.get(i).getPeriodLink(), periodLinks.get(i).getId());
                             }
                         });
-                    }else{
-                        Random random = new Random();
-                        int n = random.nextInt(6);
-                        binding.progressBar.setVisibility(View.GONE);
-                        binding.errLayout.setVisibility(View.VISIBLE);
-                        binding.errText.setText("No internet connection.");
-                        binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
-                    }
+                    } else
+                        showErr("No internet connection.");
+
 
                 }
             });
@@ -117,16 +112,9 @@ public class EnrollmentHistoryFragment extends Fragment {
                         getData(selectedLink, selectedId);
                     }
                 });
-            }else{
+            } else {
                 Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
                 binding.refreshLayout.setRefreshing(false);
-                Random random = new Random();
-                int n = random.nextInt(6);
-                binding.enrHistRecyclerView.setVisibility(View.GONE);
-                binding.progressBar.setVisibility(View.GONE);
-                binding.errLayout.setVisibility(View.VISIBLE);
-                binding.errText.setText("No internet connection.");
-                binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
 
             }
         });
@@ -136,27 +124,9 @@ public class EnrollmentHistoryFragment extends Fragment {
             getLinks();
             binding.retryLayout.retryBtn.setEnabled(false);
         });
-//        loadEnrollHistory();
 
     }
 
-    void getResponse() {
-        try {
-            viewModel.getResponse().observe(requireActivity(), res -> {
-                if (res.toLowerCase(Locale.ROOT).contains("timeout") || res.toLowerCase(Locale.ROOT).contains("fetch")) {
-                    binding.retryLayout.getRoot().setVisibility(View.VISIBLE);
-                    binding.retryLayout.retryBtn.setEnabled(true);
-                    binding.semSelectorLayout.setVisibility(View.GONE);
-                    binding.enrHistRecyclerView.setVisibility(View.GONE);
-                }
-
-            });
-
-        } catch (NullPointerException e) {
-            Log.d(TAG, "getResponse: " + e.getMessage());
-        }
-
-    }
 
     void getLinks() {
         try {
@@ -181,6 +151,16 @@ public class EnrollmentHistoryFragment extends Fragment {
         } catch (NullPointerException e) {
             Log.d(TAG, "getLinks: " + e.getMessage());
         }
+    }
+
+    void observeErr() {
+        loginViewModel.getErr().observe(requireActivity(), err -> {
+            showErr(err.getMessage());
+        });
+
+        viewModel.getErr().observe(requireActivity(), err -> {
+            showErr(err.getMessage());
+        });
     }
 
 
@@ -308,20 +288,15 @@ public class EnrollmentHistoryFragment extends Fragment {
                 binding.enrHistRecyclerView.setVisibility(View.VISIBLE);
                 arrayAdapter.notifyDataSetChanged();
             } else {
-                if(PortalApp.isConnected()){
+                if (PortalApp.isConnected()) {
                     checkSession(object1 -> {
                         if (object1) {
                             getLinks();
                         }
                     });
-                }else{
-                    Random random = new Random();
-                    int n = random.nextInt(6);
-                    binding.progressBar.setVisibility(View.GONE);
-                    binding.errLayout.setVisibility(View.VISIBLE);
-                    binding.errText.setText("No internet connection.");
-                    binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
-                }
+                } else
+                    showErr("No internet connection.");
+
 
             }
         }
@@ -367,6 +342,16 @@ public class EnrollmentHistoryFragment extends Fragment {
         });
 
     }
+
+    void showErr(String msg) {
+        Random random = new Random();
+        int n = random.nextInt(6);
+        binding.progressBar.setVisibility(View.GONE);
+        binding.errLayout.setVisibility(View.VISIBLE);
+        binding.errText.setText(msg);
+        binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
+    }
+
 
     public EnrollmentHistoryFragment() {
         // Required empty public constructor

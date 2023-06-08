@@ -123,7 +123,7 @@ public class LoginViewModel extends ViewModel {
 
             @Override
             public void onFailure(Exception e) {
-                Log.e("LoginViewModel", "onFailure: ", e);
+                err.postValue(e);
             }
 
             @Override

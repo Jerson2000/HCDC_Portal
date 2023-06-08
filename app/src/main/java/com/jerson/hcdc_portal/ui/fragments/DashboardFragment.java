@@ -83,7 +83,7 @@ public class DashboardFragment extends Fragment {
         binding.unitsTV.setText(preferenceManager.getString(PortalApp.KEY_STUDENTS_UNITS));
 
         String pDetails = "ID number: " + preferenceManager.getString(PortalApp.KEY_STUDENT_ID) + "\n" +
-                "Name: " + preferenceManager.getString(PortalApp.KEY_STUDENT_NAME).toLowerCase(Locale.ROOT) + "\n" +
+                "Name: " + preferenceManager.getString(PortalApp.KEY_STUDENT_NAME) + "\n" +
                 "Course: " + preferenceManager.getString(PortalApp.KEY_STUDENT_COURSE);
         binding.btnProfile.setOnClickListener(v -> {
             Dialog.Dialog("Student Info.", pDetails, requireActivity()).show();
@@ -185,6 +185,7 @@ public class DashboardFragment extends Fragment {
         Random random = new Random();
         int n = random.nextInt(6);
         binding.progressBar.setVisibility(View.GONE);
+        binding.recyclerView.setVisibility(View.GONE);
         binding.errLayout.setVisibility(View.VISIBLE);
         binding.errText.setText(msg);
         binding.errEmoji.setText(PortalApp.HAPPY_EMOJIS[n]);

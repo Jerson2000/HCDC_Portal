@@ -17,7 +17,7 @@ import java.util.List;
 
 public class GradeRepo {
 
-    public LiveData<List<GradeModel.Link>> getLinks(MutableLiveData<String> res,MutableLiveData<Integer> res_code){
+    public LiveData<List<GradeModel.Link>> getLinks(MutableLiveData<Throwable> err, MutableLiveData<Integer> res_code) {
         MutableLiveData<List<GradeModel.Link>> data = new MutableLiveData<>();
 
         HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.gradesUrl, new OnHttpResponseListener<Document>() {
@@ -29,7 +29,7 @@ public class GradeRepo {
 
             @Override
             public void onFailure(Exception e) {
-                res.setValue(e.getMessage());
+                err.setValue(e);
             }
 
             @Override
@@ -40,10 +40,10 @@ public class GradeRepo {
         return data;
     }
 
-    public LiveData<List<GradeModel>> gradeData (String link,MutableLiveData<String> res,MutableLiveData<Integer> res_code){
+    public LiveData<List<GradeModel>> gradeData(String link, MutableLiveData<Throwable> err, MutableLiveData<Integer> res_code) {
         MutableLiveData<List<GradeModel>> dat = new MutableLiveData<>();
 
-        HttpClient.getInstance().GET(PortalApp.baseUrl+ link, new OnHttpResponseListener<Document>() {
+        HttpClient.getInstance().GET(PortalApp.baseUrl + link, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
 
@@ -52,7 +52,7 @@ public class GradeRepo {
 
             @Override
             public void onFailure(Exception e) {
-                res.setValue(e.getMessage());
+                err.setValue(e);
             }
 
             @Override
@@ -64,7 +64,7 @@ public class GradeRepo {
         return dat;
     }
 
-    public static List<GradeModel.Link> parseLink(Document response){
+    public static List<GradeModel.Link> parseLink(Document response) {
         List<GradeModel.Link> gradesLinks = new ArrayList<>();
         Elements semList = response.select("main.app-content ul li.nav-item");
 
@@ -78,7 +78,7 @@ public class GradeRepo {
         return gradesLinks;
     }
 
-    public static List<GradeModel> parseGrade(Document response){
+    public static List<GradeModel> parseGrade(Document response) {
         List<GradeModel> gradeModelList = new ArrayList<>();
         Elements table = response.select("div.col-md-9 tbody");
 
@@ -141,8 +141,8 @@ public class GradeRepo {
                                 finalgrade.text(),
                                 finalremark.text(),
                                 teacher.text(),
-                                earn != null?earn:"null",
-                                ave != null?ave:"null"
+                                earn != null ? earn : "null",
+                                ave != null ? ave : "null"
                         );
                 gradeModelList.add(model);
 

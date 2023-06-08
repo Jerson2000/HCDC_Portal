@@ -206,30 +206,4 @@ public class HttpClient {
     }
 
 
-    /* user session check */
-    public static void checkSession(DynamicListener<HashMap<String,Object>> listener) {
-        HashMap<String,Object> data = new HashMap<>();
-        HttpClient.getInstance().GET_Redirection(PortalApp.baseUrl + PortalApp.gradesUrl, new OnHttpResponseListener<Document>() {
-            @Override
-            public void onResponse(Document response) {
-                boolean isLoginPage = response.body().text().contains("CROSSIAN LOG-IN");
-                data.put("isLoggedIn",isLoginPage);
-                listener.dynamicListener(data);
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                data.put("error",e.getMessage());
-                listener.dynamicListener(data);
-            }
-
-            @Override
-            public void onResponseCode(int code) {
-                data.put("code",code);
-                listener.dynamicListener(data);
-            }
-        });
-    }
-
-
 }

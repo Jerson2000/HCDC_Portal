@@ -68,6 +68,7 @@ public class AccountFragment extends Fragment {
         binding.accountRecyclerView.setAdapter(adapter);
 
         getAccounts(getAccountsListener);
+        observeErr();
 
         binding.refreshLayout.setOnRefreshListener(() -> {
             binding.refreshLayout.setRefreshing(true);
@@ -77,7 +78,7 @@ public class AccountFragment extends Fragment {
                         getData();
                     }
                 });
-            } else{
+            } else {
                 Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
                 binding.refreshLayout.setRefreshing(false);
             }
@@ -96,7 +97,6 @@ public class AccountFragment extends Fragment {
                 accList.addAll(data);
                 binding.dueText.setText(accList.get(0).getDueText());
                 binding.dueAmount.setText(accList.get(0).getDue());
-                binding.progressBar.setVisibility(View.GONE);
 
                 deleteAccount(object -> {
                     if (object) {
@@ -108,9 +108,7 @@ public class AccountFragment extends Fragment {
                     }
                 });
                 adapter.notifyDataSetChanged();
-                /*binding.semSelectorLayout.setVisibility(View.VISIBLE);*/
-                binding.accountRecyclerView.setVisibility(View.VISIBLE);
-                binding.dueLayout.setVisibility(View.VISIBLE);
+                isLoading(false);
             }
         });
     }
@@ -129,6 +127,38 @@ public class AccountFragment extends Fragment {
 
         });
 
+    }
+
+    void observeErr(){
+        loginViewModel.getErr().observe(requireActivity(),err->{
+            showErr(err.getMessage());
+        });
+
+        viewModel.getErr().observe(requireActivity(),err->{
+            showErr(err.getMessage());
+        });
+    }
+
+    void showErr(String msg) {
+        Random random = new Random();
+        int n = random.nextInt(6);
+        binding.accountRecyclerView.setVisibility(View.GONE);
+        binding.progressBar.setVisibility(View.GONE);
+        binding.errLayout.setVisibility(View.VISIBLE);
+        binding.errText.setText(msg);
+        binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
+    }
+
+    void isLoading(boolean loading) {
+        if (loading) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.accountRecyclerView.setVisibility(View.GONE);
+            binding.dueLayout.setVisibility(View.GONE);
+        } else {
+            binding.progressBar.setVisibility(View.GONE);
+            binding.accountRecyclerView.setVisibility(View.VISIBLE);
+            binding.dueLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     /* Database */
@@ -177,11 +207,7 @@ public class AccountFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                         binding.dueText.setText(accList.get(0).getDueText());
                         binding.dueAmount.setText(accList.get(0).getDue());
-                        binding.progressBar.setVisibility(View.GONE);
-
-                        /*binding.semSelectorLayout.setVisibility(View.VISIBLE);*/
-                        binding.accountRecyclerView.setVisibility(View.VISIBLE);
-                        binding.dueLayout.setVisibility(View.VISIBLE);
+                        isLoading(false);
 
                         listener.dynamicListener(true);
                     } else listener.dynamicListener(false);
@@ -202,15 +228,9 @@ public class AccountFragment extends Fragment {
                         getData();
                     }
                 });
-            }else{
-                Random random = new Random();
-                int n = random.nextInt(6);
-                binding.accountRecyclerView.setVisibility(View.GONE);
-                binding.progressBar.setVisibility(View.GONE);
-                binding.errLayout.setVisibility(View.VISIBLE);
-                binding.errText.setText("No internet connection.");
-                binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
-            }
+            } else
+                showErr("No internet connection.");
+
         }
     };
 

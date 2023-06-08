@@ -20,6 +20,7 @@ import io.reactivex.Flowable;
 public class AccountViewModel extends ViewModel {
     MutableLiveData<String> response = new MutableLiveData<>();
     MutableLiveData<Integer> resCode = new MutableLiveData<>();
+    MutableLiveData<Throwable> err = new MutableLiveData<>();
     AccountRepo repo;
     DatabasePortal databasePortal;
 
@@ -41,8 +42,12 @@ public class AccountViewModel extends ViewModel {
         return repo.getData(link, response, resCode);
     }
 
+    public LiveData<Throwable> getErr() {
+        return err;
+    }
+
     public LiveData<List<AccountModel>> getData() {
-        return repo.getData();
+        return repo.getData(resCode,err);
     }
 
     /* Database */

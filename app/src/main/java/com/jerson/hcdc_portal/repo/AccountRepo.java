@@ -111,90 +111,95 @@ public class AccountRepo {
         return data;
     }
 
-    public LiveData<List<AccountModel>> getData(){
+    public LiveData<List<AccountModel>> getData(MutableLiveData<Integer> rCode,MutableLiveData<Throwable> err){
         MutableLiveData<List<AccountModel>> data = new MutableLiveData<>();
         HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.accountUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
 
-                List<AccountModel> accounts = new ArrayList<>();
-
-                Elements table = response.select("div.col-md-9 section.invoice tbody");
 
 
-                for (Element tabData : table) {
-                    Elements rowsData = tabData.select("tr");
-
-                    int iDue = rowsData.size() - 1;
-                    int indexDue = 0;
-                    int iData = rowsData.size() - 2;
-                    int indexData = 0;
-                    String dueTex = null;
-                    String dueDat = null;
-
-                    // Get Due Payment
-                    for (Element row : rowsData) {
-                        indexDue++;
-                        Elements dueText = row.select("td:eq(0)");
-                        Elements dueData = row.select("td:eq(1)");
-
-                        if (indexDue == iDue) {
-
-                            dueTex = dueText.text();
-                            dueDat = dueData.text();
-                            break;
-                        }
-                    }
-
-                    for (Element row : rowsData) {
-                        indexData++;
-                        Elements date = row.select("td:eq(0)");
-                        Elements ref = row.select("td:eq(1)");
-                        Elements desc = row.select("td:eq(2)");
-                        Elements period = row.select("td:eq(3)");
-                        Elements added = row.select("td:eq(4)");
-                        Elements deducted = row.select("td:eq(5)");
-                        Elements runBal = row.select("td:eq(6)");
-
-                        AccountModel model = new AccountModel
-                                (
-                                        date.text(),
-                                        ref.text(),
-                                        desc.text(),
-                                        period.text(),
-                                        added.text(),
-                                        deducted.text(),
-                                        runBal.text(),
-                                        dueTex,
-                                        dueDat
-
-                                );
-                        accounts.add(model);
-
-                        if (indexData == iData) {
-                            break;
-                        }
-
-                    }
-
-                }
-
-                data.setValue(accounts);
+                data.setValue(parse(response));
 
             }
 
             @Override
             public void onFailure(Exception e) {
-                e.printStackTrace();
-
+                err.setValue(e);
             }
 
             @Override
             public void onResponseCode(int code) {
-
+                rCode.setValue(code);
             }
         });
 
         return data;
+    }
+
+    List<AccountModel> parse(Document response){
+        List<AccountModel> accounts = new ArrayList<>();
+
+        Elements table = response.select("div.col-md-9 section.invoice tbody");
+
+
+        for (Element tabData : table) {
+            Elements rowsData = tabData.select("tr");
+
+            int iDue = rowsData.size() - 1;
+            int indexDue = 0;
+            int iData = rowsData.size() - 2;
+            int indexData = 0;
+            String dueTex = null;
+            String dueDat = null;
+
+            // Get Due Payment
+            for (Element row : rowsData) {
+                indexDue++;
+                Elements dueText = row.select("td:eq(0)");
+                Elements dueData = row.select("td:eq(1)");
+
+                if (indexDue == iDue) {
+
+                    dueTex = dueText.text();
+                    dueDat = dueData.text();
+                    break;
+                }
+            }
+
+            for (Element row : rowsData) {
+                indexData++;
+                Elements date = row.select("td:eq(0)");
+                Elements ref = row.select("td:eq(1)");
+                Elements desc = row.select("td:eq(2)");
+                Elements period = row.select("td:eq(3)");
+                Elements added = row.select("td:eq(4)");
+                Elements deducted = row.select("td:eq(5)");
+                Elements runBal = row.select("td:eq(6)");
+
+                AccountModel model = new AccountModel
+                        (
+                                date.text(),
+                                ref.text(),
+                                desc.text(),
+                                period.text(),
+                                added.text(),
+                                deducted.text(),
+                                runBal.text(),
+                                dueTex,
+                                dueDat
+
+                        );
+                accounts.add(model);
+
+                if (indexData == iData) {
+                    break;
+                }
+
+            }
+
+        }
+
+        return accounts;
     }
 }

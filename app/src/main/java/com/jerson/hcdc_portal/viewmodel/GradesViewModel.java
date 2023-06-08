@@ -18,6 +18,7 @@ public class GradesViewModel extends ViewModel {
 
     MutableLiveData<String> response = new MutableLiveData<>();
     MutableLiveData<Integer> resCode = new MutableLiveData<>();
+    MutableLiveData<Throwable> err = new MutableLiveData<>();
     GradeRepo repo;
     DatabasePortal databasePortal;
 
@@ -34,13 +35,16 @@ public class GradesViewModel extends ViewModel {
         return resCode;
     }
 
+    public LiveData<Throwable> getErr() {
+        return err;
+    }
 
     public LiveData<List<GradeModel.Link>> getLinks() {
-        return repo.getLinks(response, resCode);
+        return repo.getLinks(err, resCode);
     }
 
     public LiveData<List<GradeModel>> gradeData(String link) {
-        return repo.gradeData(link, response, resCode);
+        return repo.gradeData(link, err, resCode);
     }
 
 

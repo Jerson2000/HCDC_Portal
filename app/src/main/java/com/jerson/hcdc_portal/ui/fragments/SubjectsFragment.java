@@ -81,7 +81,6 @@ public class SubjectsFragment extends Fragment {
             } else {
                 Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
                 binding.refreshLayout.setRefreshing(false);
-                showErr("No internet connection.");
             }
         });
 
@@ -130,9 +129,23 @@ public class SubjectsFragment extends Fragment {
         int n = random.nextInt(6);
         binding.errLayout.setVisibility(View.VISIBLE);
         binding.progressBar.setVisibility(View.GONE);
+        binding.subjectsRecyclerView.setVisibility(View.GONE);
         binding.errText.setText(err);
         binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
     }
+
+    void isLoading(boolean loading){
+        if(loading){
+            binding.subjectsRecyclerView.setVisibility(View.GONE);
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.errLayout.setVisibility(View.GONE);
+        }else{
+            binding.subjectsRecyclerView.setVisibility(View.VISIBLE);
+            binding.progressBar.setVisibility(View.GONE);
+            binding.errLayout.setVisibility(View.GONE);
+        }
+    }
+
 
 
     /* database */
@@ -147,9 +160,7 @@ public class SubjectsFragment extends Fragment {
                         subjectList.clear();
                         subjectList.addAll(data);
                         adapter.notifyDataSetChanged();
-                        binding.subjectsRecyclerView.setVisibility(View.VISIBLE);
-                        binding.progressBar.setVisibility(View.GONE);
-                        binding.errLayout.setVisibility(View.GONE);
+                        isLoading(false);
 
                     } else {
                         showErr("No subjects");

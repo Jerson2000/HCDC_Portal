@@ -19,7 +19,7 @@ import java.util.List;
 
 public class EnrollHistRepo {
 
-    public LiveData<List<EnrollHistModel.Link>> getEnrollLinks(MutableLiveData<String> response, MutableLiveData<Integer> resCode){
+    public LiveData<List<EnrollHistModel.Link>> getEnrollLinks(MutableLiveData<Throwable> err, MutableLiveData<Integer> resCode) {
         MutableLiveData<List<EnrollHistModel.Link>> data = new MutableLiveData<>();
         HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.enrollHistory, new OnHttpResponseListener<Document>() {
             @Override
@@ -30,7 +30,7 @@ public class EnrollHistRepo {
 
             @Override
             public void onFailure(Exception e) {
-                response.setValue(e.getMessage());
+                err.setValue(e);
             }
 
             @Override
@@ -43,7 +43,7 @@ public class EnrollHistRepo {
         return data;
     }
 
-    public static List<EnrollHistModel.Link> parseLink(Document response){
+    public static List<EnrollHistModel.Link> parseLink(Document response) {
         List<EnrollHistModel.Link> links = new ArrayList<>();
         Elements semList = response.select("main.app-content ul li.nav-item:gt(0)");
 
@@ -59,7 +59,7 @@ public class EnrollHistRepo {
     }
 
 
-    public LiveData<List<EnrollHistModel>> getEnrollData(String link, MutableLiveData<String> response, MutableLiveData<Integer> resCode){
+    public LiveData<List<EnrollHistModel>> getEnrollData(String link, MutableLiveData<Throwable> err, MutableLiveData<Integer> resCode) {
         MutableLiveData<List<EnrollHistModel>> data = new MutableLiveData<>();
 
         HttpClient.getInstance().GET(PortalApp.baseUrl + link, new OnHttpResponseListener<Document>() {
@@ -87,7 +87,7 @@ public class EnrollHistRepo {
 
             @Override
             public void onFailure(Exception e) {
-                response.setValue(e.getMessage());
+                err.setValue(e);
             }
 
             @Override
