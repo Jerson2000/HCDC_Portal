@@ -24,5 +24,5 @@ I started working on this project in mid-December, as I was feeling bored and th
 > * Scalable Unit ( dp and sp ) -->
 
 ### Disclaimer:
-I only scrapes what's available in the student portal like text,images and etc. that can be accessible using any browser. To make this project possible it thanks jsoup library that scrapes and parse HTML from a site.
+I only scrapes what's available in the student portal like text,images and etc. that can be accessible using any browser, it thanks <a href="https://jsoup.org/">jsoup</a> library to make this project possible.
  
