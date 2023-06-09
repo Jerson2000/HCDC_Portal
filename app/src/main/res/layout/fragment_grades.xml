@@ -160,6 +160,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="visible"
+            android:layout_marginTop="10dp"
             android:layout_above="@+id/spaceView"
             android:layout_below="@id/gradeLayout">
             <androidx.recyclerview.widget.RecyclerView

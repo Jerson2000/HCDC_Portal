@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ItemContainerDashboardBinding;
+import com.jerson.hcdc_portal.listener.OnClickListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.squareup.picasso.Picasso;
 
@@ -19,10 +20,12 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
 
     private Context context;
     private List<DashboardModel> list;
+    private OnClickListener<DashboardModel> listener;
 
-    public DashboardAdapter(Context context, List<DashboardModel> list) {
+    public DashboardAdapter(Context context, List<DashboardModel> list,OnClickListener<DashboardModel> listener) {
         this.context = context;
         this.list = list;
+        this.listener = listener;
     }
 
     @NonNull
@@ -53,6 +56,10 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
         public ViewHolder(ItemContainerDashboardBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+
+            binding.getRoot().setOnClickListener(v->{
+                listener.onItemClick(list.get(getAdapterPosition()));
+            });
         }
     }
 }

@@ -93,7 +93,7 @@ public class GradesFragment extends Fragment {
                                     getGrade(semGradeList.get(i).getId(), semGradeList.get(i).getLink());
                                 }
                             });
-                        } else{
+                        } else {
                             Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
                             showErr("No internet connection.");
                         }
@@ -113,7 +113,7 @@ public class GradesFragment extends Fragment {
                         getGrade(selectedId, selectedLink);
                     }
                 });
-            } else{
+            } else {
                 Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
                 binding.refreshLayout.setRefreshing(false);
             }
@@ -200,12 +200,12 @@ public class GradesFragment extends Fragment {
 
     }
 
-    void observerErr(){
-        loginViewModel.getErr().observe(requireActivity(),err->{
+    void observerErr() {
+        loginViewModel.getErr().observe(requireActivity(), err -> {
             showErr(err.getMessage());
         });
 
-        viewModel.getErr().observe(requireActivity(),err->{
+        viewModel.getErr().observe(requireActivity(), err -> {
             showErr(err.getMessage());
         });
     }
@@ -235,20 +235,15 @@ public class GradesFragment extends Fragment {
 
     DynamicListener<Boolean> linkListener = object -> {
         if (!object) {
-            if (PortalApp.isConnected()){
+            if (PortalApp.isConnected()) {
                 checkSession(object1 -> {
                     if (object1) {
                         getLink();
                     }
                 });
-            }else{
-                Random random = new Random();
-                int n = random.nextInt(6);
-                binding.progressBar.setVisibility(View.GONE);
-                binding.errLayout.setVisibility(View.VISIBLE);
-                binding.errText.setText("No internet connection.");
-                binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
-            }
+            } else
+                showErr("No internet connection.");
+
 
         } else {
             arrayAdapter.notifyDataSetChanged();
@@ -343,7 +338,7 @@ public class GradesFragment extends Fragment {
     }
 
 
-    void showErr(String msg){
+    void showErr(String msg) {
         Random random = new Random();
         int n = random.nextInt(6);
         binding.progressBar.setVisibility(View.GONE);

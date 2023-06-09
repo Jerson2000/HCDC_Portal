@@ -44,11 +44,11 @@ public class LoginViewModel extends ViewModel {
                         dashboardData.postValue(DashboardRepo.parseDashboard(response));
 
                         if (wrongPass) {
-                            res.postValue("Incorrect Credentials!");
+                            res.setValue("Incorrect Credentials!");
 
                         }
                         if (!wrongPass) {
-                            res.postValue("Logged In!");
+                            res.setValue("Logged In!");
                            PortalApp.parseUser(response);
                         }
 
@@ -57,12 +57,12 @@ public class LoginViewModel extends ViewModel {
 
                     @Override
                     public void onFailure(Exception e) {
-                        err.postValue(e);
+                        err.setValue(e);
                     }
 
                     @Override
                     public void onResponseCode(int code) {
-                        resCode.postValue(code);
+                        resCode.setValue(code);
                     }
 
                 });
@@ -71,6 +71,50 @@ public class LoginViewModel extends ViewModel {
         });
 
         return res;
+    }
+
+    public void Login(String email,String pass,DynamicListener<Boolean> listener){
+        getToken().observeForever(resp -> {
+            if (resp != null) {
+                FormBody formBody = new FormBody.Builder()
+                        .add("_token", resp)
+                        .add("email", email)
+                        .add("password", pass)
+                        .build();
+
+                HttpClient.getInstance().POST(PortalApp.baseUrl + PortalApp.loginPostUrl, formBody, new OnHttpResponseListener<Document>() {
+                    @Override
+                    public void onResponse(Document response) {
+                        boolean wrongPass = response.body().text().contains("CROSSIAN LOG-IN");
+
+                        dashboardData.postValue(DashboardRepo.parseDashboard(response));
+
+                        if (wrongPass) {
+                            err.setValue(new Throwable("Incorrect Credentials!"));
+                            listener.dynamicListener(false);
+                        }
+                        if (!wrongPass) {
+                            listener.dynamicListener(true);
+                            PortalApp.parseUser(response);
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        err.setValue(e);
+                    }
+
+                    @Override
+                    public void onResponseCode(int code) {
+                        resCode.setValue(code);
+                    }
+
+                });
+
+            }
+        });
     }
 
     public MutableLiveData<Integer> getResCode() {
@@ -95,17 +139,17 @@ public class LoginViewModel extends ViewModel {
 
             @Override
             public void onResponse(Document response) {
-                s.postValue(response.select("input[name=_token]").first().attr("value"));
+                s.setValue(response.select("input[name=_token]").first().attr("value"));
             }
 
             @Override
             public void onFailure(Exception e) {
-               err.postValue(e);
+               err.setValue(e);
             }
 
             @Override
             public void onResponseCode(int code) {
-                resCode.postValue(code);
+                resCode.setValue(code);
             }
 
 

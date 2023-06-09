@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private DashboardViewModel dashboardViewModel;
     private static final String TAG = "LoginActivity";
     private PreferenceManager preferenceManager;
+    private int pop = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,8 @@ public class LoginActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+
+        observeErr();
 
     }
 
@@ -88,60 +91,56 @@ public class LoginActivity extends AppCompatActivity {
 
 
         isLoading(true, false);
-        viewModel.Login(email, pass);
+        /*viewModel.Login(email, pass);*/
 
-        viewModel.getResponse().observe(this, res -> {
-            if (res.toLowerCase(Locale.ROOT).contains("timeout") ||
-                    res.toLowerCase(Locale.ROOT).contains("error fetching url") ||
-                    res.toLowerCase(Locale.ROOT).contains("time out")) {
-                SnackBarUtil.SnackBarIndefiniteDuration(binding.snackBarLayout, "Connection Timeout")
-                        .setAction("Retry", view -> {
-                            viewModel.Login(email,pass);
-                            isLoading(false, false);
-                        })
-                        .show();
-                isLoading(false, false);
-            }
+        viewModel.Login(email, pass,loginListener);
 
-            if (res.toLowerCase(Locale.ROOT).contains("credentials")) {
-                SnackBarUtil.SnackBarLong(binding.snackBarLayout, res).show();
-                isLoading(false, true);
-            }
 
-            if (res.toLowerCase(Locale.ROOT).contains("logged in")) {
-                binding.progressBar.setVisibility(View.GONE);
+    }
 
+    DynamicListener<Boolean> loginListener = new DynamicListener<Boolean>() {
+        @Override
+        public void dynamicListener(Boolean object) {
+            if (object) {
                 /* deleting all data in dashboard table */
-                deleteData(object -> {
-                    if (object) {
+                deleteData(object1 -> {
+                    if (object1) {
                         saveData(); /* then saving it */
                     }
                 });
 
+                isLoading(false, false);
+
                 preferenceManager.putBoolean(PortalApp.KEY_IS_LOGIN, true);
-                preferenceManager.putString(PortalApp.KEY_EMAIL, email);
-                preferenceManager.putString(PortalApp.KEY_PASSWORD, pass);
+                preferenceManager.putString(PortalApp.KEY_EMAIL, binding.emailET.getText().toString());
+                preferenceManager.putString(PortalApp.KEY_PASSWORD, binding.passET.getText().toString());
 
-
-                SnackBarUtil.SnackBarLong(binding.snackBarLayout, res).show();
+                SnackBarUtil.SnackBarLong(binding.snackBarLayout, "Logged In").show();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    startActivity(new Intent(this, MainActivity.class));
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 }, 1300);
-
-
             }
-        });
+        }
+    };
 
-        viewModel.getResCode().observe(this,code->{
-            if(code!=null){
-                if(code >= 500){
-                    SnackBarUtil.SnackBarIndefiniteDuration(binding.snackBarLayout,"Server Unavailable").show();
-                }
-                Log.d(TAG, "login response code: "+code);
+    void observeErr(){
+        viewModel.getErr().observe(this, err -> {
+
+            if (err.getMessage().toLowerCase(Locale.ROOT).contains("credentials")) {
+                SnackBarUtil.SnackBarLong(binding.snackBarLayout, err.getMessage()).show();
+                isLoading(false, true);
+
+            } else {
+                isLoading(false, false);
+                SnackBarUtil.SnackBarIndefiniteDuration(binding.snackBarLayout, err.getMessage())
+                        .setAction("Retry", view -> {
+                            viewModel.Login(binding.emailET.getText().toString(), binding.passET.getText().toString(),loginListener);
+                            isLoading(true, false);
+                        })
+                        .show();
             }
+
         });
-
-
     }
 
 

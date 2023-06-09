@@ -16,9 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentDashboardBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
+import com.jerson.hcdc_portal.listener.OnClickListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.ui.activity.LoginActivity;
 import com.jerson.hcdc_portal.ui.activity.SettingsActivity;
+import com.jerson.hcdc_portal.ui.activity.SubjectDetailActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
 import com.jerson.hcdc_portal.util.Dialog;
 import com.jerson.hcdc_portal.util.PreferenceManager;
@@ -40,7 +42,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment implements OnClickListener<DashboardModel> {
     FragmentDashboardBinding binding;
     DashboardAdapter adapter;
     List<DashboardModel> dashList = new ArrayList<>();
@@ -73,7 +75,7 @@ public class DashboardFragment extends Fragment {
 
     void init() {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
-        adapter = new DashboardAdapter(requireActivity(), todayList);
+        adapter = new DashboardAdapter(requireActivity(), todayList, this::onItemClick);
         binding.recyclerView.setAdapter(adapter);
 
         if (!preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE).equals("")) {
@@ -101,13 +103,15 @@ public class DashboardFragment extends Fragment {
     String getDay() {
         String day;
         if (new SimpleDateFormat("EEE").format(new Date()).equals("Thu")) {
-            day = "TH";
+            day = "Th";
         } else if (new SimpleDateFormat("EEE").format(new Date()).equals("Sun")) {
-            day = "SU";
+            day = "Su";
         } else {
             day = String.valueOf(new SimpleDateFormat("EEE").format(new Date()).charAt(0));
         }
-        return day.toUpperCase(Locale.ROOT);
+
+
+        return day;
     }
 
 
@@ -202,4 +206,10 @@ public class DashboardFragment extends Fragment {
     }
 
 
+    @Override
+    public void onItemClick(DashboardModel object) {
+        Intent intent = new Intent(requireActivity(), SubjectDetailActivity.class);
+        intent.putExtra("subject", object);
+        startActivity(intent);
+    }
 }

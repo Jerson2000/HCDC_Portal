@@ -14,6 +14,7 @@ import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.database.DatabasePortal;
 import com.jerson.hcdc_portal.databinding.ActivitySettingsBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
+import com.jerson.hcdc_portal.ui.MainActivity;
 import com.jerson.hcdc_portal.util.Dialog;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.AccountViewModel;
@@ -56,21 +57,21 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         binding.autoChip.setOnClickListener(v -> {
-            preferenceManager.putInteger(PortalApp.KEY_SETTINGS_THEME_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            setAppTheme(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
             binding.themeModeView.setVisibility(getPolarVisibility(binding.themeModeView));
-            showRestartAppMsg();
+
         });
 
         binding.nightChip.setOnClickListener(v -> {
-            preferenceManager.putInteger(PortalApp.KEY_SETTINGS_THEME_MODE, AppCompatDelegate.MODE_NIGHT_YES);
+            setAppTheme(AppCompatDelegate.MODE_NIGHT_YES);
             binding.themeModeView.setVisibility(getPolarVisibility(binding.themeModeView));
-            showRestartAppMsg();
+
         });
 
         binding.lightChip.setOnClickListener(v -> {
-            preferenceManager.putInteger(PortalApp.KEY_SETTINGS_THEME_MODE, AppCompatDelegate.MODE_NIGHT_NO);
+            setAppTheme(AppCompatDelegate.MODE_NIGHT_NO);
             binding.themeModeView.setVisibility(getPolarVisibility(binding.themeModeView));
-            showRestartAppMsg();
+
         });
 
         binding.btnLogout.setOnClickListener(v -> {
@@ -89,8 +90,9 @@ public class SettingsActivity extends AppCompatActivity {
         return mode == View.VISIBLE ? View.GONE : View.VISIBLE;
     }
 
-    void showRestartAppMsg() {
-        Dialog.Dialog("Settings", "Restart the app to apply the changes", this).show();
+    void setAppTheme(int theme){
+        AppCompatDelegate.setDefaultNightMode(theme);
+        preferenceManager.putInteger(PortalApp.KEY_SETTINGS_THEME_MODE,theme);
     }
 
     /* database */

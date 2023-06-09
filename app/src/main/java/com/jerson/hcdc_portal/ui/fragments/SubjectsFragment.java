@@ -1,5 +1,6 @@
 package com.jerson.hcdc_portal.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,8 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentSubjectsBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
+import com.jerson.hcdc_portal.listener.OnClickListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.network.HttpClient;
+import com.jerson.hcdc_portal.ui.activity.SubjectDetailActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
@@ -32,7 +35,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class SubjectsFragment extends Fragment {
+public class SubjectsFragment extends Fragment implements OnClickListener<DashboardModel> {
     private static final String TAG = "SubjectsFragment";
     private FragmentSubjectsBinding binding;
     private List<DashboardModel> subjectList = new ArrayList<>();
@@ -63,7 +66,7 @@ public class SubjectsFragment extends Fragment {
 
     void init() {
         binding.subjectsRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
-        adapter = new DashboardAdapter(requireActivity(), subjectList);
+        adapter = new DashboardAdapter(requireActivity(), subjectList,this::onItemClick);
         binding.subjectsRecyclerView.setAdapter(adapter);
 
         loadSubject();
@@ -206,5 +209,13 @@ public class SubjectsFragment extends Fragment {
 
 
     public SubjectsFragment() {
+    }
+
+    @Override
+    public void onItemClick(DashboardModel object) {
+        Intent intent = new Intent(requireActivity(), SubjectDetailActivity.class);
+        intent.putExtra("subject",object);
+        startActivity(intent);
+
     }
 }

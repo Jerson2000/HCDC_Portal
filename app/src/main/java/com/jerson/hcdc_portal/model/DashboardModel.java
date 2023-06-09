@@ -3,8 +3,10 @@ package com.jerson.hcdc_portal.model;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity(tableName = "dashboard")
-public class DashboardModel {
+public class DashboardModel implements Serializable {
     @PrimaryKey(autoGenerate = true)
     public int id;
     private String offerNo;

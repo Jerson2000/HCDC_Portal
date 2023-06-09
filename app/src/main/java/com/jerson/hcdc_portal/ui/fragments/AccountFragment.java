@@ -90,7 +90,6 @@ public class AccountFragment extends Fragment {
 
 
     void getData() {
-
         viewModel.getData().observe(requireActivity(), data -> {
             if (data != null) {
                 accList.clear();
