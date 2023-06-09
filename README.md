@@ -1,7 +1,9 @@
 # HCDC Student Portal for android ( WIP...)
-I started working on this project in mid-December, as I was feeling bored and there wasn't much to do at home. Since the student portal could not handle too many requests, I came up with the idea of creating an Android app for the HCDC student portal that would allow users to view their subjects and accountabilities offline. Additionally, I wanted to learn something new through this project. However, once the semester began, I had to put the project on hold due to my busy schedule with school projects and other commitments. The project is still unstable and has some bugs ( spaghetti code haha), and it requires better exception handling.
+I started working on this project in mid-December, as I was feeling bored and there wasn't much to do at home. Since the student portal could not handle too many requests, I came up with the idea of creating an Android app for the HCDC student portal that would allow users to view their subjects and accountabilities offline and to lessen unnecessary request just to view there schedules.
 
-> Only the Holy Cross of Davao College Student are able to use this app.
+<!-- I started working on this project in mid-December, as I was feeling bored and there wasn't much to do at home. Since the student portal could not handle too many requests, I came up with the idea of creating an Android app for the HCDC student portal that would allow users to view their subjects and accountabilities offline. Additionally, I wanted to learn something new through this project. However, once the semester began, I had to put the project on hold due to my busy schedule with school projects and other commitments. The project is still unstable and has some bugs ( spaghetti code haha), and it requires better exception handling. -->
+
+> Only the Holy Cross of Davao College Student/s are able to use this app.
 
 ### UI ( Pangit ang UI )
 ![7o42az](https://github.com/Jerson2000/HCDC_Portal/assets/78902475/f1e2d849-0c26-4468-90fc-42655909948a)
