@@ -4,12 +4,18 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
+import android.os.Build;
+import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.jerson.hcdc_portal.util.PreferenceManager;
 
 import org.jsoup.nodes.Document;
+
+import java.io.Serializable;
 
 
 public class PortalApp extends Application {
@@ -49,6 +55,22 @@ public class PortalApp extends Application {
         preferenceManager.putString(PortalApp.KEY_STUDENT_ID, courseID[courseID.length - 1]);
         preferenceManager.putString(PortalApp.KEY_STUDENT_COURSE, courseID[0]);
         preferenceManager.putString(PortalApp.KEY_STUDENT_NAME, response.select(".app-sidebar__user-name").text());
+    }
+
+    @SuppressWarnings({"unchecked", "deprecation"})
+    @Nullable
+    public static <T extends Serializable> T getSerializable(@Nullable Bundle bundle, @Nullable String key, @NonNull Class<T> clazz) {
+        if (bundle != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                return bundle.getSerializable(key, clazz);
+            } else {
+                try {
+                    return (T) bundle.getSerializable(key);
+                } catch (Throwable ignored) {
+                }
+            }
+        }
+        return null;
     }
 
 

@@ -2,8 +2,10 @@ package com.jerson.hcdc_portal.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Build;
 import android.os.Bundle;
 
+import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.ActivitySubjectDetailBinding;
 import com.jerson.hcdc_portal.model.DashboardModel;
 
@@ -17,7 +19,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
         binding = ActivitySubjectDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        subjectData = (DashboardModel) getIntent().getSerializableExtra("subject");
+        Bundle bundle = getIntent().getExtras();
+        subjectData = (DashboardModel) PortalApp.getSerializable(bundle,"subject",DashboardModel.class);
 
         init();
     }
