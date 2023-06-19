@@ -81,6 +81,8 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
         if (!preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE).equals("")) {
             binding.enrollAnnounceLayout.setVisibility(View.VISIBLE);
             binding.enrollAnnounce.setText(preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE));
+        }else{
+            binding.enrollAnnounceLayout.setVisibility(View.GONE);
         }
         binding.enrolledTV.setText(preferenceManager.getString(PortalApp.KEY_IS_ENROLLED));
         binding.unitsTV.setText(preferenceManager.getString(PortalApp.KEY_STUDENTS_UNITS));
