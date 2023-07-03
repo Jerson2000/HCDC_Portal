@@ -26,7 +26,7 @@ public class PortalApp extends Application {
         super.onCreate();
         appContext = getApplicationContext();
         preferenceManager = new PreferenceManager(PortalApp.getAppContext());
-        AppCompatDelegate.setDefaultNightMode(preferenceManager.getInteger(PortalApp.KEY_SETTINGS_THEME_MODE));
+        AppCompatDelegate.setDefaultNightMode(preferenceManager.getInteger(PortalApp.KEY_SETTINGS_THEME_MODE)!=0?preferenceManager.getInteger(PortalApp.KEY_SETTINGS_THEME_MODE):AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
 
     }
 

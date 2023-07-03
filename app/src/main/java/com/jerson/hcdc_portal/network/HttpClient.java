@@ -64,6 +64,10 @@ public class HttpClient {
         return instance;
     }
 
+    public OkHttpClient getClient() {
+        return client;
+    }
+
     public void GET(String url, final OnHttpResponseListener<Document> listener) {
         if(PortalApp.isConnected()){
             Request request = new Request.Builder()
