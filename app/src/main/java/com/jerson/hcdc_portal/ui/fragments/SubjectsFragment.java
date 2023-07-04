@@ -25,10 +25,8 @@ import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -66,7 +64,7 @@ public class SubjectsFragment extends Fragment implements OnClickListener<Dashbo
 
     void init() {
         binding.subjectsRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
-        adapter = new DashboardAdapter(requireActivity(), subjectList,this::onItemClick);
+        adapter = new DashboardAdapter(requireActivity(), subjectList, this::onItemClick);
         binding.subjectsRecyclerView.setAdapter(adapter);
 
         loadSubject();
@@ -118,11 +116,11 @@ public class SubjectsFragment extends Fragment implements OnClickListener<Dashbo
     }
 
     void observeRequest() {
-        viewModel.getErr().observe(requireActivity(),err->{
+        viewModel.getErr().observe(requireActivity(), err -> {
             showErr(err.getMessage());
         });
 
-        loginViewModel.getErr().observe(requireActivity(),err->{
+        loginViewModel.getErr().observe(requireActivity(), err -> {
             showErr(err.getMessage());
         });
     }
@@ -137,18 +135,17 @@ public class SubjectsFragment extends Fragment implements OnClickListener<Dashbo
         binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
     }
 
-    void isLoading(boolean loading){
-        if(loading){
+    void isLoading(boolean loading) {
+        if (loading) {
             binding.subjectsRecyclerView.setVisibility(View.GONE);
             binding.progressBar.setVisibility(View.VISIBLE);
             binding.errLayout.setVisibility(View.GONE);
-        }else{
+        } else {
             binding.subjectsRecyclerView.setVisibility(View.VISIBLE);
             binding.progressBar.setVisibility(View.GONE);
             binding.errLayout.setVisibility(View.GONE);
         }
     }
-
 
 
     /* database */
@@ -168,7 +165,7 @@ public class SubjectsFragment extends Fragment implements OnClickListener<Dashbo
                     } else {
                         showErr("No subjects");
                     }
-                   /* Log.d(TAG, "loadSubject: " + data.size());*/
+                    /* Log.d(TAG, "loadSubject: " + data.size());*/
                 }, throwable -> {
                     Log.e(TAG, "loadSubject", throwable);
                     showErr(throwable.getMessage());
@@ -198,7 +195,7 @@ public class SubjectsFragment extends Fragment implements OnClickListener<Dashbo
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     isDeleted.dynamicListener(true);
-                    Log.d(TAG, "deleteSubjects: success");
+                    /*Log.d(TAG, "deleteSubjects: success");*/
                 }, throwable -> {
                     isDeleted.dynamicListener(false);
                     showErr(throwable.getMessage());
@@ -214,8 +211,15 @@ public class SubjectsFragment extends Fragment implements OnClickListener<Dashbo
     @Override
     public void onItemClick(DashboardModel object) {
         Intent intent = new Intent(requireActivity(), SubjectDetailActivity.class);
-        intent.putExtra("subject",object);
+        intent.putExtra("subject", object);
         startActivity(intent);
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        HttpClient.getInstance().cancelRequest();
+        ((ViewGroup) binding.refreshLayout.getParent()).removeView(binding.refreshLayout);
     }
 }

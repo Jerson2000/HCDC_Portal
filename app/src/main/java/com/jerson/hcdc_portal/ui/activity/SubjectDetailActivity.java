@@ -34,16 +34,16 @@ public class SubjectDetailActivity extends AppCompatActivity {
     void init() {
         binding.btnBack.setOnClickListener(v -> onBackPressed());
         setViews();
-        getRooms();
+        /*getRooms();*/
     }
 
     void getRooms() {
-        roomViewModel.getRooms().observe(this, data -> {
+        roomViewModel.getRoom().observe(this,data->{
             for (RoomModel.rooms s : data.getRooms()) {
                 if (s.getRoomId().trim().equals(subjectData.getRoom().replace("-","").trim())) {
                     System.out.println(s.getLocation());
                     for(RoomModel.previews img:s.getPreviews()){
-                        System.out.println(img.getImage());
+                        System.out.println(img.getDoor());
                     }
                 }
             }

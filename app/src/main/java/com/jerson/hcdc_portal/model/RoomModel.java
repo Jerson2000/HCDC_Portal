@@ -56,15 +56,23 @@ public class RoomModel {
    }
 
     static public class previews{
-        @SerializedName("image")
-        private String image;
+        @SerializedName("door")
+        private String door;
+        @SerializedName("front")
+        private String front;
+        @SerializedName("back")
+        private String back;
 
-        public String getImage() {
-            return image;
+        public String getDoor() {
+            return door;
         }
 
-        public void setImage(String image) {
-            this.image = image;
+        public String getFront() {
+            return front;
+        }
+
+        public String getBack() {
+            return back;
         }
     }
 }

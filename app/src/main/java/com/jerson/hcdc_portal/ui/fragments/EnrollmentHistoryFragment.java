@@ -16,6 +16,7 @@ import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentEnrollmentHistoryBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.EnrollHistModel;
+import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.adapter.EnrollHistoryAdapter;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.EnrollHistoryViewModel;
@@ -76,11 +77,12 @@ public class EnrollmentHistoryFragment extends Fragment {
         binding.enrHistRecyclerView.setAdapter(adapter);
 
 
-
         observeErr();
 
+        binding.spinnerSem.setFocusable(false);
         binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
-            Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " [" + periodLinks.get(i).getId() + "] ");
+            /*Log.d(TAG, "onItemClick: " + periodLinks.get(i).getPeriodText() + " [" + periodLinks.get(i).getId() + "] ");*/
+            binding.refreshLayout.setEnabled(true);
             binding.progressBar.setVisibility(View.VISIBLE);
             binding.enrHistRecyclerView.setVisibility(View.GONE);
 
@@ -104,20 +106,22 @@ public class EnrollmentHistoryFragment extends Fragment {
 
         });
 
-        binding.refreshLayout.setOnRefreshListener(() -> {
-            binding.refreshLayout.setRefreshing(true);
-            if (PortalApp.isConnected()) {
-                checkSession(object -> {
-                    if (object) {
-                        getData(selectedLink, selectedId);
-                    }
-                });
-            } else {
-                Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
-                binding.refreshLayout.setRefreshing(false);
+        if (!binding.spinnerSem.getText().toString().equals("")) {
+            binding.refreshLayout.setOnRefreshListener(() -> {
+                binding.refreshLayout.setRefreshing(true);
+                if (PortalApp.isConnected()) {
+                    checkSession(object -> {
+                        if (object) {
+                            getData(selectedLink, selectedId);
+                        }
+                    });
+                } else {
+                    Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
+                    binding.refreshLayout.setRefreshing(false);
 
-            }
-        });
+                }
+            });
+        } else binding.refreshLayout.setEnabled(false);
 
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
@@ -140,7 +144,14 @@ public class EnrollmentHistoryFragment extends Fragment {
                     }
                     deleteEnrollHistoryLinkData(object -> {
                         if (object) {
-                            saveEnrollHistoryLink();
+                            saveEnrollHistoryLink(new DynamicListener<Boolean>() {
+                                @Override
+                                public void dynamicListener(Boolean object) {
+                                    if (object) {
+                                        binding.refreshLayout.setRefreshing(false);
+                                    }
+                                }
+                            });
                         }
                     });
 
@@ -181,14 +192,16 @@ public class EnrollmentHistoryFragment extends Fragment {
         );
     }
 
-    void saveEnrollHistoryLink() {
+    void saveEnrollHistoryLink(DynamicListener<Boolean> listener) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.insertEnrollHistoryLink(periodLinks)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     /*Log.w(TAG, "saveEnrollHistoryLink Data saved: " + periodLinks.size());*/
+                    listener.dynamicListener(true);
                 }, throwable -> {
                     Log.d(TAG, "saveEnrollHistoryLink: " + throwable);
+                    listener.dynamicListener(false);
                 })
         );
     }
@@ -257,7 +270,7 @@ public class EnrollmentHistoryFragment extends Fragment {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     isDeleted.dynamicListener(true);
-                    /*Log.d(TAG, "deleteEnrollHistoryLinkData: success");*/
+                    Log.d(TAG, "deleteEnrollHistoryLinkData: success");
                 }, throwable -> {
                     isDeleted.dynamicListener(false);
                     Log.e(TAG, "deleteEnrollHistoryLinkData: ", throwable);
@@ -288,16 +301,14 @@ public class EnrollmentHistoryFragment extends Fragment {
                 binding.enrHistRecyclerView.setVisibility(View.VISIBLE);
                 arrayAdapter.notifyDataSetChanged();
             } else {
-                if (PortalApp.isConnected()) {
+                if (PortalApp.isConnected() && !binding.refreshLayout.isRefreshing()) {
                     checkSession(object1 -> {
-                        if (object1) {
+                        if (object1 && !binding.refreshLayout.isRefreshing()) {
                             getLinks();
                         }
                     });
-                } else
-                    showErr("No internet connection.");
-
-
+                }
+                if (!PortalApp.isConnected()) showErr("No internet connection.");
             }
         }
     };
@@ -357,5 +368,11 @@ public class EnrollmentHistoryFragment extends Fragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        HttpClient.getInstance().cancelRequest();
+        ((ViewGroup) binding.refreshLayout.getParent()).removeView(binding.refreshLayout);
+    }
 
 }

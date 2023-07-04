@@ -22,4 +22,8 @@ public class RoomViewModel extends ViewModel {
     public LiveData<RoomModel> getRooms(){
         return repo.getRooms(err);
     }
+
+    public LiveData<RoomModel> getRoom(){
+        return repo.getRoom(err);
+    }
 }

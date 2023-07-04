@@ -3,30 +3,42 @@
     {
       "roomId": "IT L 1",
       "room": "IT LAB 1",
+      "roomNo": 406,
       "location": "4th floor",
+      "floor": "4th",
       "previews": [
         {
-          "image": "link"
+          "door": "link",
+          "front": "link",
+          "back": "link"
         }
       ]
     },
     {
       "roomId": "IT L 2",
       "room": "IT LAB 2",
+      "roomNo": 407,
       "location": "4th floor",
+      "floor": "4th",
       "previews": [
         {
-          "image": "link"
+          "door": "link",
+          "front": "link",
+          "back": "link"
         }
       ]
     },
     {
-      "roomId": "IT L 3",
-      "room": "IT LAB 3",
+      "roomId": "IT L 2",
+      "room": "IT LAB 2",
+      "roomNo": 507,
       "location": "5th floor",
+      "floor": "5th",
       "previews": [
         {
-          "image": "link"
+          "door": "link",
+          "front": "link",
+          "back": "link"
         }
       ]
     }
