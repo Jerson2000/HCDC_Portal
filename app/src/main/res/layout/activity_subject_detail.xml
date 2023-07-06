@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".ui.activity.SubjectDetailActivity">
 
     <LinearLayout
@@ -16,12 +17,13 @@
             android:layout_height="?actionBarSize"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="10dp">
+            android:padding="15dp">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/btnBack"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
+                android:backgroundTint="@android:color/transparent"
                 app:srcCompat="@drawable/ic_arrow_back" />
 
         </LinearLayout>
@@ -38,10 +40,10 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Material3.CardView.Elevated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            style="@style/Widget.Material3.CardView.Elevated"
             app:contentPadding="5dp">
 
             <LinearLayout
@@ -62,8 +64,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Offer No."
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
                     <TextView
                         android:id="@+id/subjCode"
@@ -72,7 +73,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Subject Code"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
 
                 </LinearLayout>
@@ -118,8 +119,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Schedule"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -129,7 +129,7 @@
                         android:text="Schedule"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="8sp"/>
+                        android:textSize="8sp" />
 
                 </LinearLayout>
 
@@ -145,8 +145,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Room"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                        />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -156,7 +155,7 @@
                         android:text="Room"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="8sp"/>
+                        android:textSize="8sp" />
 
                 </LinearLayout>
 
@@ -165,6 +164,20 @@
         </com.google.android.material.card.MaterialCardView>
 
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Room"
+            android:layout_marginTop="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:layout_marginStart="15dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
+
 
 </androidx.core.widget.NestedScrollView>

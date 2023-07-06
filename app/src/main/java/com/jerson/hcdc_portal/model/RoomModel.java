@@ -56,23 +56,17 @@ public class RoomModel {
    }
 
     static public class previews{
-        @SerializedName("door")
-        private String door;
-        @SerializedName("front")
-        private String front;
-        @SerializedName("back")
-        private String back;
+        @SerializedName("description")
+        private String description;
+        @SerializedName("img")
+        private String img;
 
-        public String getDoor() {
-            return door;
+        public String getDescription() {
+            return description;
         }
 
-        public String getFront() {
-            return front;
-        }
-
-        public String getBack() {
-            return back;
+        public String getImg() {
+            return img;
         }
     }
 }

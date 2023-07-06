@@ -2,6 +2,7 @@ package com.jerson.hcdc_portal.util;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.view.View;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -23,5 +24,15 @@ public class Dialog {
         return new MaterialAlertDialogBuilder(context)
                 .setTitle(sTitle)
                 .setMessage(sMessage);
+    }
+
+    public static MaterialAlertDialogBuilder CustomDialog(String sTitle, final Context context, View customView) {
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context)
+                .setTitle(sTitle);
+        if (customView != null) {
+            dialogBuilder.setView(customView);
+        }
+
+        return dialogBuilder;
     }
 }
