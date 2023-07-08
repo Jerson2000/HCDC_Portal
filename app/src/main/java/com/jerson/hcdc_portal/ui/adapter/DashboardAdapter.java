@@ -2,17 +2,14 @@ package com.jerson.hcdc_portal.ui.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ItemContainerDashboardBinding;
 import com.jerson.hcdc_portal.listener.OnClickListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -42,7 +39,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.View
         holder.binding.subjCode.setText(model.getSubjCode());
         holder.binding.schedDays.setText(model.getDays());
         holder.binding.schedTime.setText(model.getTime());
-        Picasso.get().load(R.drawable.v2_book).into(holder.binding.bookIV);
+        /*Picasso.get().load(R.drawable.v2_book).into(holder.binding.bookIV);*/
 
     }
 

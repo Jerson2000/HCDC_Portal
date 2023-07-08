@@ -1,0 +1,60 @@
+{
+  "rooms": [
+    {
+      "roomId": "IT L 1",
+      "room": "IT LAB 1",
+      "roomNo": 406,
+      "building": "J Building",
+      "floor": "4th",
+      "previews": [
+        {
+          "description": "Door",
+          "img":"https://il8.picdn.net/shutterstock/videos/6357851/thumb/1.jpg"
+        },
+        {
+          "description": "Front",
+          "img": "https://i.ytimg.com/vi/BJEZSHOw8sI/hqdefault.jpg"
+        },
+        {
+          "description": "Back",
+          "img": "https://i.pinimg.com/originals/39/79/0d/39790d9c874fd2698e8f51828d852908.jpg"
+        }
+      ]
+    },
+    {
+      "roomId": "IT L 2",
+      "room": "IT LAB 2",
+      "roomNo": 407,
+      "building": "J Building",
+      "floor": "4th",
+      "previews": [
+        {
+          "description": "Door",
+          "img":"https://raw.githubusercontent.com/Jerson2000/jerson2000/main/images/itl-2-door.jpg"
+        },
+        {
+          "description": "Front",
+          "img": "https://raw.githubusercontent.com/Jerson2000/jerson2000/main/images/itl-2-front.jpg"
+        },
+        {
+          "description": "Back",
+          "img": ""
+        }
+      ]
+    },
+    {
+      "roomId": "IT L 3",
+      "room": "IT LAB 3",
+      "roomNo": 506,
+      "building": "J Building",
+      "floor": "5th",
+      "previews": [
+        {
+          "door": "link",
+          "front": "link",
+          "back": "link"
+        }
+      ]
+    }
+  ]
+}

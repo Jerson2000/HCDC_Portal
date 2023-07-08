@@ -16,6 +16,7 @@ import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentGradesBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.GradeModel;
+import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.adapter.GradeAdapter;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.GradesViewModel;
@@ -75,12 +76,14 @@ public class GradesFragment extends Fragment {
 
         observerErr();
 
+        binding.spinnerSem.setFocusable(false);
         binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
-            Log.d(TAG, "onItemClick: " + semGradeList.get(i).getLink() + "[" + semGradeList.get(i).getId() + "]");
+            /*Log.d(TAG, "onItemClick: " + semGradeList.get(i).getLink() + "[" + semGradeList.get(i).getId() + "]");*/
             if (i != 0) {
                 binding.progressBar.setVisibility(View.VISIBLE);
                 binding.gradeLayout.setVisibility(View.GONE);
                 binding.gradeRecyclerView.setVisibility(View.GONE);
+                binding.refreshLayout.setEnabled(true);
 
                 selectedId = semGradeList.get(i).getId();
                 selectedLink = semGradeList.get(i).getLink();
@@ -105,21 +108,22 @@ public class GradesFragment extends Fragment {
             }
         });
 
-        binding.refreshLayout.setOnRefreshListener(() -> {
-            binding.refreshLayout.setRefreshing(true);
-            if (PortalApp.isConnected()) {
-                checkSession(object -> {
-                    if (object) {
-                        getGrade(selectedId, selectedLink);
-                    }
-                });
-            } else {
-                Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
-                binding.refreshLayout.setRefreshing(false);
-            }
+        if(!binding.spinnerSem.getText().toString().equals("")){
+            binding.refreshLayout.setOnRefreshListener(() -> {
+                binding.refreshLayout.setRefreshing(true);
+                if (PortalApp.isConnected()) {
+                    checkSession(object -> {
+                        if (object) {
+                            getGrade(selectedId, selectedLink);
+                        }
+                    });
+                } else {
+                    Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
+                    binding.refreshLayout.setRefreshing(false);
+                }
 
-        });
-
+            });
+        }else binding.refreshLayout.setEnabled(false);
 
         binding.gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = new GradeAdapter(gradeList, requireActivity());
@@ -137,7 +141,12 @@ public class GradesFragment extends Fragment {
 
                 deleteGradeLink(object -> {
                     if (object) {
-                        saveGradeLink();
+                        saveGradeLink(new DynamicListener<Boolean>() {
+                            @Override
+                            public void dynamicListener(Boolean object) {
+                                binding.refreshLayout.setRefreshing(false);
+                            }
+                        });
                     }
                 });
 
@@ -224,9 +233,10 @@ public class GradesFragment extends Fragment {
                         for (GradeModel.Link d : data) {
                             list.add(d.getText());
                         }
-                        /*Log.e(TAG, "loadGradeLink: " + data.size());*/
+
                         listener.dynamicListener(true);
                     } else listener.dynamicListener(false);
+                    /*Log.e(TAG, "loadGradeLink: " + data.size());*/
                 }, throwable -> {
 
                 })
@@ -235,15 +245,15 @@ public class GradesFragment extends Fragment {
 
     DynamicListener<Boolean> linkListener = object -> {
         if (!object) {
-            if (PortalApp.isConnected()) {
+            if (PortalApp.isConnected() && !binding.refreshLayout.isRefreshing()) {
                 checkSession(object1 -> {
                     if (object1) {
                         getLink();
                     }
                 });
-            } else
-                showErr("No internet connection.");
+            }
 
+            if (!PortalApp.isConnected()) showErr("No internet connection.");
 
         } else {
             arrayAdapter.notifyDataSetChanged();
@@ -253,14 +263,18 @@ public class GradesFragment extends Fragment {
     };
 
 
-    void saveGradeLink() {
+    void saveGradeLink(DynamicListener<Boolean> listener) {
         CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(viewModel.insertGradeLink(semGradeList)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    /*Log.w(TAG, "saveGradeLink Data saved: " + semGradeList.size());*/
-                }, throwable -> Log.d(TAG, "saveGradeLink: " + throwable))
-        );
+                            /*Log.w(TAG, "saveGradeLink Data saved: " + semGradeList.size());*/
+                            listener.dynamicListener(true);
+                        }, throwable -> {
+                            Log.d(TAG, "saveGradeLink: " + throwable);
+                            listener.dynamicListener(false);
+                        }
+                ));
 
     }
 
@@ -269,7 +283,10 @@ public class GradesFragment extends Fragment {
         compositeDisposable.add(viewModel.deleteGradeLink()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> isDeleted.dynamicListener(true), throwable -> {
+                .subscribe(() -> {
+                    isDeleted.dynamicListener(true);
+                    /*Log.e(TAG, "deleteGradeLink: deleted");*/
+                }, throwable -> {
                     Log.e(TAG, "deleteGradeLink: ", throwable);
                     isDeleted.dynamicListener(false);
                 }));
@@ -352,5 +369,11 @@ public class GradesFragment extends Fragment {
     public GradesFragment() {
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        HttpClient.getInstance().cancelRequest();
+        ((ViewGroup) binding.refreshLayout.getParent()).removeView(binding.refreshLayout);
+    }
 
 }
