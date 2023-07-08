@@ -1,4 +1,4 @@
-package com.jerson.hcdc_portal.database;
+package com.jerson.hcdc_portal.database.dao;
 
 import androidx.room.Dao;
 import androidx.room.Insert;

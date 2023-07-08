@@ -1,7 +1,6 @@
 package com.jerson.hcdc_portal.ui.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +17,7 @@ import com.jerson.hcdc_portal.databinding.FragmentDashboardBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.listener.OnClickListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
-import com.jerson.hcdc_portal.ui.activity.LoginActivity;
+import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.activity.SettingsActivity;
 import com.jerson.hcdc_portal.ui.activity.SubjectDetailActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
@@ -30,13 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -165,7 +158,7 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    Log.d(TAG, "loadDashboard: " + data.size());
+                    /*Log.d(TAG, "loadDashboard: " + data.size());*/
                     if (data.size() > 0) {
                         dashList.clear();
                         dashList.addAll(data);

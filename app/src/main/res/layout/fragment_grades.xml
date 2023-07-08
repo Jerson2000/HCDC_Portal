@@ -6,13 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.GradesFragment">
 
-    <include
-        android:id="@+id/retryLayout"
-        layout="@layout/retry_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -23,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:indeterminate="true"/>
+            android:indeterminate="true" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/semSelectorLayout"
@@ -47,6 +40,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/gradeLayout"
+            style="@style/Widget.Material3.CardView.Filled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/semSelectorLayout"
@@ -54,7 +48,6 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
             android:visibility="gone"
-            style="@style/Widget.Material3.CardView.Filled"
             app:cardBackgroundColor="?colorSecondaryContainer"
             app:contentPadding="5dp">
 
@@ -129,11 +122,11 @@
             android:id="@+id/errLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_below="@id/gradeLayout"
+            android:layout_alignParentBottom="true"
             android:gravity="center_vertical"
-            android:visibility="gone"
-            android:layout_above="@+id/spaceView"
-            android:layout_below="@id/gradeLayout">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/errEmoji"
@@ -142,8 +135,7 @@
                 android:text="emoji"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display2"
-                android:textColor="?colorSecondaryVariant"
-                />
+                android:textColor="?colorSecondaryVariant" />
 
             <TextView
                 android:id="@+id/errText"
@@ -151,7 +143,7 @@
                 android:layout_height="wrap_content"
                 android:text="text"
                 android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
         </LinearLayout>
 
@@ -159,10 +151,11 @@
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"
+            android:layout_below="@id/gradeLayout"
+            android:layout_alignParentBottom="true"
             android:layout_marginTop="10dp"
-            android:layout_above="@+id/spaceView"
-            android:layout_below="@id/gradeLayout">
+            android:visibility="visible">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/gradeRecyclerView"
                 android:layout_width="match_parent"
@@ -170,16 +163,12 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="5dp"
-                android:clipToPadding="true" />
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="true"
+                android:paddingBottom="30dp" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-
-        <View
-            android:id="@+id/spaceView"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_alignParentBottom="true" />
 
 
     </RelativeLayout>

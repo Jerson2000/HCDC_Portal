@@ -17,6 +17,7 @@ import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentAccountBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.AccountModel;
+import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.adapter.AccountAdapter;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.AccountViewModel;
@@ -238,5 +239,10 @@ public class AccountFragment extends Fragment {
         // Required empty public constructor
     }
 
-
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        HttpClient.getInstance().cancelRequest();
+        ((ViewGroup) binding.refreshLayout.getParent()).removeView(binding.refreshLayout);
+    }
 }

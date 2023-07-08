@@ -21,6 +21,9 @@
                 android:id="@+id/subjectsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:nestedScrollingEnabled="true"
+                android:paddingBottom="30dp"
                 android:clipToPadding="false" />
 
 
@@ -67,11 +70,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
