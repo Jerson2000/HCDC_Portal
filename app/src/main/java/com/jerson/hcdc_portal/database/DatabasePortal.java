@@ -6,6 +6,10 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.jerson.hcdc_portal.database.dao.AccountDao;
+import com.jerson.hcdc_portal.database.dao.DashboardDao;
+import com.jerson.hcdc_portal.database.dao.EnrollHistoryDao;
+import com.jerson.hcdc_portal.database.dao.GradeDao;
 import com.jerson.hcdc_portal.model.AccountModel;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.model.EnrollHistModel;

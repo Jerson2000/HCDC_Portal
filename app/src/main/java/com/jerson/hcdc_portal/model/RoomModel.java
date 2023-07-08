@@ -2,9 +2,10 @@ package com.jerson.hcdc_portal.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class RoomModel {
+public class RoomModel implements Serializable {
     @SerializedName("rooms")
    private List<rooms> rooms;
 
@@ -12,50 +13,34 @@ public class RoomModel {
         return rooms;
     }
 
-    static public class rooms{
+    static public class rooms implements Serializable{
        @SerializedName("roomId")
        private String roomId;
        @SerializedName("room")
        private String room;
-       @SerializedName("location")
-       private String location;
+       @SerializedName("building")
+       private String building;
        @SerializedName("previews")
        private List<previews> previews;
 
-       public String getRoomId() {
-           return roomId;
-       }
+        public String getRoomId() {
+            return roomId;
+        }
 
-       public void setRoomId(String roomId) {
-           this.roomId = roomId;
-       }
+        public String getRoom() {
+            return room;
+        }
 
-       public String getRoom() {
-           return room;
-       }
+        public String getBuilding() {
+            return building;
+        }
 
-       public void setRoom(String room) {
-           this.room = room;
-       }
+        public List<RoomModel.previews> getPreviews() {
+            return previews;
+        }
+    }
 
-       public String getLocation() {
-           return location;
-       }
-
-       public void setLocation(String location) {
-           this.location = location;
-       }
-
-       public List<RoomModel.previews> getPreviews() {
-           return previews;
-       }
-
-       public void setPreviews(List<RoomModel.previews> previews) {
-           this.previews = previews;
-       }
-   }
-
-    static public class previews{
+    static public class previews implements Serializable {
         @SerializedName("description")
         private String description;
         @SerializedName("img")

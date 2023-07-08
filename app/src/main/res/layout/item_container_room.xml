@@ -7,7 +7,7 @@
 
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
         android:id="@+id/roomIV"
-        android:layout_width="150dp"
+        android:layout_width="200dp"
         android:layout_height="150dp"
         app:panEnabled="false"
         app:zoomEnabled="false"/>
@@ -15,9 +15,14 @@
         android:id="@+id/roomDesc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CENTER"
-        android:textSize="12sp"
-        android:background="#70FFFFFF"
-        android:layout_gravity="center_horizontal"/>
+        android:textSize="14sp"
+        android:text="Center"
+        android:textStyle="bold"
+        android:textColor="?colorOnSecondaryContainer"
+        android:shadowColor="?colorOnPrimary"
+        android:shadowDx="1"
+        android:layout_gravity="center_horizontal"
+        android:shadowDy="1"
+        android:shadowRadius="2" />
 
 </com.google.android.material.card.MaterialCardView>

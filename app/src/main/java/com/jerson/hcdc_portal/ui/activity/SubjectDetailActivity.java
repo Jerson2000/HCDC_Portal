@@ -1,5 +1,12 @@
 package com.jerson.hcdc_portal.ui.activity;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -7,20 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.bitmap_recycle.LruBitmapPool;
-import com.bumptech.glide.load.engine.cache.LruResourceCache;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.davemorrissey.labs.subscaleview.ImageSource;
@@ -33,9 +27,9 @@ import com.jerson.hcdc_portal.model.RoomModel;
 import com.jerson.hcdc_portal.ui.adapter.RoomAdapter;
 import com.jerson.hcdc_portal.util.Dialog;
 import com.jerson.hcdc_portal.util.GlideApp;
-import com.jerson.hcdc_portal.util.JustGlideModule;
 import com.jerson.hcdc_portal.viewmodel.RoomViewModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,13 +74,22 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
             if (data != null) {
                 for (RoomModel.rooms s : data.getRooms()) {
                     if (s.getRoomId().trim().equals(subjectData.getRoom().replace("-", "").trim())) {
-                        imageList.addAll(s.getPreviews());
+                        /*if (!s.getPreviews().equals("")) imageList.addAll(s.getPreviews());*/
+                        for(RoomModel.previews model : s.getPreviews()){
+                            if(!model.getImg().equals("")){
+                                imageList.add(model);
+                            }
+                        }
                         adapter.notifyDataSetChanged();
                     }
                 }
             }
 
         });
+    }
+
+    void observeRooms(){
+
     }
 
     void setViews() {
@@ -100,48 +103,13 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
 
 
     @Override
-    public void dynamicListener(Integer object) {
-        ViewGroup parentView = (ViewGroup) imagePreviewBinding.getRoot().getParent();
-        if (parentView != null) {
-            parentView.removeView(imagePreviewBinding.getRoot());
-        }
+    public void dynamicListener(Integer position) {
 
-        dialog = Dialog.CustomDialog("", this, imagePreviewBinding.getRoot())
-                .show();
-
-        GlideApp.with(imagePreviewBinding.getRoot())
-                .asBitmap()
-                .load(imageList.get(object).getImg())
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-
-                        if(!resource.isRecycled()){
-                            imagePreviewBinding.roomIV.setImage(ImageSource.bitmap(resource));
-                        }else resource.recycle();
-
-
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                    }
-                });
-        Toast.makeText(this, Glide.get(this).getBitmapPool().toString(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this,RoomPreviewActivity.class);
+        intent.putExtra("previews", (Serializable) imageList);
+        intent.putExtra("pos",position);
+        startActivity(intent);
 
     }
 
-
-
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        /*Glide.with(imagePreviewBinding.getRoot()).clear(imagePreviewBinding.roomIV);
-        Glide.get(getApplicationContext()).getBitmapPool().clearMemory();*/
-    }
 }
