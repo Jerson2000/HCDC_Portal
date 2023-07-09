@@ -19,11 +19,10 @@
             android:orientation="horizontal"
             android:padding="15dp">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/btnBack"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:backgroundTint="@android:color/transparent"
+                android:layout_width="30dp"
+                android:layout_height="28dp"
                 app:srcCompat="@drawable/ic_arrow_back" />
 
         </LinearLayout>
@@ -119,7 +118,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Schedule"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -138,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
+                    <!--<TextView
                         android:id="@+id/room"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -155,7 +154,7 @@
                         android:text="Room"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="8sp" />
+                        android:textSize="8sp" />-->
 
                 </LinearLayout>
 
@@ -167,17 +166,44 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Room"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:layout_marginStart="15dp"/>
+            android:text="Room"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+        <TextView
+            android:id="@+id/room"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="Room"
+            android:layout_marginStart="15sp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <TextView
+            android:id="@+id/building"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15sp"
+            android:gravity="start"
+            android:text="Building"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <TextView
+            android:id="@+id/floor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15sp"
+            android:gravity="start"
+            android:text="Floor"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:clipChildren="false"/>
+            android:clipChildren="false"
+            android:clipToPadding="false" />
 
     </LinearLayout>
 

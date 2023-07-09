@@ -20,7 +20,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class RoomRepo {
-    private final String url = "https://raw.githubusercontent.com/Jerson2000/jerson2000/main/room.json";
+    private final String url = "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/room.json";
 
     /* this is for assets */
     public LiveData<RoomModel> getRooms(MutableLiveData<Throwable> err) {

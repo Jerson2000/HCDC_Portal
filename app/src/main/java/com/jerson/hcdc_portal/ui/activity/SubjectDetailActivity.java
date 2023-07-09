@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,8 +40,8 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
     private RoomViewModel roomViewModel;
     private RoomAdapter adapter;
     private List<RoomModel.previews> imageList = new ArrayList<>();
-    private ViewImagePreviewBinding imagePreviewBinding;
-    private AlertDialog dialog;
+    private RoomModel.rooms roomModel;
+
     private final String TAG =  SubjectDetailActivity.class.toString();
 
     @Override
@@ -52,7 +53,6 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
         Bundle bundle = getIntent().getExtras();
         subjectData = (DashboardModel) PortalApp.getSerializable(bundle, "subject", DashboardModel.class);
         roomViewModel = new ViewModelProvider(this).get(RoomViewModel.class);
-        imagePreviewBinding = ViewImagePreviewBinding.inflate(LayoutInflater.from(this));
 
         init();
     }
@@ -63,8 +63,9 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
         binding.recyclerView.setAdapter(adapter);
 
         binding.btnBack.setOnClickListener(v -> onBackPressed());
-        setViews();
         getRooms();
+        observeRooms();
+        setViews();
 
 
     }
@@ -72,15 +73,17 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
     void getRooms() {
         roomViewModel.getRooms().observe(this, data -> {
             if (data != null) {
-                for (RoomModel.rooms s : data.getRooms()) {
-                    if (s.getRoomId().trim().equals(subjectData.getRoom().replace("-", "").trim())) {
-                        /*if (!s.getPreviews().equals("")) imageList.addAll(s.getPreviews());*/
-                        for(RoomModel.previews model : s.getPreviews()){
+                for (RoomModel.rooms room : data.getRooms()) {
+                    if (room.getRoomId().trim().equals(subjectData.getRoom().replace("-", "").trim())) {
+                        roomModel = room;
+                        for(RoomModel.previews model : room.getPreviews()){
                             if(!model.getImg().equals("")){
                                 imageList.add(model);
                             }
                         }
                         adapter.notifyDataSetChanged();
+                        binding.building.setText(roomModel.getBuilding());
+                        binding.floor.setText(roomModel.getFloor());
                     }
                 }
             }
@@ -89,7 +92,10 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
     }
 
     void observeRooms(){
-
+        roomViewModel.getErr().observe(this,err->{
+            Toast.makeText(this, "Unable to fetch the room images \nCheck internet connection!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, err.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 
     void setViews() {

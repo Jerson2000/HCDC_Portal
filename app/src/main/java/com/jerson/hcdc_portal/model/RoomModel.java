@@ -20,6 +20,9 @@ public class RoomModel implements Serializable {
        private String room;
        @SerializedName("building")
        private String building;
+
+       @SerializedName("floor")
+       private String floor;
        @SerializedName("previews")
        private List<previews> previews;
 
@@ -33,6 +36,10 @@ public class RoomModel implements Serializable {
 
         public String getBuilding() {
             return building;
+        }
+
+        public String getFloor() {
+            return floor;
         }
 
         public List<RoomModel.previews> getPreviews() {
