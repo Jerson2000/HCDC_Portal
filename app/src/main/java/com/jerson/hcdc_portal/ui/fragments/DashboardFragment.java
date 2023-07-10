@@ -18,6 +18,7 @@ import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.listener.OnClickListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.network.HttpClient;
+import com.jerson.hcdc_portal.ui.activity.EvaluationActivity;
 import com.jerson.hcdc_portal.ui.activity.SettingsActivity;
 import com.jerson.hcdc_portal.ui.activity.SubjectDetailActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
@@ -88,6 +89,10 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
         });
         binding.btnSetting.setOnClickListener(v -> {
             startActivity(new Intent(requireActivity(), SettingsActivity.class));
+        });
+
+        binding.evaluation.setOnClickListener(v->{
+            startActivity(new Intent(requireActivity(), EvaluationActivity.class));
         });
 
 

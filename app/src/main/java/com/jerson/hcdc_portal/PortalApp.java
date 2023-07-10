@@ -95,6 +95,8 @@ public class PortalApp extends Application {
 
     public static final String KEY_SETTINGS_THEME_MODE = "themeMode";
 
+    public static final String KEY_HTML_EVALUATION = "evaluationHTML";
+
 
     // App
     public static final String userAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36";

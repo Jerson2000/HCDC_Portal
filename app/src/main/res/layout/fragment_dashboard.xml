@@ -209,6 +209,25 @@
 
             </LinearLayout>
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/evaluation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:contentPadding="5dp"
+                app:layout_constraintTop_toBottomOf="@id/cardLayout">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="View Evaluation"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <TextView
                 android:id="@+id/todayTV"
                 android:layout_width="wrap_content"
@@ -218,7 +237,7 @@
                 android:text="Today's subject/s."
                 android:textAppearance="?attr/textAppearanceHeadline6"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardLayout" />
+                app:layout_constraintTop_toBottomOf="@id/evaluation" />
 
 
             <androidx.recyclerview.widget.RecyclerView
@@ -260,7 +279,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="70dp"
                 app:layout_constraintTop_toBottomOf="@id/recyclerView" />
 
 

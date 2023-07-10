@@ -85,4 +85,6 @@ dependencies {
     // Image View
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view-androidx:3.10.0'
 
+    implementation "androidx.webkit:webkit:1.4.0"
+
 }
