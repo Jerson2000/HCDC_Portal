@@ -9,15 +9,15 @@
       "previews": [
         {
           "description": "Door",
-          "img":"https://il8.picdn.net/shutterstock/videos/6357851/thumb/1.jpg"
+          "img":"https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/images/itl-1-door.jpg"
         },
         {
           "description": "Front",
-          "img": "https://i.ytimg.com/vi/BJEZSHOw8sI/hqdefault.jpg"
+          "img": "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/images/itl-1-front.jpg"
         },
         {
           "description": "Back",
-          "img": "https://i.pinimg.com/originals/39/79/0d/39790d9c874fd2698e8f51828d852908.jpg"
+          "img": "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/images/itl-1-back.jpg"
         }
       ]
     },

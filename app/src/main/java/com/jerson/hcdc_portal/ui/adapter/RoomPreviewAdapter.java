@@ -11,11 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ItemContainerRoomPreviewBinding;
 import com.jerson.hcdc_portal.model.RoomModel;
 import com.jerson.hcdc_portal.util.GlideApp;
@@ -50,6 +53,13 @@ public class RoomPreviewAdapter extends PagerAdapter {
                 .asBitmap()
                 .load(imgList.get(position).getImg())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .error(GlideApp.with(container.getContext())
+                        .asBitmap()
+                        .load(R.drawable.logo)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .centerCrop()
+                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                        .error(R.drawable.logo))
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {

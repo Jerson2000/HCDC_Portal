@@ -51,7 +51,7 @@ public class EvaluationActivity extends AppCompatActivity {
                         "</body></html>";
                 preferenceManager.putString(PortalApp.KEY_HTML_EVALUATION,data);
                 myWebView.loadDataWithBaseURL(null, htmlHeaders, "text/html", "UTF-8", null);
-            }
+            }else myWebView.loadDataWithBaseURL(null,  preferenceManager.getString(PortalApp.KEY_HTML_EVALUATION), "text/html", "UTF-8", null);
         });
     }
 

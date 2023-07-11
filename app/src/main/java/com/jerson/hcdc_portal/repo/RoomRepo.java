@@ -11,6 +11,8 @@ import com.jerson.hcdc_portal.model.RoomModel;
 import com.jerson.hcdc_portal.network.HttpClient;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,6 +34,26 @@ public class RoomRepo {
             data.setValue(room);
         } catch (IOException e) {
             err.setValue(e);
+        }
+
+        return data;
+    }
+
+
+    public LiveData<RoomModel> getRoomsx(MutableLiveData<Throwable> err) {
+        MutableLiveData<RoomModel> data = new MutableLiveData<>();
+        File file = new File(PortalApp.getAppContext().getFilesDir(), "rooms.json");
+        String filePath = file.getAbsolutePath();
+
+        try {
+            FileInputStream inputStream = new FileInputStream(filePath);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            RoomModel room = new Gson().fromJson(inputStreamReader, RoomModel.class);
+            data.setValue(room);
+
+            inputStreamReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return data;

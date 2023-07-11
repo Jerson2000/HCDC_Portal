@@ -2,6 +2,7 @@ package com.jerson.hcdc_portal.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +13,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.jerson.hcdc_portal.PortalApp;
+import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.FragmentDashboardBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.listener.OnClickListener;
@@ -26,6 +29,12 @@ import com.jerson.hcdc_portal.util.Dialog;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -95,6 +104,11 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
             startActivity(new Intent(requireActivity(), EvaluationActivity.class));
         });
 
+        binding.evaluationIV.setImage(ImageSource.resource(R.drawable.paper));
+        binding.enrollAnnounceLayout.setOnClickListener(v->{
+            /*downloadAndSaveJSON("https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/room.json","test.json");*/
+        });
+
 
     }
 
@@ -112,6 +126,50 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
 
 
         return day;
+    }
+    @SuppressLint("StaticFieldLeak")
+    private void downloadAndSaveJSON(String url, String fileName) {
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    URL downloadUrl = new URL(url);
+                    HttpURLConnection connection = (HttpURLConnection) downloadUrl.openConnection();
+                    connection.setRequestMethod("GET");
+
+                    File outputFile = new File(PortalApp.getAppContext().getFilesDir(), fileName);
+                    FileOutputStream outputStream = new FileOutputStream(outputFile);
+
+                    InputStream inputStream = connection.getInputStream();
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+
+                    outputStream.close();
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                // File downloaded and saved successfully
+                displayDownloadedFilePath(fileName);
+            }
+        }.execute();
+    }
+
+    private void displayDownloadedFilePath(String fileName) {
+        File outputFile = new File(PortalApp.getAppContext().getFilesDir(), fileName);
+        String filePath = outputFile.getAbsolutePath();
+        System.out.println("File Path: " + filePath);
     }
 
 
