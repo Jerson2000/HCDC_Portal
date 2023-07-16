@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager.widget.PagerAdapter;
 
-import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
@@ -21,7 +21,6 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ItemContainerRoomPreviewBinding;
 import com.jerson.hcdc_portal.model.RoomModel;
-import com.jerson.hcdc_portal.util.GlideApp;
 
 import java.util.List;
 
@@ -49,11 +48,11 @@ public class RoomPreviewAdapter extends PagerAdapter {
 
         SubsamplingScaleImageView img = binding.roomView;
 
-        GlideApp.with(img)
+        Glide.with(img)
                 .asBitmap()
                 .load(imgList.get(position).getImg())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(GlideApp.with(container.getContext())
+                .error(Glide.with(container.getContext())
                         .asBitmap()
                         .load(R.drawable.logo)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)

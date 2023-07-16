@@ -19,7 +19,8 @@ public class EvaluationRepo {
         HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.evaluationsUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
-                data.setValue(response.body().select("div.col-md-12 > div.tile").toString());
+                String dat=response.body().select("div.col-md-12 > div.tile").toString();
+                data.setValue(!dat.equals("")?dat:"wala");
             }
 
             @Override

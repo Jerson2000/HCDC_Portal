@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey;
 public class GradeModel {
     @PrimaryKey(autoGenerate = true)
     private int id;
-    @ForeignKey(entity = GradeModel.Link.class, parentColumns = "id", childColumns = "grade")
     private int link_id;
     private String code;
     private String subject;

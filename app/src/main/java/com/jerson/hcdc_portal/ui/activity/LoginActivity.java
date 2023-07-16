@@ -118,6 +118,7 @@ public class LoginActivity extends AppCompatActivity {
                 SnackBarUtil.SnackBarLong(binding.snackBarLayout, "Logged In").show();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
                 }, 1300);
             }
         }

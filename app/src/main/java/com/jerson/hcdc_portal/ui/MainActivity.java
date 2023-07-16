@@ -8,10 +8,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.android.material.navigation.NavigationBarView;
+import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ActivityMainBinding;
+import com.jerson.hcdc_portal.util.DownloadRoomsWorker;
+import com.jerson.hcdc_portal.util.DownloadWorker;
 import com.jerson.hcdc_portal.util.SnackBarUtil;
 
 public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
@@ -34,6 +40,20 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     void Init() {
         binding.navbar.setOnItemSelectedListener(this);
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        if(PortalApp.isConnected()) downloadRooms();
+    }
+
+    void downloadRooms(){
+        Data inputData = new Data.Builder()
+                .putString("url", "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/room.json")
+                .putString("fileName", "rooms.json")
+                .build();
+
+        OneTimeWorkRequest downloadRequest =
+                new OneTimeWorkRequest.Builder(DownloadRoomsWorker.class)
+                        .setInputData(inputData)
+                        .build();
+        WorkManager.getInstance(this).enqueue(downloadRequest);
     }
 
     @Override

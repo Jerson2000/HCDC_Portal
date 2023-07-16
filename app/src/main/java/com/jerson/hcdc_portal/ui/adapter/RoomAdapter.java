@@ -20,8 +20,6 @@ import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ItemContainerRoomBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.RoomModel;
-import com.jerson.hcdc_portal.util.GlideApp;
-
 
 import java.util.List;
 
@@ -47,11 +45,11 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.ViewHolder> {
         holder.binding.roomIV.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE);
         holder.binding.roomIV.setDoubleTapZoomStyle(SubsamplingScaleImageView.ZOOM_FOCUS_CENTER);
         /*holder.binding.roomIV.setScaleAndCenter(holder.binding.roomIV.getMinScale(), holder.binding.roomIV.getCenter());*/
-        GlideApp.with(holder.binding.roomIV)
+        Glide.with(holder.binding.roomIV)
                 .asBitmap()
                 .load(imageList.get(position).getImg())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(GlideApp.with(holder.binding.getRoot())
+                .error(Glide.with(holder.binding.getRoot())
                         .asBitmap()
                         .load(R.drawable.logo)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)

@@ -1,6 +1,7 @@
 package com.jerson.hcdc_portal.model;
 
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
@@ -8,9 +9,9 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "enrollhist")
 public class EnrollHistModel {
+    @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     private int id;
-    @ForeignKey(entity = EnrollHistModel.Link.class, parentColumns = "id", childColumns = "enrollhist")
     private int link_id;
     private String offerNo;
     private String subjCode;

@@ -12,6 +12,9 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.jerson.hcdc_portal.PortalApp;
@@ -26,6 +29,7 @@ import com.jerson.hcdc_portal.ui.activity.SettingsActivity;
 import com.jerson.hcdc_portal.ui.activity.SubjectDetailActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
 import com.jerson.hcdc_portal.util.Dialog;
+import com.jerson.hcdc_portal.util.DownloadWorker;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 
@@ -106,7 +110,19 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
 
         binding.evaluationIV.setImage(ImageSource.resource(R.drawable.paper));
         binding.enrollAnnounceLayout.setOnClickListener(v->{
-            /*downloadAndSaveJSON("https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/room.json","test.json");*/
+            Data inputData = new Data.Builder()
+                    .putString("url", "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/room.json")
+                    .putString("fileName", "test.json")
+                    .build();
+
+            // Create a OneTimeWorkRequest for the DownloadWorker
+            OneTimeWorkRequest downloadRequest =
+                    new OneTimeWorkRequest.Builder(DownloadWorker.class)
+                            .setInputData(inputData)
+                            .build();
+
+            // Enqueue the request with WorkManager
+            WorkManager.getInstance(requireActivity()).enqueue(downloadRequest);
         });
 
 
@@ -127,51 +143,6 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
 
         return day;
     }
-    @SuppressLint("StaticFieldLeak")
-    private void downloadAndSaveJSON(String url, String fileName) {
-        new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    URL downloadUrl = new URL(url);
-                    HttpURLConnection connection = (HttpURLConnection) downloadUrl.openConnection();
-                    connection.setRequestMethod("GET");
-
-                    File outputFile = new File(PortalApp.getAppContext().getFilesDir(), fileName);
-                    FileOutputStream outputStream = new FileOutputStream(outputFile);
-
-                    InputStream inputStream = connection.getInputStream();
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-
-                    while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, bytesRead);
-                    }
-
-                    outputStream.close();
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                // File downloaded and saved successfully
-                displayDownloadedFilePath(fileName);
-            }
-        }.execute();
-    }
-
-    private void displayDownloadedFilePath(String fileName) {
-        File outputFile = new File(PortalApp.getAppContext().getFilesDir(), fileName);
-        String filePath = outputFile.getAbsolutePath();
-        System.out.println("File Path: " + filePath);
-    }
-
 
     void getSubjectToday() {
         if (dashList.size() > 0) {

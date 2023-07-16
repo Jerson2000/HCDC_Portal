@@ -1,33 +1,20 @@
 package com.jerson.hcdc_portal.ui.activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
-import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.ActivitySubjectDetailBinding;
-import com.jerson.hcdc_portal.databinding.ViewImagePreviewBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.model.RoomModel;
 import com.jerson.hcdc_portal.ui.adapter.RoomAdapter;
-import com.jerson.hcdc_portal.util.Dialog;
-import com.jerson.hcdc_portal.util.GlideApp;
 import com.jerson.hcdc_portal.viewmodel.RoomViewModel;
 
 import java.io.Serializable;
@@ -71,7 +58,7 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
     }
 
     void getRooms() {
-        roomViewModel.getRooms().observe(this, data -> {
+        roomViewModel.getRoomx().observe(this, data -> {
             if (data != null) {
                 for (RoomModel.rooms room : data.getRooms()) {
                     if (room.getRoomId().trim().equals(subjectData.getRoom().replace("-", "").trim())) {
@@ -84,6 +71,24 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
                         adapter.notifyDataSetChanged();
                         binding.building.setText(roomModel.getBuilding());
                         binding.floor.setText(roomModel.getFloor());
+                    }
+                }
+            }
+
+        });
+    }
+
+    void getRoomx(){
+        roomViewModel.getRooms().observe(this, data -> {
+            if (data != null) {
+                for (RoomModel.rooms room : data.getRooms()) {
+                    if (room.getRoomId().trim().equals(subjectData.getRoom().replace("-", "").trim())) {
+                        roomModel = room;
+                        for(RoomModel.previews model : room.getPreviews()){
+                            if(!model.getImg().equals("")){
+                                Log.e(TAG, "getRoomx: "+model.getImg() );
+                            }
+                        }
                     }
                 }
             }
