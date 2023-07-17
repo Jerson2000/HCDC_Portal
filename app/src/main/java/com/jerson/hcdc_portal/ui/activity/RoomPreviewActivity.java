@@ -27,7 +27,9 @@ public class RoomPreviewActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
 
-        imgList = (List<RoomModel.previews>) PortalApp.getSerializable(bundle, "previews", RoomModel.previews.class);
+        /*imgList = (List<RoomModel.previews>) PortalApp.getSerializable(bundle, "previews", RoomModel.previews.class);*/
+
+        imgList = (List<RoomModel.previews>) bundle.getSerializable("previews");
         pos = bundle.getInt("pos");
 
         adapter = new RoomPreviewAdapter(imgList);
