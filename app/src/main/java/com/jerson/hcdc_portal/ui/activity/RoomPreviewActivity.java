@@ -1,18 +1,17 @@
 package com.jerson.hcdc_portal.ui.activity;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.ActivityRoomPreviewBinding;
 import com.jerson.hcdc_portal.model.RoomModel;
 import com.jerson.hcdc_portal.ui.adapter.RoomPreviewAdapter;
+import com.jerson.hcdc_portal.util.BaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomPreviewActivity extends AppCompatActivity {
+public class RoomPreviewActivity extends BaseActivity<ActivityRoomPreviewBinding> {
     private ActivityRoomPreviewBinding binding;
     private List<RoomModel.previews> imgList = new ArrayList<>();
     private int pos;
@@ -22,12 +21,9 @@ public class RoomPreviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityRoomPreviewBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        binding = getBinding();
 
         Bundle bundle = getIntent().getExtras();
-
-        /*imgList = (List<RoomModel.previews>) PortalApp.getSerializable(bundle, "previews", RoomModel.previews.class);*/
 
         imgList = (List<RoomModel.previews>) bundle.getSerializable("previews");
         pos = bundle.getInt("pos");
@@ -41,5 +37,10 @@ public class RoomPreviewActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    @Override
+    protected ActivityRoomPreviewBinding createBinding(LayoutInflater layoutInflater) {
+        return ActivityRoomPreviewBinding.inflate(layoutInflater);
     }
 }

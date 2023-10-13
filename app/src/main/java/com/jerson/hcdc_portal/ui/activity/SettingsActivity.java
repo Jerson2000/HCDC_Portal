@@ -3,6 +3,7 @@ package com.jerson.hcdc_portal.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import com.jerson.hcdc_portal.database.DatabasePortal;
 import com.jerson.hcdc_portal.databinding.ActivitySettingsBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.ui.MainActivity;
+import com.jerson.hcdc_portal.util.BaseActivity;
 import com.jerson.hcdc_portal.util.Dialog;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.AccountViewModel;
@@ -26,7 +28,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity<ActivitySettingsBinding> {
     private static final String TAG = "SettingsActivity";
     private ActivitySettingsBinding binding;
     private PreferenceManager preferenceManager;
@@ -38,8 +40,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivitySettingsBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        binding = getBinding();
 
         preferenceManager = new PreferenceManager(this);
         dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
@@ -100,42 +101,27 @@ public class SettingsActivity extends AppCompatActivity {
     void clear() {
         deleteSubjects(object -> {
             if (object) {
-                deleteGradeLink(new DynamicListener<Boolean>() {
-                    @Override
-                    public void dynamicListener(Boolean object) {
-                        if (object) {
-                            deleteGrade(new DynamicListener<Boolean>() {
-                                @Override
-                                public void dynamicListener(Boolean object) {
-                                    if (object) {
-                                        deleteEnrollHistoryLinkData(new DynamicListener<Boolean>() {
-                                            @Override
-                                            public void dynamicListener(Boolean object) {
-                                                if (object) {
-                                                    deleteEnrollHistoryData(new DynamicListener<Boolean>() {
-                                                        @Override
-                                                        public void dynamicListener(Boolean object) {
-                                                            if (object) {
-                                                                deleteAccount(new DynamicListener<Boolean>() {
-                                                                    @Override
-                                                                    public void dynamicListener(Boolean object) {
-                                                                        if (object) {
-                                                                            preferenceManager.putBoolean(PortalApp.KEY_IS_LOGIN,false);
-                                                                            startActivity(new Intent(SettingsActivity.this, LoginActivity.class));
-                                                                            finish();
-                                                                        }
-                                                                    }
-                                                                });
-                                                            }
-                                                        }
-                                                    });
-                                                }
+                deleteGradeLink(delGL -> {
+                    if (delGL) {
+                        deleteGrade(delG -> {
+                            if (delG) {
+                                deleteEnrollHistoryLinkData(delEnL -> {
+                                    if (delEnL) {
+                                        deleteEnrollHistoryData(delEn -> {
+                                            if (delEn) {
+                                                deleteAccount(delAc -> {
+                                                    if (delAc) {
+                                                        preferenceManager.putBoolean(PortalApp.KEY_IS_LOGIN,false);
+                                                        startActivity(new Intent(SettingsActivity.this, LoginActivity.class));
+                                                        finish();
+                                                    }
+                                                });
                                             }
                                         });
                                     }
-                                }
-                            });
-                        }
+                                });
+                            }
+                        });
                     }
                 });
             }
@@ -148,10 +134,8 @@ public class SettingsActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    /*Log.d(TAG, "deleteAccount: success");*/
                     listener.dynamicListener(true);
                 }, throwable -> {
-                    Log.e(TAG, "deleteAccount: ", throwable);
                     listener.dynamicListener(false);
                 })
 
@@ -164,10 +148,8 @@ public class SettingsActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     isDeleted.dynamicListener(true);
-                    Log.d(TAG, "deleteSubjects: success");
                 }, throwable -> {
                     isDeleted.dynamicListener(false);
-                    Log.e(TAG, "deleteSubjects: ", throwable);
                 })
         );
     }
@@ -178,10 +160,8 @@ public class SettingsActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     isDeleted.dynamicListener(true);
-                    Log.d(TAG, "deleteEnrollHistoryLinkData: success");
                 }, throwable -> {
                     isDeleted.dynamicListener(false);
-                    Log.e(TAG, "deleteEnrollHistoryLinkData: ", throwable);
                 })
         );
     }
@@ -192,10 +172,8 @@ public class SettingsActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     isDeleted.dynamicListener(true);
-                    Log.d(TAG, "deleteEnrollHistoryData: success");
                 }, throwable -> {
                     isDeleted.dynamicListener(false);
-                    Log.e(TAG, "deleteEnrollHistoryData: ", throwable);
                 })
         );
     }
@@ -206,7 +184,6 @@ public class SettingsActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> isDeleted.dynamicListener(true), throwable -> {
-                    Log.e(TAG, "deleteGradeLink: ", throwable);
                     isDeleted.dynamicListener(false);
                 }));
     }
@@ -217,13 +194,16 @@ public class SettingsActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    /*Log.e(TAG, "deleteGrade: success");*/
                     listener.dynamicListener(true);
                 }, throwable -> {
-                    Log.e(TAG, "deleteGrade: ", throwable);
                     listener.dynamicListener(false);
                 })
         );
+    }
+
+    @Override
+    protected ActivitySettingsBinding createBinding(LayoutInflater layoutInflater) {
+        return ActivitySettingsBinding.inflate(layoutInflater);
     }
 
 }

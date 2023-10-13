@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +30,7 @@ import com.jerson.hcdc_portal.ui.activity.EvaluationActivity;
 import com.jerson.hcdc_portal.ui.activity.SettingsActivity;
 import com.jerson.hcdc_portal.ui.activity.SubjectDetailActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
+import com.jerson.hcdc_portal.util.BaseFragment;
 import com.jerson.hcdc_portal.util.Dialog;
 import com.jerson.hcdc_portal.util.DownloadWorker;
 import com.jerson.hcdc_portal.util.PreferenceManager;
@@ -49,7 +52,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class DashboardFragment extends Fragment implements OnClickListener<DashboardModel> {
+public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> implements OnClickListener<DashboardModel> {
     FragmentDashboardBinding binding;
     DashboardAdapter adapter;
     List<DashboardModel> dashList = new ArrayList<>();
@@ -69,16 +72,11 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
-
-
-        init();
-
-        return binding.getRoot();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding = getBinding();
+        if (!getBindingNull()) init();
     }
-
 
     void init() {
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
@@ -88,7 +86,7 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
         if (!preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE).equals("")) {
             binding.enrollAnnounceLayout.setVisibility(View.VISIBLE);
             binding.enrollAnnounce.setText(preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE));
-        }else{
+        } else {
             binding.enrollAnnounceLayout.setVisibility(View.GONE);
         }
         binding.enrolledTV.setText(preferenceManager.getString(PortalApp.KEY_IS_ENROLLED));
@@ -104,12 +102,12 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
             startActivity(new Intent(requireActivity(), SettingsActivity.class));
         });
 
-        binding.evaluation.setOnClickListener(v->{
+        binding.evaluation.setOnClickListener(v -> {
             startActivity(new Intent(requireActivity(), EvaluationActivity.class));
         });
 
         binding.evaluationIV.setImage(ImageSource.resource(R.drawable.paper));
-        binding.enrollAnnounceLayout.setOnClickListener(v->{
+        binding.enrollAnnounceLayout.setOnClickListener(v -> {
             Data inputData = new Data.Builder()
                     .putString("url", "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/room.json")
                     .putString("fileName", "test.json")
@@ -192,7 +190,6 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    /*Log.d(TAG, "loadDashboard: " + data.size());*/
                     if (data.size() > 0) {
                         dashList.clear();
                         dashList.addAll(data);
@@ -203,7 +200,6 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
                         isRetrieved.dynamicListener(false);
                     }
                 }, throwable -> {
-                    Log.e(TAG, "loadDashboard", throwable);
                     isRetrieved.dynamicListener(false);
                 }));
 
@@ -240,5 +236,10 @@ public class DashboardFragment extends Fragment implements OnClickListener<Dashb
         Intent intent = new Intent(requireActivity(), SubjectDetailActivity.class);
         intent.putExtra("subject", object);
         startActivity(intent);
+    }
+
+    @Override
+    protected FragmentDashboardBinding onCreateViewBinding(LayoutInflater layoutInflater, ViewGroup container) {
+        return FragmentDashboardBinding.inflate(layoutInflater, container, false);
     }
 }

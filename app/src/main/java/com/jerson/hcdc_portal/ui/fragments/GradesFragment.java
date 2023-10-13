@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +20,7 @@ import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.GradeModel;
 import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.adapter.GradeAdapter;
+import com.jerson.hcdc_portal.util.BaseFragment;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.GradesViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
@@ -32,7 +35,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class GradesFragment extends Fragment {
+public class GradesFragment extends BaseFragment<FragmentGradesBinding> {
     private static final String TAG = "GradesFragment";
     private FragmentGradesBinding binding;
     private List<GradeModel.Link> semGradeList = new ArrayList<>();
@@ -57,64 +60,62 @@ public class GradesFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentGradesBinding.inflate(inflater, container, false);
-
-
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding = getBinding();
         init();
-
-        return binding.getRoot();
     }
 
     void init() {
+        if (!getBindingNull()) {
 
-        // dropdown/spinner
-        arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, list);
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spinnerSem.setAdapter(arrayAdapter);
+            // dropdown/spinner
+            arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, list);
+            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.spinnerSem.setAdapter(arrayAdapter);
 
-        observerErr();
+            observerErr();
 
-        binding.spinnerSem.setFocusable(false);
-        binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
-            /*Log.d(TAG, "onItemClick: " + semGradeList.get(i).getLink() + "[" + semGradeList.get(i).getId() + "]");*/
-            if (i != 0) {
-                binding.progressBar.setVisibility(View.VISIBLE);
-                binding.gradeLayout.setVisibility(View.GONE);
-                binding.gradeRecyclerView.setVisibility(View.GONE);
-                binding.refreshLayout.setEnabled(true);
+            binding.spinnerSem.setFocusable(false);
+            binding.spinnerSem.setOnItemClickListener((adapterView, view, i, l) -> {
+                /*Log.d(TAG, "onItemClick: " + semGradeList.get(i).getLink() + "[" + semGradeList.get(i).getId() + "]");*/
+                if (i != 0) {
+                    binding.progressBar.setVisibility(View.VISIBLE);
+                    binding.gradeLayout.setVisibility(View.GONE);
+                    binding.gradeRecyclerView.setVisibility(View.GONE);
+                    binding.refreshLayout.setEnabled(true);
 
-                selectedId = semGradeList.get(i).getId();
-                selectedLink = semGradeList.get(i).getLink();
+                    selectedId = semGradeList.get(i).getId();
+                    selectedLink = semGradeList.get(i).getLink();
 
-                loadGrade(semGradeList.get(i).getId(), object -> {
-                    if (!object && !binding.refreshLayout.isRefreshing()) {
-                        if (PortalApp.isConnected()) {
-                            checkSession(object2 -> {
-                                if (object2) {
-                                    getGrade(semGradeList.get(i).getId(), semGradeList.get(i).getLink());
-                                }
-                            });
-                        } else {
-                            Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
-                            showErr("No internet connection.");
+                    loadGrade(semGradeList.get(i).getId(), object -> {
+                        if (!object && !binding.refreshLayout.isRefreshing()) {
+                            if (PortalApp.isConnected()) {
+                                checkSession(object2 -> {
+                                    if (object2) {
+                                        getGrade(semGradeList.get(i).getId(), semGradeList.get(i).getLink());
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
+                                showErr("No internet connection.");
+                            }
+
                         }
-
-                    }
-                });
+                    });
 
 
-            }
-        });
+                }
+            });
 
-        if(!binding.spinnerSem.getText().toString().equals("")){
             binding.refreshLayout.setOnRefreshListener(() -> {
-                binding.refreshLayout.setRefreshing(true);
                 if (PortalApp.isConnected()) {
                     checkSession(object -> {
                         if (object) {
-                            getGrade(selectedId, selectedLink);
+                            if (!binding.spinnerSem.getText().toString().equals(""))
+                                getGrade(selectedId, selectedLink);
+                            else
+                                getLink();
                         }
                     });
                 } else {
@@ -123,13 +124,13 @@ public class GradesFragment extends Fragment {
                 }
 
             });
-        }else binding.refreshLayout.setEnabled(false);
-
-        binding.gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new GradeAdapter(gradeList, requireActivity());
-        binding.gradeRecyclerView.setAdapter(adapter);
 
 
+            binding.gradeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            adapter = new GradeAdapter(gradeList, requireActivity());
+            binding.gradeRecyclerView.setAdapter(adapter);
+
+        }
     }
 
     void getLink() {
@@ -141,10 +142,11 @@ public class GradesFragment extends Fragment {
 
                 deleteGradeLink(object -> {
                     if (object) {
-                        saveGradeLink(new DynamicListener<Boolean>() {
-                            @Override
-                            public void dynamicListener(Boolean object) {
-                                binding.refreshLayout.setRefreshing(false);
+                        deleteAllGrade(isDeleted -> {
+                            if (isDeleted) {
+                                saveGradeLink(isSave -> {
+                                    if (isSave) binding.refreshLayout.setRefreshing(false);
+                                });
                             }
                         });
                     }
@@ -236,7 +238,6 @@ public class GradesFragment extends Fragment {
 
                         listener.dynamicListener(true);
                     } else listener.dynamicListener(false);
-                    /*Log.e(TAG, "loadGradeLink: " + data.size());*/
                 }, throwable -> {
 
                 })
@@ -271,7 +272,6 @@ public class GradesFragment extends Fragment {
                             /*Log.w(TAG, "saveGradeLink Data saved: " + semGradeList.size());*/
                             listener.dynamicListener(true);
                         }, throwable -> {
-                            Log.d(TAG, "saveGradeLink: " + throwable);
                             listener.dynamicListener(false);
                         }
                 ));
@@ -285,7 +285,6 @@ public class GradesFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     isDeleted.dynamicListener(true);
-                    /*Log.e(TAG, "deleteGradeLink: deleted");*/
                 }, throwable -> {
                     Log.e(TAG, "deleteGradeLink: ", throwable);
                     isDeleted.dynamicListener(false);
@@ -316,7 +315,6 @@ public class GradesFragment extends Fragment {
 
                     }
                     listener.dynamicListener(data.size() > 0);
-                    /*Log.e(TAG, "loadGrade: " + data.size());*/
                 }, throwable -> Log.e(TAG, "loadGrade: ", throwable)));
     }
 
@@ -329,7 +327,6 @@ public class GradesFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    /*Log.e(TAG, "saveGrade: success");*/
                     listener.dynamicListener(true);
                 }, throwable -> {
                     Log.e(TAG, "saveGrade: ", throwable);
@@ -345,10 +342,22 @@ public class GradesFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    /*Log.e(TAG, "deleteGrade: success");*/
                     listener.dynamicListener(true);
                 }, throwable -> {
                     Log.e(TAG, "deleteGrade: ", throwable);
+                    listener.dynamicListener(false);
+                })
+        );
+    }
+
+    void deleteAllGrade(DynamicListener<Boolean> listener) {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(viewModel.deleteAllGradeData()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    listener.dynamicListener(true);
+                }, throwable -> {
                     listener.dynamicListener(false);
                 })
         );
@@ -365,6 +374,10 @@ public class GradesFragment extends Fragment {
         binding.errEmoji.setText(PortalApp.SAD_EMOJIS[n]);
     }
 
+    @Override
+    protected FragmentGradesBinding onCreateViewBinding(LayoutInflater layoutInflater, ViewGroup container) {
+        return FragmentGradesBinding.inflate(layoutInflater, container, false);
+    }
 
     public GradesFragment() {
     }

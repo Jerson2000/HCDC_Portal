@@ -1,24 +1,23 @@
 package com.jerson.hcdc_portal.ui.fragments;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.FragmentAccountBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.AccountModel;
-import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.adapter.AccountAdapter;
+import com.jerson.hcdc_portal.util.BaseFragment;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.AccountViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
@@ -32,7 +31,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class AccountFragment extends Fragment {
+public class AccountFragment extends BaseFragment<FragmentAccountBinding> {
     private static final String TAG = "AccountFragment";
     private FragmentAccountBinding binding;
     private AccountViewModel viewModel;
@@ -52,15 +51,10 @@ public class AccountFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentAccountBinding.inflate(inflater, container, false);
-
-
-        init();
-
-
-        return binding.getRoot();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding = getBinding();
+        if (!getBindingNull()) init();
     }
 
     void init() {
@@ -129,12 +123,12 @@ public class AccountFragment extends Fragment {
 
     }
 
-    void observeErr(){
-        loginViewModel.getErr().observe(requireActivity(),err->{
+    void observeErr() {
+        loginViewModel.getErr().observe(requireActivity(), err -> {
             showErr(err.getMessage());
         });
 
-        viewModel.getErr().observe(requireActivity(),err->{
+        viewModel.getErr().observe(requireActivity(), err -> {
             showErr(err.getMessage());
         });
     }
@@ -240,9 +234,7 @@ public class AccountFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        HttpClient.getInstance().cancelRequest();
-        ((ViewGroup) binding.refreshLayout.getParent()).removeView(binding.refreshLayout);
+    protected FragmentAccountBinding onCreateViewBinding(LayoutInflater layoutInflater, ViewGroup container) {
+        return FragmentAccountBinding.inflate(layoutInflater, container, false);
     }
 }

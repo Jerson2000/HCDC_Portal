@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +20,7 @@ import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.EnrollHistModel;
 import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.adapter.EnrollHistoryAdapter;
+import com.jerson.hcdc_portal.util.BaseFragment;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.EnrollHistoryViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
@@ -31,7 +34,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class EnrollmentHistoryFragment extends Fragment {
+public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHistoryBinding> {
     private static final String TAG = "EnrollmentHistoryFragment";
     private FragmentEnrollmentHistoryBinding binding;
     private EnrollHistoryViewModel viewModel;
@@ -54,14 +57,11 @@ public class EnrollmentHistoryFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding = getBinding();
+        if (!getBindingNull()) init();
 
-        binding = FragmentEnrollmentHistoryBinding.inflate(inflater, container, false);
-
-        init();
-
-        return binding.getRoot();
     }
 
     void init() {
@@ -106,22 +106,24 @@ public class EnrollmentHistoryFragment extends Fragment {
 
         });
 
-        if (!binding.spinnerSem.getText().toString().equals("")) {
-            binding.refreshLayout.setOnRefreshListener(() -> {
-                binding.refreshLayout.setRefreshing(true);
-                if (PortalApp.isConnected()) {
-                    checkSession(object -> {
-                        if (object) {
-                            getData(selectedLink, selectedId);
-                        }
-                    });
-                } else {
-                    Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
-                    binding.refreshLayout.setRefreshing(false);
 
-                }
-            });
-        } else binding.refreshLayout.setEnabled(false);
+        binding.refreshLayout.setOnRefreshListener(() -> {
+            binding.refreshLayout.setRefreshing(true);
+            if (PortalApp.isConnected()) {
+                checkSession(object -> {
+                    if (object) {
+                        if (!binding.spinnerSem.getText().toString().equals(""))
+                            getData(selectedLink, selectedId);
+                        else
+                            getLinks();
+                    }
+                });
+            } else {
+                Toast.makeText(requireActivity(), "No internet connection.", Toast.LENGTH_SHORT).show();
+                binding.refreshLayout.setRefreshing(false);
+
+            }
+        });
 
 
         binding.retryLayout.retryBtn.setOnClickListener(v -> {
@@ -144,12 +146,13 @@ public class EnrollmentHistoryFragment extends Fragment {
                     }
                     deleteEnrollHistoryLinkData(object -> {
                         if (object) {
-                            saveEnrollHistoryLink(new DynamicListener<Boolean>() {
-                                @Override
-                                public void dynamicListener(Boolean object) {
-                                    if (object) {
-                                        binding.refreshLayout.setRefreshing(false);
-                                    }
+                            deleteAllEnrollHistoryData(isDel -> {
+                                if (isDel) {
+                                    saveEnrollHistoryLink(isSave -> {
+                                        if (isSave) {
+                                            binding.refreshLayout.setRefreshing(false);
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -284,7 +287,6 @@ public class EnrollmentHistoryFragment extends Fragment {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                     isDeleted.dynamicListener(true);
-                    /*Log.d(TAG, "deleteEnrollHistoryData: success");*/
                 }, throwable -> {
                     isDeleted.dynamicListener(false);
                     Log.e(TAG, "deleteEnrollHistoryData: ", throwable);
@@ -292,24 +294,38 @@ public class EnrollmentHistoryFragment extends Fragment {
         );
     }
 
+    void deleteAllEnrollHistoryData(DynamicListener<Boolean> isDeleted) {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(viewModel.deleteAllEnrollHistoryData()
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    isDeleted.dynamicListener(true);
+                }, throwable -> {
+                    isDeleted.dynamicListener(false);
+                })
+        );
+    }
+
     DynamicListener<Boolean> linkRetrieved = new DynamicListener<Boolean>() {
         @Override
         public void dynamicListener(Boolean object) {
-            if (object) {
-                binding.progressBar.setVisibility(View.GONE);
-                binding.semSelectorLayout.setVisibility(View.VISIBLE);
-                binding.enrHistRecyclerView.setVisibility(View.VISIBLE);
-                arrayAdapter.notifyDataSetChanged();
-            } else {
+            if (!object) {
                 if (PortalApp.isConnected() && !binding.refreshLayout.isRefreshing()) {
                     checkSession(object1 -> {
-                        if (object1 && !binding.refreshLayout.isRefreshing()) {
+                        if (object1) {
                             getLinks();
                         }
                     });
                 }
+
                 if (!PortalApp.isConnected()) showErr("No internet connection.");
+
+            } else {
+                arrayAdapter.notifyDataSetChanged();
+                binding.semSelectorLayout.setVisibility(View.VISIBLE);
+                binding.progressBar.setVisibility(View.GONE);
             }
+
         }
     };
 
@@ -369,10 +385,8 @@ public class EnrollmentHistoryFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        HttpClient.getInstance().cancelRequest();
-        ((ViewGroup) binding.refreshLayout.getParent()).removeView(binding.refreshLayout);
+    protected FragmentEnrollmentHistoryBinding onCreateViewBinding(LayoutInflater layoutInflater, ViewGroup container) {
+        return FragmentEnrollmentHistoryBinding.inflate(layoutInflater, container, false);
     }
 
 }

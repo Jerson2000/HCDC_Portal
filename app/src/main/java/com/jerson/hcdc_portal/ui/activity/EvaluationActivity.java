@@ -5,22 +5,23 @@ import static androidx.webkit.WebSettingsCompat.FORCE_DARK_ON;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewFeature;
 
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.databinding.ActivityEvaluationBinding;
+import com.jerson.hcdc_portal.util.BaseActivity;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.EvaluationViewModel;
 
-public class EvaluationActivity extends AppCompatActivity {
+public class EvaluationActivity extends BaseActivity<ActivityEvaluationBinding> {
     private static final String TAG = "EvaluationActivity";
     private ActivityEvaluationBinding binding;
     private String evaluationHtml;
@@ -31,12 +32,19 @@ public class EvaluationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityEvaluationBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        binding = getBinding();
 
         viewModel = new ViewModelProvider(this).get(EvaluationViewModel.class);
         preferenceManager = new PreferenceManager(this);
 
+        if(!getBindingNull()) init();
+
+
+
+
+    }
+
+    void init(){
         myWebView = binding.myWebView;
 
         if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
@@ -53,8 +61,7 @@ public class EvaluationActivity extends AppCompatActivity {
 
         getEvaluation();
         observeErr();
-
-
+        binding.btnBack.setOnClickListener(v->onBackPressed());
     }
 
     void getEvaluation() {
@@ -66,6 +73,7 @@ public class EvaluationActivity extends AppCompatActivity {
                         evaluationHtml +
                         "</body></html>";
                 preferenceManager.putString(PortalApp.KEY_HTML_EVALUATION, data);
+
                 myWebView.loadDataWithBaseURL(null, htmlHeaders, "text/html", "UTF-8", null);
 
             } else {
@@ -87,5 +95,14 @@ public class EvaluationActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected ActivityEvaluationBinding createBinding(LayoutInflater layoutInflater) {
+        return ActivityEvaluationBinding.inflate(layoutInflater);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        myWebView.destroy();
+    }
 }

@@ -2,10 +2,9 @@ package com.jerson.hcdc_portal.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -15,13 +14,15 @@ import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.model.RoomModel;
 import com.jerson.hcdc_portal.ui.adapter.RoomAdapter;
+import com.jerson.hcdc_portal.util.BaseActivity;
 import com.jerson.hcdc_portal.viewmodel.RoomViewModel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SubjectDetailActivity extends AppCompatActivity implements DynamicListener<Integer> {
+public class SubjectDetailActivity extends BaseActivity<ActivitySubjectDetailBinding> implements DynamicListener<Integer> {
+    private static final String TAG = "SubjectDetailActivity";
     private ActivitySubjectDetailBinding binding;
     private DashboardModel subjectData;
     private RoomViewModel roomViewModel;
@@ -29,16 +30,14 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
     private List<RoomModel.previews> imageList = new ArrayList<>();
     private RoomModel.rooms roomModel;
 
-    private final String TAG =  SubjectDetailActivity.class.toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivitySubjectDetailBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        binding = getBinding();
 
         Bundle bundle = getIntent().getExtras();
-        subjectData = (DashboardModel) PortalApp.getSerializable(bundle, "subject", DashboardModel.class);
+        subjectData = PortalApp.getSerializable(bundle, "subject", DashboardModel.class);
         roomViewModel = new ViewModelProvider(this).get(RoomViewModel.class);
 
         init();
@@ -64,31 +63,13 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
                     if (room.getRoomId().trim().equals(subjectData.getRoom().replace("-", "").trim())) {
                         roomModel = room;
                         for(RoomModel.previews model : room.getPreviews()){
-                            if(!model.getImg().equals("")){
+                            if(model.getImg() != null && !model.getImg().equals("")){
                                 imageList.add(model);
                             }
                         }
                         adapter.notifyDataSetChanged();
                         binding.building.setText(roomModel.getBuilding());
                         binding.floor.setText(roomModel.getFloor());
-                    }
-                }
-            }
-
-        });
-    }
-
-    void getRoomx(){
-        roomViewModel.getRooms().observe(this, data -> {
-            if (data != null) {
-                for (RoomModel.rooms room : data.getRooms()) {
-                    if (room.getRoomId().trim().equals(subjectData.getRoom().replace("-", "").trim())) {
-                        roomModel = room;
-                        for(RoomModel.previews model : room.getPreviews()){
-                            if(!model.getImg().equals("")){
-                                Log.e(TAG, "getRoomx: "+model.getImg() );
-                            }
-                        }
                     }
                 }
             }
@@ -104,11 +85,13 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
     }
 
     void setViews() {
-        binding.subjDesc.setText(subjectData.getDescription());
-        binding.offerNo.setText(subjectData.getOfferNo());
-        binding.subjCode.setText(subjectData.getSubjCode());
-        binding.schedule.setText(subjectData.getDays().concat(" - ").concat(subjectData.getTime()));
-        binding.room.setText(subjectData.getRoom().replace("-", ""));
+        if(!getBindingNull()){
+            binding.subjDesc.setText(subjectData.getDescription());
+            binding.offerNo.setText(subjectData.getOfferNo());
+            binding.subjCode.setText(subjectData.getSubjCode());
+            binding.schedule.setText(subjectData.getDays().concat(" - ").concat(subjectData.getTime()));
+            binding.room.setText(subjectData.getRoom().replace("-", ""));
+        }
 
     }
 
@@ -121,6 +104,12 @@ public class SubjectDetailActivity extends AppCompatActivity implements DynamicL
         intent.putExtra("pos",position);
         startActivity(intent);
 
+    }
+
+
+    @Override
+    protected ActivitySubjectDetailBinding createBinding(LayoutInflater layoutInflater) {
+        return ActivitySubjectDetailBinding.inflate(layoutInflater);
     }
 
 }

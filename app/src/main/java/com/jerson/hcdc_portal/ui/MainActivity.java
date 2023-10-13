@@ -1,6 +1,7 @@
 package com.jerson.hcdc_portal.ui;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -16,11 +17,12 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ActivityMainBinding;
+import com.jerson.hcdc_portal.util.BaseActivity;
 import com.jerson.hcdc_portal.util.DownloadRoomsWorker;
 import com.jerson.hcdc_portal.util.DownloadWorker;
 import com.jerson.hcdc_portal.util.SnackBarUtil;
 
-public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements NavigationBarView.OnItemSelectedListener {
     private static final String TAG = "MainActivity";
 
     ActivityMainBinding binding;
@@ -29,9 +31,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
+        binding = getBinding();
 
         Init();
 
@@ -84,5 +84,10 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         }
 
         return true;
+    }
+
+    @Override
+    protected ActivityMainBinding createBinding(LayoutInflater layoutInflater) {
+        return ActivityMainBinding.inflate(layoutInflater);
     }
 }

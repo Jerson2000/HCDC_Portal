@@ -5,16 +5,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.jerson.hcdc_portal.PortalApp;
+import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ActivityLoginBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.ui.MainActivity;
+import com.jerson.hcdc_portal.util.BaseActivity;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.util.SnackBarUtil;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
@@ -27,20 +31,17 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     private ActivityLoginBinding binding;
     private LoginViewModel viewModel;
     private DashboardViewModel dashboardViewModel;
     private static final String TAG = "LoginActivity";
     private PreferenceManager preferenceManager;
-    private int pop = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityLoginBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
+        binding = getBinding();
 
         preferenceManager = new PreferenceManager(this);
 
@@ -55,9 +56,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     void init() {
-
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+
+        Glide.with(this).load(R.drawable.logo).into(binding.logo);
 
         observeErr();
 
@@ -68,12 +70,12 @@ public class LoginActivity extends AppCompatActivity {
         binding.loginBtn.setOnClickListener(v -> {
             if (PortalApp.isConnected()) {
 
-                if (binding.emailET.getText().toString().equals("") || binding.passET.getText().toString().equals("")) {
-                    SnackBarUtil.SnackBarLong(binding.snackBarLayout, "Some field/s are empty.").show();
+                if (!binding.emailET.getText().toString().equals("") && !binding.passET.getText().toString().equals("")) {
+                    login();
                 } else {
-
+                    SnackBarUtil.SnackBarLong(binding.snackBarLayout, "Some field/s are empty.").show();
                 }
-                login();
+
 
             } else {
                 SnackBarUtil.SnackBarLong(binding.snackBarLayout, "No internet connection.").show();
@@ -93,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
         isLoading(true, false);
         /*viewModel.Login(email, pass);*/
 
-        viewModel.Login(email, pass,loginListener);
+        viewModel.Login(email, pass, loginListener);
 
 
     }
@@ -124,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    void observeErr(){
+    void observeErr() {
         viewModel.getErr().observe(this, err -> {
 
             if (err.getMessage().toLowerCase(Locale.ROOT).contains("credentials")) {
@@ -135,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                 isLoading(false, false);
                 SnackBarUtil.SnackBarIndefiniteDuration(binding.snackBarLayout, err.getMessage())
                         .setAction("Retry", view -> {
-                            viewModel.Login(binding.emailET.getText().toString(), binding.passET.getText().toString(),loginListener);
+                            viewModel.Login(binding.emailET.getText().toString(), binding.passET.getText().toString(), loginListener);
                             isLoading(true, false);
                         })
                         .show();
@@ -190,6 +192,10 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e(TAG, "deleteData: ", throwable);
                 })
         );
+    }
+    @Override
+    protected ActivityLoginBinding createBinding(LayoutInflater layoutInflater) {
+        return ActivityLoginBinding.inflate(layoutInflater);
     }
 
 }

@@ -53,7 +53,7 @@ public class RoomRepo {
 
             inputStreamReader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            err.setValue(e);
         }
 
         return data;
