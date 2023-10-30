@@ -20,6 +20,7 @@ import com.jerson.hcdc_portal.databinding.ActivityMainBinding;
 import com.jerson.hcdc_portal.util.BaseActivity;
 import com.jerson.hcdc_portal.util.DownloadRoomsWorker;
 import com.jerson.hcdc_portal.util.DownloadWorker;
+import com.jerson.hcdc_portal.util.NetworkUtil;
 import com.jerson.hcdc_portal.util.SnackBarUtil;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> implements NavigationBarView.OnItemSelectedListener {
@@ -40,7 +41,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements N
     void Init() {
         binding.navbar.setOnItemSelectedListener(this);
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        if(PortalApp.isConnected()) downloadRooms();
+        if(NetworkUtil.isConnected()) downloadRooms();
     }
 
     void downloadRooms(){

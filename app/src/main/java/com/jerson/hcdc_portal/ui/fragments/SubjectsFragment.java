@@ -23,6 +23,7 @@ import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.activity.SubjectDetailActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
 import com.jerson.hcdc_portal.util.BaseFragment;
+import com.jerson.hcdc_portal.util.NetworkUtil;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
@@ -72,7 +73,7 @@ public class SubjectsFragment extends BaseFragment<FragmentSubjectsBinding> impl
 
         binding.refreshLayout.setOnRefreshListener(() -> {
             binding.refreshLayout.setRefreshing(true);
-            if (PortalApp.isConnected()) {
+            if (NetworkUtil.isConnected()) {
                 checkSession(object -> {
                     if (object) {
                         getSubjects();
@@ -88,10 +89,10 @@ public class SubjectsFragment extends BaseFragment<FragmentSubjectsBinding> impl
     }
 
     void checkSession(DynamicListener<Boolean> listener) {
-        loginViewModel.checkSession(object -> {
+        NetworkUtil.checkSession(object -> {
             if (object) {
-                loginViewModel.Login(preferenceManager.getString(PortalApp.KEY_EMAIL), preferenceManager.getString(PortalApp.KEY_PASSWORD)).observe(requireActivity(), data -> {
-                    if (data.toLowerCase(Locale.ROOT).contains("logged")) {
+                NetworkUtil.reLogin(logged->{
+                    if(logged){
                         checkSession(listener);
                     }
                 });

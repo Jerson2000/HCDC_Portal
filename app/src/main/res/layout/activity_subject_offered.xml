@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:clipChildren="false"
     android:fitsSystemWindows="true"
-    tools:context=".ui.activity.EvaluationActivity">
+    tools:context=".ui.activity.SubjectOfferedActivity">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -17,15 +17,23 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingHorizontal="24dp">
+            android:orientation="vertical">
 
-            <WebView
-                android:id="@+id/myWebView"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:clipToPadding="false"
+                android:orientation="vertical" />
 
+            <ProgressBar
+                android:id="@+id/bottomProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -35,20 +43,12 @@
         android:id="@+id/header"
         layout="@layout/view_header_expandable" />
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
+    <ProgressBar
         android:id="@+id/progressBar"
-        style="@style/Widget.Material3.CircularProgressIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:indeterminate="true" />
-
-    <include
-        android:id="@+id/errLayout"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        layout="@layout/error_layout"
-        android:visibility="gone"
-        android:layout_height="wrap_content"/>
+        android:indeterminate="true"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

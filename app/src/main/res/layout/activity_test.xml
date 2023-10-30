@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:clipChildren="false"
     android:fitsSystemWindows="true"
-    tools:context=".ui.activity.EvaluationActivity">
+    tools:context=".ui.activity.TestActivity">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -20,11 +20,11 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp">
 
-            <WebView
-                android:id="@+id/myWebView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
+           <com.google.android.material.button.MaterialButton
+               android:id="@+id/testBtn"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="Test Subject Offered"/>
 
 
         </LinearLayout>
@@ -34,21 +34,5 @@
     <include
         android:id="@+id/header"
         layout="@layout/view_header_expandable" />
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/progressBar"
-        style="@style/Widget.Material3.CircularProgressIndicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="true" />
-
-    <include
-        android:id="@+id/errLayout"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        layout="@layout/error_layout"
-        android:visibility="gone"
-        android:layout_height="wrap_content"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

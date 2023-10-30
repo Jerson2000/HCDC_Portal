@@ -21,6 +21,7 @@ import com.jerson.hcdc_portal.model.GradeModel;
 import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.adapter.GradeAdapter;
 import com.jerson.hcdc_portal.util.BaseFragment;
+import com.jerson.hcdc_portal.util.NetworkUtil;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.GradesViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
@@ -90,7 +91,7 @@ public class GradesFragment extends BaseFragment<FragmentGradesBinding> {
 
                     loadGrade(semGradeList.get(i).getId(), object -> {
                         if (!object && !binding.refreshLayout.isRefreshing()) {
-                            if (PortalApp.isConnected()) {
+                            if (NetworkUtil.isConnected()) {
                                 checkSession(object2 -> {
                                     if (object2) {
                                         getGrade(semGradeList.get(i).getId(), semGradeList.get(i).getLink());
@@ -109,7 +110,7 @@ public class GradesFragment extends BaseFragment<FragmentGradesBinding> {
             });
 
             binding.refreshLayout.setOnRefreshListener(() -> {
-                if (PortalApp.isConnected()) {
+                if (NetworkUtil.isConnected()) {
                     checkSession(object -> {
                         if (object) {
                             if (!binding.spinnerSem.getText().toString().equals(""))
@@ -196,11 +197,10 @@ public class GradesFragment extends BaseFragment<FragmentGradesBinding> {
     }
 
     void checkSession(DynamicListener<Boolean> listener) {
-        loginViewModel.checkSession(object -> {
+        NetworkUtil.checkSession(object -> {
             if (object) {
-                loginViewModel.Login(preferenceManager.getString(PortalApp.KEY_EMAIL), preferenceManager.getString(PortalApp.KEY_PASSWORD)).observe(requireActivity(), data -> {
-                    Log.e(TAG, "dynamicListener: " + data);
-                    if (data.toLowerCase(Locale.ROOT).contains("logged")) {
+                NetworkUtil.reLogin(logged->{
+                    if(logged){
                         checkSession(listener);
                     }
                 });
@@ -246,7 +246,7 @@ public class GradesFragment extends BaseFragment<FragmentGradesBinding> {
 
     DynamicListener<Boolean> linkListener = object -> {
         if (!object) {
-            if (PortalApp.isConnected() && !binding.refreshLayout.isRefreshing()) {
+            if (NetworkUtil.isConnected() && !binding.refreshLayout.isRefreshing()) {
                 checkSession(object1 -> {
                     if (object1) {
                         getLink();
@@ -254,7 +254,7 @@ public class GradesFragment extends BaseFragment<FragmentGradesBinding> {
                 });
             }
 
-            if (!PortalApp.isConnected()) showErr("No internet connection.");
+            if (!NetworkUtil.isConnected()) showErr("No internet connection.");
 
         } else {
             arrayAdapter.notifyDataSetChanged();

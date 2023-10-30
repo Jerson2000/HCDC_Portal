@@ -21,6 +21,7 @@ import com.jerson.hcdc_portal.model.EnrollHistModel;
 import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.adapter.EnrollHistoryAdapter;
 import com.jerson.hcdc_portal.util.BaseFragment;
+import com.jerson.hcdc_portal.util.NetworkUtil;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.EnrollHistoryViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
@@ -91,7 +92,7 @@ public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHi
 
             loadEnrollHistory(periodLinks.get(i).getId(), object -> {
                 if (!object && !binding.refreshLayout.isRefreshing()) {
-                    if (PortalApp.isConnected()) {
+                    if (NetworkUtil.isConnected()) {
                         checkSession(object1 -> {
                             if (object1) {
                                 getData(periodLinks.get(i).getPeriodLink(), periodLinks.get(i).getId());
@@ -109,7 +110,7 @@ public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHi
 
         binding.refreshLayout.setOnRefreshListener(() -> {
             binding.refreshLayout.setRefreshing(true);
-            if (PortalApp.isConnected()) {
+            if (NetworkUtil.isConnected()) {
                 checkSession(object -> {
                     if (object) {
                         if (!binding.spinnerSem.getText().toString().equals(""))
@@ -310,7 +311,7 @@ public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHi
         @Override
         public void dynamicListener(Boolean object) {
             if (!object) {
-                if (PortalApp.isConnected() && !binding.refreshLayout.isRefreshing()) {
+                if (NetworkUtil.isConnected() && !binding.refreshLayout.isRefreshing()) {
                     checkSession(object1 -> {
                         if (object1) {
                             getLinks();
@@ -318,7 +319,7 @@ public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHi
                     });
                 }
 
-                if (!PortalApp.isConnected()) showErr("No internet connection.");
+                if (!NetworkUtil.isConnected()) showErr("No internet connection.");
 
             } else {
                 arrayAdapter.notifyDataSetChanged();
@@ -355,11 +356,10 @@ public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHi
     }
 
     void checkSession(DynamicListener<Boolean> listener) {
-        loginViewModel.checkSession(object -> {
+        NetworkUtil.checkSession(object -> {
             if (object) {
-                loginViewModel.Login(preferenceManager.getString(PortalApp.KEY_EMAIL), preferenceManager.getString(PortalApp.KEY_PASSWORD)).observe(requireActivity(), data -> {
-                    /*Log.e(TAG, "dynamicListener: " + data);*/
-                    if (data.toLowerCase(Locale.ROOT).contains("logged")) {
+                NetworkUtil.reLogin(logged->{
+                    if(logged){
                         checkSession(listener);
                     }
                 });
