@@ -43,7 +43,8 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> {
         super.onCreate(savedInstanceState);
 
         if (PortalApp.getPreferenceManager().getBoolean(PortalApp.KEY_IS_LOGIN)) {
-            autoReLogin();
+            if (NetworkUtil.isConnected()) autoReLogin();
+            else loading(MainActivity.class);
         } else {
             loading(LoginActivity.class);
         }
