@@ -45,12 +45,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
         binding = getBinding();
 
         preferenceManager = new PreferenceManager(this);
-
-        if (preferenceManager.getBoolean(PortalApp.KEY_IS_LOGIN)) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
-
         init();
         listeners();
 

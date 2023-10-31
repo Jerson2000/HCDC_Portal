@@ -1,6 +1,7 @@
 package com.jerson.hcdc_portal.ui.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -99,6 +100,10 @@ public class SettingsActivity extends BaseActivity<ActivitySettingsBinding> {
                         dialog.setCanceledOnTouchOutside(false);
                     })
                     .setNegativeButton("No", (dialog, which) -> dialog.dismiss()).show();
+        });
+
+        binding.github.setOnClickListener(v->{
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(PortalApp.github)));
         });
     }
 

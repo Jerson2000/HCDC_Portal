@@ -143,6 +143,9 @@ public class PortalApp extends Application implements LifecycleObserver {
     public static final String subjectOfferedSearch = "/subject/s";
 
 
+    public static final String github = "https://github.com/Jerson2000/HCDC_Portal";
+
+
     public static final String[] SAD_EMOJIS = {"(っ °Д °;)っ", "(┬┬﹏┬┬)", "¯\\_(ツ)_/¯", "___*( ￣皿￣)/#____", "ಥ_ಥ", "(>ლ)"};
     public static final String[] HAPPY_EMOJIS = {"(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧", "(⌐■_■)", "✪ ω ✪", "( ﾉ ﾟｰﾟ)ﾉ", "d=====(￣▽￣*)b", "🤝🏻o((>ω< ))o"};
 

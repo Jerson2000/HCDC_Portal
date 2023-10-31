@@ -41,20 +41,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements N
     void Init() {
         binding.navbar.setOnItemSelectedListener(this);
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        if(NetworkUtil.isConnected()) downloadRooms();
-    }
-
-    void downloadRooms(){
-        Data inputData = new Data.Builder()
-                .putString("url", "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/room.json")
-                .putString("fileName", "rooms.json")
-                .build();
-
-        OneTimeWorkRequest downloadRequest =
-                new OneTimeWorkRequest.Builder(DownloadRoomsWorker.class)
-                        .setInputData(inputData)
-                        .build();
-        WorkManager.getInstance(this).enqueue(downloadRequest);
     }
 
     @Override

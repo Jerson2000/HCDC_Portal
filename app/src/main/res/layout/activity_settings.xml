@@ -35,7 +35,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:settingIcon="@drawable/ic_brightness"
-                    app:settingSubtitle="change app theme"
+                    app:settingSubtitle="Change app theme."
                     app:settingTitle="Select default theme" />
 
                 <LinearLayout
@@ -85,14 +85,23 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
                     android:orientation="vertical">
+
+                    <com.jerson.hcdc_portal.ui.view.SettingOptionView
+                        android:id="@+id/github"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:settingIcon="@drawable/ic_github_24"
+                        app:settingSubtitle="Developer info. and app release."
+                        app:settingTitle="Github" />
 
                     <com.jerson.hcdc_portal.ui.view.SettingOptionView
                         android:id="@+id/btnLogout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:settingIcon="@drawable/ic_logout"
-                        app:settingSubtitle="end session"
+                        app:settingSubtitle="End session."
                         app:settingTitle="Logout" />
 
                 </LinearLayout>

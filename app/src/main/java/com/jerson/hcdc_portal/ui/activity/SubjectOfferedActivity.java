@@ -30,6 +30,7 @@ import com.jerson.hcdc_portal.viewmodel.SubjectOfferedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class SubjectOfferedActivity extends BaseActivity<ActivitySubjectOfferedBinding> implements OnClickListener<Integer> {
     private static final String TAG = "SubjectOfferedActivity";
@@ -39,8 +40,7 @@ public class SubjectOfferedActivity extends BaseActivity<ActivitySubjectOfferedB
     private int page = 1;
     private int totalPages = 148;
     private AlertDialog dialog;
-    private int visibleItemCount, totalItemCount, firstVisibleItemPosition;
-    private boolean iLoad;
+    private boolean isSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,36 +68,24 @@ public class SubjectOfferedActivity extends BaseActivity<ActivitySubjectOfferedB
 
         getBinding().recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (!recyclerView.canScrollVertically(1)&& newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                    int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
-                    int itemCount = layoutManager.getItemCount();
-
-                    if (lastVisibleItemPosition == itemCount - 1) {
-                        Log.e(TAG, "onScrollStateChanged: LOAD MORE PLEASE HUHU" );
-                    }
-                }
-            }
-
-            @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount, totalItemCount, firstVisibleItemPosition;
                 LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 assert layoutManager != null;
-                 visibleItemCount = layoutManager.getChildCount();
-                 totalItemCount = layoutManager.getItemCount();
-                 firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+                visibleItemCount = layoutManager.getChildCount();
+                totalItemCount = layoutManager.getItemCount();
+                firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-                 if(!recyclerView.canScrollVertically(1)){
-                     if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
-                         Log.e(TAG, "onScrolled: tinuod");
-                         iLoad=true;
-                     }else{
-                         iLoad = false;
-                     }
-                 }
+                if (!recyclerView.canScrollVertically(1)) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
+                        if (page <= totalPages && !isSearch) {
+                            page++;
+                            getSubjectOffered();
+                        }
+
+                    }
+                }
 
 
             }
@@ -130,12 +118,19 @@ public class SubjectOfferedActivity extends BaseActivity<ActivitySubjectOfferedB
                 offeredList.addAll(data.getSubjectOfferedList());
                 totalPages = data.getSubjectOfferedList().get(0).getTotalPage();
                 adapter.notifyDataSetChanged();
+            }else{
+                getBinding().errLayout.emoji.setText(PortalApp.SAD_EMOJIS[new Random().nextInt(6)]);
+                getBinding().errLayout.response.setText("No data available.");
+                getBinding().recyclerView.setVisibility(View.GONE);
             }
         });
     }
 
     void showErrDisplay() {
         subjectOfferedViewModel.getErr().observe(this, data -> {
+            getBinding().errLayout.emoji.setText(PortalApp.SAD_EMOJIS[new Random().nextInt(6)]);
+            getBinding().errLayout.response.setText(data.getMessage());
+            getBinding().recyclerView.setVisibility(View.GONE);
             PortalApp.showToast(data.getMessage());
         });
     }
@@ -180,13 +175,16 @@ public class SubjectOfferedActivity extends BaseActivity<ActivitySubjectOfferedB
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchSubjectOffered(query);
-                return true;
+                if (!query.equals("")) {
+                    searchSubjectOffered(query);
+                    isSearch = true;
+                    return true;
+                }
+                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Update search results
                 return false;
             }
         });
