@@ -1,6 +1,8 @@
 package com.jerson.hcdc_portal.util;
 
 import android.content.Context;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -15,6 +17,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class DownloadRoomsWorker extends Worker {
+    private static final String TAG = "DownloadRoomsWorker";
 
     public DownloadRoomsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -65,6 +68,6 @@ public class DownloadRoomsWorker extends Worker {
     }
 
     private void displayDownloadedFilePath(String filePath) {
-        System.out.println("File Path: " + filePath);
+        Log.e(TAG, "displayDownloadedFilePath: "+ filePath);
     }
 }

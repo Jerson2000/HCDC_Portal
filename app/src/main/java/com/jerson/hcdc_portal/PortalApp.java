@@ -2,23 +2,30 @@ package com.jerson.hcdc_portal;
 
 import android.app.Application;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.jerson.hcdc_portal.ui.activity.CrashActivity;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 
 import org.jsoup.nodes.Document;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 
 
-public class PortalApp extends Application {
+public class PortalApp extends Application implements LifecycleObserver {
+    private static final String TAG = "PortalApp";
     private static Context appContext;
     private static PreferenceManager preferenceManager;
 
@@ -26,19 +33,44 @@ public class PortalApp extends Application {
         super.onCreate();
         appContext = getApplicationContext();
         preferenceManager = new PreferenceManager(PortalApp.getAppContext());
-        AppCompatDelegate.setDefaultNightMode(preferenceManager.getInteger(PortalApp.KEY_SETTINGS_THEME_MODE)!=0?preferenceManager.getInteger(PortalApp.KEY_SETTINGS_THEME_MODE):AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        int themeMode = preferenceManager.getInteger(PortalApp.KEY_SETTINGS_THEME_MODE) != 0 ? preferenceManager.getInteger(PortalApp.KEY_SETTINGS_THEME_MODE) : AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+        AppCompatDelegate.setDefaultNightMode(themeMode);
+
+
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+        Thread.setDefaultUncaughtExceptionHandler(
+                (thread, e) -> {
+
+
+                    Intent intent = new Intent(getApplicationContext(), CrashActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String stackTrace = sw.toString(); // stack trace as a string
+                    intent.putExtra("ex", stackTrace);
+                    startActivity(intent);
+                    Log.e(TAG, "uncaughtException: ", e);
+                    System.exit(1);
+                    CrashActivity.PENDING_ERROR = e;
+
+                });
 
     }
 
+    public static PreferenceManager getPreferenceManager() {
+        if (preferenceManager == null) {
+            preferenceManager = new PreferenceManager(PortalApp.getAppContext());
+        }
+        return preferenceManager;
+    }
 
-    public static boolean isConnected() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) PortalApp.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
-        return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+    public static void showToast(String msg) {
+        Toast.makeText(appContext, msg, Toast.LENGTH_SHORT).show();
     }
 
 
-    public static void parseUser(Document response){
+    public static void parseUser(Document response) {
         boolean enrolled = response.body().text().contains("Officially Enrolled");
 
         String id = response.select(".app-sidebar__user-designation").text().replace("(", " ").replace(")", " ");
@@ -50,7 +82,7 @@ public class PortalApp extends Application {
         else
             preferenceManager.putString(PortalApp.KEY_IS_ENROLLED, response.select(".app-title > div > p").text());
 
-        preferenceManager.putString(PortalApp.KEY_STUDENTS_UNITS,units[units.length-1]);
+        preferenceManager.putString(PortalApp.KEY_STUDENTS_UNITS, units[units.length - 1]);
         preferenceManager.putString(PortalApp.KEY_ENROLL_ANNOUNCE, response.select(".mybox-body > center > h5").text());
         preferenceManager.putString(PortalApp.KEY_STUDENT_ID, courseID[courseID.length - 1]);
         preferenceManager.putString(PortalApp.KEY_STUDENT_COURSE, courseID[0]);
@@ -74,8 +106,6 @@ public class PortalApp extends Application {
     }
 
 
-
-
     public static Context getAppContext() {
         return appContext;
     }
@@ -96,6 +126,7 @@ public class PortalApp extends Application {
     public static final String KEY_SETTINGS_THEME_MODE = "themeMode";
 
     public static final String KEY_HTML_EVALUATION = "evaluationHTML";
+    public static final String KEY_CSRF_TOKEN = "csrf_token";
 
 
     // App
@@ -108,9 +139,15 @@ public class PortalApp extends Application {
     public static final String evaluationsUrl = "/evaluation_hed";
     public static final String accountUrl = "/account_hed";
     public static final String enrollHistory = "/enrollmentHistory";
+    public static final String subjectOffered = "/subject/p";
+    public static final String subjectOfferedSearch = "/subject/s";
 
-    public static final String[] SAD_EMOJIS = {"(っ °Д °;)っ","(┬┬﹏┬┬)","¯\\_(ツ)_/¯","___*( ￣皿￣)/#____","ಥ_ಥ","(>ლ)"};
-    public static final String[] HAPPY_EMOJIS = {"(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧","(⌐■_■)","✪ ω ✪","( ﾉ ﾟｰﾟ)ﾉ","d=====(￣▽￣*)b","🤝🏻o((>ω< ))o"};
+
+    public static final String github = "https://github.com/Jerson2000/HCDC_Portal";
+
+
+    public static final String[] SAD_EMOJIS = {"(っ °Д °;)っ", "(┬┬﹏┬┬)", "¯\\_(ツ)_/¯", "___*( ￣皿￣)/#____", "ಥ_ಥ", "(>ლ)"};
+    public static final String[] HAPPY_EMOJIS = {"(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧", "(⌐■_■)", "✪ ω ✪", "( ﾉ ﾟｰﾟ)ﾉ", "d=====(￣▽￣*)b", "🤝🏻o((>ω< ))o"};
 
 
 }

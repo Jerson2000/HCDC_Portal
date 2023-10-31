@@ -18,6 +18,7 @@ import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.model.AccountModel;
 import com.jerson.hcdc_portal.ui.adapter.AccountAdapter;
 import com.jerson.hcdc_portal.util.BaseFragment;
+import com.jerson.hcdc_portal.util.NetworkUtil;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.AccountViewModel;
 import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
@@ -67,7 +68,7 @@ public class AccountFragment extends BaseFragment<FragmentAccountBinding> {
 
         binding.refreshLayout.setOnRefreshListener(() -> {
             binding.refreshLayout.setRefreshing(true);
-            if (PortalApp.isConnected()) {
+            if (NetworkUtil.isConnected()) {
                 checkSession(object -> {
                     if (object) {
                         getData();
@@ -108,11 +109,10 @@ public class AccountFragment extends BaseFragment<FragmentAccountBinding> {
     }
 
     void checkSession(DynamicListener<Boolean> listener) {
-        loginViewModel.checkSession(object -> {
+        NetworkUtil.checkSession(object -> {
             if (object) {
-                loginViewModel.Login(preferenceManager.getString(PortalApp.KEY_EMAIL), preferenceManager.getString(PortalApp.KEY_PASSWORD)).observe(requireActivity(), data -> {
-                    /*Log.e(TAG, "dynamicListener: " + data);*/
-                    if (data.toLowerCase(Locale.ROOT).contains("logged")) {
+                NetworkUtil.reLogin(logged->{
+                    if(logged){
                         checkSession(listener);
                     }
                 });
@@ -216,7 +216,7 @@ public class AccountFragment extends BaseFragment<FragmentAccountBinding> {
 
     DynamicListener<Boolean> getAccountsListener = object -> {
         if (!object && !binding.refreshLayout.isRefreshing()) {
-            if (PortalApp.isConnected()) {
+            if (NetworkUtil.isConnected()) {
                 checkSession(object1 -> {
                     if (object1) {
                         getData();

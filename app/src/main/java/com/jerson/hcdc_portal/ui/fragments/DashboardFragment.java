@@ -2,21 +2,15 @@ package com.jerson.hcdc_portal.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.jerson.hcdc_portal.PortalApp;
@@ -25,23 +19,16 @@ import com.jerson.hcdc_portal.databinding.FragmentDashboardBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.listener.OnClickListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
-import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.ui.activity.EvaluationActivity;
 import com.jerson.hcdc_portal.ui.activity.SettingsActivity;
 import com.jerson.hcdc_portal.ui.activity.SubjectDetailActivity;
+import com.jerson.hcdc_portal.ui.activity.SubjectOfferedActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
 import com.jerson.hcdc_portal.util.BaseFragment;
 import com.jerson.hcdc_portal.util.Dialog;
-import com.jerson.hcdc_portal.util.DownloadWorker;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -106,8 +93,12 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
             startActivity(new Intent(requireActivity(), EvaluationActivity.class));
         });
 
+        binding.subjectOffered.setOnClickListener(v->{
+            startActivity(new Intent(requireActivity(), SubjectOfferedActivity.class));
+        });
+
         binding.evaluationIV.setImage(ImageSource.resource(R.drawable.paper));
-        binding.enrollAnnounceLayout.setOnClickListener(v -> {
+        /*binding.enrollAnnounceLayout.setOnClickListener(v -> {
             Data inputData = new Data.Builder()
                     .putString("url", "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/room.json")
                     .putString("fileName", "test.json")
@@ -121,7 +112,7 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
 
             // Enqueue the request with WorkManager
             WorkManager.getInstance(requireActivity()).enqueue(downloadRequest);
-        });
+        });*/
 
 
     }

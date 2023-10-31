@@ -1,12 +1,16 @@
 package com.jerson.hcdc_portal.ui.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.ViewModelProvider;
@@ -36,6 +40,7 @@ public class SettingsActivity extends BaseActivity<ActivitySettingsBinding> {
     private EnrollHistoryViewModel enrollHistoryViewModel;
     private AccountViewModel accountViewModel;
     private GradesViewModel gradesViewModel;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,14 @@ public class SettingsActivity extends BaseActivity<ActivitySettingsBinding> {
     }
 
     void init() {
+        setSupportActionBar(getBinding().header.toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            getBinding().header.collapsingToolbar.setTitle("Settings");
+            getBinding().header.collapsingToolbar.setSubtitle("");
+        }
         binding.themeOption.setOnClickListener(v -> {
             binding.themeModeView.setVisibility(getPolarVisibility(binding.themeModeView));
         });
@@ -77,12 +90,21 @@ public class SettingsActivity extends BaseActivity<ActivitySettingsBinding> {
 
         binding.btnLogout.setOnClickListener(v -> {
             Dialog.Dialog("WARNING!", "Are you sure you want to logout?", this)
-                    .setPositiveButton("Yes", (dialog, which) -> {
+                    .setPositiveButton("Yes", (dialogInterface, which) -> {
                         clear();
+                        ProgressBar progressBar = new ProgressBar(this);
+                        progressBar.setIndeterminate(true);
+                        dialog = Dialog.CustomDialog("Logging out...",this,progressBar)
+                                        .show();
+                        dialog.setCancelable(false);
+                        dialog.setCanceledOnTouchOutside(false);
                     })
                     .setNegativeButton("No", (dialog, which) -> dialog.dismiss()).show();
         });
-        binding.btnBack.setOnClickListener(v->onBackPressed());
+
+        binding.github.setOnClickListener(v->{
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(PortalApp.github)));
+        });
     }
 
 
@@ -112,6 +134,7 @@ public class SettingsActivity extends BaseActivity<ActivitySettingsBinding> {
                                                 deleteAccount(delAc -> {
                                                     if (delAc) {
                                                         preferenceManager.putBoolean(PortalApp.KEY_IS_LOGIN,false);
+                                                        dialog.dismiss();
                                                         startActivity(new Intent(SettingsActivity.this, LoginActivity.class));
                                                         finish();
                                                     }
@@ -199,6 +222,12 @@ public class SettingsActivity extends BaseActivity<ActivitySettingsBinding> {
                     listener.dynamicListener(false);
                 })
         );
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override

@@ -19,6 +19,7 @@ import com.jerson.hcdc_portal.databinding.ActivityLoginBinding;
 import com.jerson.hcdc_portal.listener.DynamicListener;
 import com.jerson.hcdc_portal.ui.MainActivity;
 import com.jerson.hcdc_portal.util.BaseActivity;
+import com.jerson.hcdc_portal.util.NetworkUtil;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.util.SnackBarUtil;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
@@ -44,12 +45,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
         binding = getBinding();
 
         preferenceManager = new PreferenceManager(this);
-
-        if (preferenceManager.getBoolean(PortalApp.KEY_IS_LOGIN)) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
-
         init();
         listeners();
 
@@ -68,8 +63,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     void listeners() {
 
         binding.loginBtn.setOnClickListener(v -> {
-            if (PortalApp.isConnected()) {
-
+            if (NetworkUtil.isConnected()) {
                 if (!binding.emailET.getText().toString().equals("") && !binding.passET.getText().toString().equals("")) {
                     login();
                 } else {
@@ -80,7 +74,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
             } else {
                 SnackBarUtil.SnackBarLong(binding.snackBarLayout, "No internet connection.").show();
             }
-
         });
 
     }
@@ -94,8 +87,11 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
         isLoading(true, false);
         /*viewModel.Login(email, pass);*/
-
-        viewModel.Login(email, pass, loginListener);
+        NetworkUtil.checkSession(logged -> {
+            if (logged) {
+                viewModel.Login(email, pass, loginListener);
+            }
+        });
 
 
     }
@@ -127,6 +123,8 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     };
 
     void observeErr() {
+
+
         viewModel.getErr().observe(this, err -> {
 
             if (err.getMessage().toLowerCase(Locale.ROOT).contains("credentials")) {
@@ -144,6 +142,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
             }
 
         });
+
     }
 
 
@@ -193,6 +192,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                 })
         );
     }
+
     @Override
     protected ActivityLoginBinding createBinding(LayoutInflater layoutInflater) {
         return ActivityLoginBinding.inflate(layoutInflater);

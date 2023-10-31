@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -44,11 +45,20 @@ public class SubjectDetailActivity extends BaseActivity<ActivitySubjectDetailBin
     }
 
     void init() {
+
+        setSupportActionBar(getBinding().header.toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            getBinding().header.collapsingToolbar.setTitle("Subject");
+            getBinding().header.collapsingToolbar.setSubtitle("Subject Information");
+        }
+
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         adapter = new RoomAdapter(imageList, this);
         binding.recyclerView.setAdapter(adapter);
 
-        binding.btnBack.setOnClickListener(v -> onBackPressed());
         getRooms();
         observeRooms();
         setViews();
@@ -95,6 +105,11 @@ public class SubjectDetailActivity extends BaseActivity<ActivitySubjectDetailBin
 
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
     @Override
     public void dynamicListener(Integer position) {

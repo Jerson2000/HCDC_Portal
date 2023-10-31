@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/appBarLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:fitsSystemWindows="true"
+    app:liftOnScroll="true">
+
+    <com.google.android.material.appbar.SubtitleCollapsingToolbarLayout
+        android:id="@+id/collapsing_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
+        app:collapsedSubtitleTextAppearance="@style/TextAppearance.Material3.BodySmall"
+        app:collapsedSubtitleTextColor="?colorSecondary"
+        app:collapsedTitleTextAppearance="@style/TextAppearance.Material3.TitleMedium"
+        app:collapsedTitleTextColor="?colorPrimary"
+        app:contentScrim="?colorSurfaceVariant"
+        app:expandedSubtitleTextAppearance="@style/TextAppearance.Material3.BodyMedium"
+        app:expandedTitleMarginBottom="16dp"
+        app:expandedTitleMarginEnd="24dp"
+        app:expandedTitleMarginStart="24dp"
+        app:expandedTitleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+        app:forceApplySystemWindowInsetTop="true"
+        app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+        app:scrimAnimationDuration="300"
+        app:statusBarScrim="@null"
+        app:subtitle="@string/app_subtitle"
+        app:title="@string/app_name">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:paddingEnd="24dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:layout_collapseMode="pin"
+            app:maxLines="1"
+            app:navigationIconTint="?attr/colorOnSurface"
+            app:popupTheme="@style/Theme.HCDC_Portal"
+            app:subtitle="@string/app_subtitle"
+            app:title="@string/app_name"
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:titleTextEllipsize="end"
+            tools:ignore="RtlSymmetry" />
+
+    </com.google.android.material.appbar.SubtitleCollapsingToolbarLayout>
+</com.google.android.material.appbar.AppBarLayout>
