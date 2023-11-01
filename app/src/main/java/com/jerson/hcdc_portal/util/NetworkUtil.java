@@ -28,8 +28,8 @@ public class NetworkUtil {
             @Override
             public void onResponse(Document response) {
                 boolean isLoginPage = response.body().text().contains("CROSSIAN LOG-IN");
-                listener.dynamicListener(isLoginPage);
                 PortalApp.getPreferenceManager().putString(PortalApp.KEY_CSRF_TOKEN, response.select("meta[name=csrf-token]").attr("content"));
+                listener.dynamicListener(isLoginPage);
             }
 
             @Override

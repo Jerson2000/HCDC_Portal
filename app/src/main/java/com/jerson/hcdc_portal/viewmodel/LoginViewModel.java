@@ -26,14 +26,13 @@ public class LoginViewModel extends ViewModel {
     MutableLiveData<List<DashboardModel>> dashboardData = new MutableLiveData<>();
     MutableLiveData<String> res = new MutableLiveData<>();
     MutableLiveData<Throwable> err = new MutableLiveData<>();
-
-    public LiveData<String> Login(String email, String password) {
+    public void Login(String email, String pass, DynamicListener<Boolean> listener) {
         getToken().observeForever(resp -> {
             if (resp != null) {
                 FormBody formBody = new FormBody.Builder()
                         .add("_token", resp)
                         .add("email", email)
-                        .add("password", password)
+                        .add("password", pass)
                         .build();
 
                 HttpClient.getInstance().POST(PortalApp.baseUrl + PortalApp.loginPostUrl, formBody, new OnHttpResponseListener<Document>() {
@@ -44,11 +43,11 @@ public class LoginViewModel extends ViewModel {
                         dashboardData.postValue(DashboardRepo.parseDashboard(response));
 
                         if (wrongPass) {
-                            res.setValue("Incorrect Credentials!");
-
+                            err.setValue(new Throwable("Incorrect Credentials!"));
+                            listener.dynamicListener(false);
                         }
                         if (!wrongPass) {
-                            res.setValue("Logged In!");
+                            listener.dynamicListener(true);
                             PortalApp.parseUser(response);
                         }
 
@@ -68,47 +67,6 @@ public class LoginViewModel extends ViewModel {
                 });
 
             }
-        });
-
-        return res;
-    }
-
-    public void Login(String email, String pass, DynamicListener<Boolean> listener) {
-        FormBody formBody = new FormBody.Builder()
-                .add("_token", PortalApp.getPreferenceManager().getString(PortalApp.KEY_CSRF_TOKEN))
-                .add("email", email)
-                .add("password", pass)
-                .build();
-
-        HttpClient.getInstance().POST(PortalApp.baseUrl + PortalApp.loginPostUrl, formBody, new OnHttpResponseListener<Document>() {
-            @Override
-            public void onResponse(Document response) {
-                boolean wrongPass = response.body().text().contains("CROSSIAN LOG-IN");
-
-                dashboardData.postValue(DashboardRepo.parseDashboard(response));
-
-                if (wrongPass) {
-                    err.setValue(new Throwable("Incorrect Credentials!"));
-                    listener.dynamicListener(false);
-                }
-                if (!wrongPass) {
-                    listener.dynamicListener(true);
-                    PortalApp.parseUser(response);
-                }
-
-
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                err.setValue(e);
-            }
-
-            @Override
-            public void onResponseCode(int code) {
-                resCode.setValue(code);
-            }
-
         });
 
     }

@@ -47,7 +47,7 @@
         android:text="Student Portal"
         android:textAlignment="center"
         android:textAppearance="?attr/textAppearanceHeadlineLarge"
-        android:textColor="?colorOnSecondaryContainer"
+        android:textColor="@color/md_theme_light_onSecondaryContainer"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -40,6 +40,12 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     private PreferenceManager preferenceManager;
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (!getBindingNull()) Glide.with(this).load(R.drawable.logo).into(binding.logo);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = getBinding();
@@ -53,8 +59,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     void init() {
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
-
-        Glide.with(this).load(R.drawable.logo).into(binding.logo);
 
         observeErr();
 
@@ -86,12 +90,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
 
         isLoading(true, false);
-        /*viewModel.Login(email, pass);*/
-        NetworkUtil.checkSession(logged -> {
-            if (logged) {
-                viewModel.Login(email, pass, loginListener);
-            }
-        });
+        viewModel.Login(email, pass, loginListener);
 
 
     }
