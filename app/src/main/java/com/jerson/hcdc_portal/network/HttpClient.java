@@ -33,6 +33,7 @@ import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -293,6 +294,72 @@ public class HttpClient {
                         handler.post(() -> listener.onResponseCode(finalResponse.code()));
                     }
                 } catch (IOException | JSONException e) {
+                    handler.post(() -> listener.onFailure(e));
+                } finally {
+                    if (call != null) {
+                        call.cancel(); // Cancel the Call object if it exists
+                    }
+                }
+            });
+        } else {
+            listener.onFailure(new IOException("No internet connection"));
+        }
+    }
+
+
+    public void POST_STRING(String url, RequestBody formBody, OnHttpResponseListener<String> listener) {
+        if (NetworkUtil.isConnected()) {
+            executor.execute(() -> {
+                try {
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(formBody)
+                            .build();
+
+                    call = client.newCall(request); // Assign the Call object
+
+                    Response response = call.execute();
+
+                    while (response.isRedirect()) {
+                        if (response.code() == 302 || response.code() == 307) {
+                            request = request.newBuilder()
+                                    .url(response.header("Location"))
+                                    .url(PortalApp.baseUrl)
+                                    .post(formBody)
+                                    .build();
+
+                            call = client.newCall(request); // Update the Call object
+
+                            response = call.execute();
+                        }
+                        // Handle other redirects
+                        else {
+                            request = request.newBuilder()
+                                    .url(response.header("Location"))
+                                    .url(PortalApp.baseUrl)
+                                    .build();
+
+                            call = client.newCall(request); // Update the Call object
+
+                            response = call.execute();
+                        }
+                    }
+
+                    Response finalResponse = response;
+                    // Handle the final response
+                    if (response.isSuccessful()) {
+                        // Success
+                        handler.post(() -> listener.onResponseCode(finalResponse.code()));
+                        ResponseBody body = response.body();
+                        if (body != null) {
+                            String responseData = body.string();
+                            handler.post(() -> listener.onResponse(responseData));
+                        }
+                    } else {
+                        // Handle error
+                        handler.post(() -> listener.onResponseCode(finalResponse.code()));
+                    }
+                } catch (IOException e) {
                     handler.post(() -> listener.onFailure(e));
                 } finally {
                     if (call != null) {

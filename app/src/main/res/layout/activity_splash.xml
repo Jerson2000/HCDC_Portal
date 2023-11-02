@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="50dp"
         android:indeterminate="true"
-        android:indeterminateTint="?colorPrimary"
+        android:indeterminateTint="@color/md_theme_light_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logo" />

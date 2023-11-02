@@ -35,4 +35,14 @@ public class Dialog {
 
         return dialogBuilder;
     }
+    public static MaterialAlertDialogBuilder CustomDialog(String sTitle,String msg, final Context context, View customView) {
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(context)
+                .setTitle(sTitle)
+                .setMessage(msg);
+        if (customView != null) {
+            dialogBuilder.setView(customView);
+        }
+
+        return dialogBuilder;
+    }
 }

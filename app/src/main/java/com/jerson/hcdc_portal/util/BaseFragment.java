@@ -35,7 +35,11 @@ public abstract class BaseFragment<T extends ViewBinding> extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (binding != null) binding = null;
+        if (binding != null) {
+            ViewGroup viewGroup = (ViewGroup) binding.getRoot();
+            viewGroup.removeAllViews();
+            binding = null;
+        }
         HttpClient.getInstance().cancelRequest();
     }
 }

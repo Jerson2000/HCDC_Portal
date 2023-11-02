@@ -132,6 +132,7 @@ public class SubjectOfferedActivity extends BaseActivity<ActivitySubjectOfferedB
             getBinding().errLayout.response.setText(data.getMessage());
             getBinding().recyclerView.setVisibility(View.GONE);
             PortalApp.showToast(data.getMessage());
+            toggleLoading();
         });
     }
 

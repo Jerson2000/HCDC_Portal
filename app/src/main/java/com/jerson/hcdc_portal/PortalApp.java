@@ -141,6 +141,7 @@ public class PortalApp extends Application implements LifecycleObserver {
     public static final String enrollHistory = "/enrollmentHistory";
     public static final String subjectOffered = "/subject/p";
     public static final String subjectOfferedSearch = "/subject/s";
+    public static final String lackingCredential = "/lacking";
 
 
     public static final String github = "https://github.com/Jerson2000/HCDC_Portal";
