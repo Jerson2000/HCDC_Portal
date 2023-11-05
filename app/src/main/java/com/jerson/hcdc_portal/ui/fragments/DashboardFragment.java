@@ -1,10 +1,8 @@
 package com.jerson.hcdc_portal.ui.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.NestedScrollView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,6 +28,8 @@ import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.model.chat_ai.ChatBotAIModel;
 import com.jerson.hcdc_portal.network.HttpClient;
+import com.jerson.hcdc_portal.repo.ChatAIRepo;
+import com.jerson.hcdc_portal.ui.activity.ChatAIActivity;
 import com.jerson.hcdc_portal.ui.activity.EvaluationActivity;
 import com.jerson.hcdc_portal.ui.activity.LackingActivity;
 import com.jerson.hcdc_portal.ui.activity.SettingsActivity;
@@ -37,6 +38,7 @@ import com.jerson.hcdc_portal.ui.activity.SubjectOfferedActivity;
 import com.jerson.hcdc_portal.ui.adapter.DashboardAdapter;
 import com.jerson.hcdc_portal.util.BaseFragment;
 import com.jerson.hcdc_portal.util.Dialog;
+import com.jerson.hcdc_portal.util.NetworkUtil;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.ChatAIViewModel;
 import com.jerson.hcdc_portal.viewmodel.DashboardViewModel;
@@ -58,17 +60,16 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
 public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> implements OnClickListener<DashboardModel> {
-    FragmentDashboardBinding binding;
-    DashboardAdapter adapter;
-    List<DashboardModel> dashList = new ArrayList<>();
-    List<DashboardModel> todayList = new ArrayList<>();
-    DashboardViewModel viewModel;
-    PreferenceManager preferenceManager;
-    ProfileLayoutDialogBinding profileDialogLayoutBinding;
+    private FragmentDashboardBinding binding;
+    private DashboardAdapter adapter;
+    private List<DashboardModel> dashList = new ArrayList<>();
+    private List<DashboardModel> todayList = new ArrayList<>();
+    private DashboardViewModel viewModel;
+    private PreferenceManager preferenceManager;
+    private ProfileLayoutDialogBinding profileDialogLayoutBinding;
 
     private static final String TAG = "DashboardFragment";
-    private ChatAIViewModel aiViewModel;
-    private ChatBotAIModel chatBotAIModel;
+    private AlertDialog dialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,9 +89,6 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
 
     void init() {
         profileDialogLayoutBinding = ProfileLayoutDialogBinding.inflate(LayoutInflater.from(requireActivity()));
-
-        aiViewModel = new ViewModelProvider(requireActivity()).get(ChatAIViewModel.class);
-
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         adapter = new DashboardAdapter(requireActivity(), todayList, this::onItemClick);
         binding.recyclerView.setAdapter(adapter);
@@ -113,10 +111,20 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
             if (parentView != null) {
                 parentView.removeView(profileDialogLayoutBinding.getRoot());
             }
-            Dialog.CustomDialog("Student Info.", pDetails, requireActivity(),profileDialogLayoutBinding.getRoot())
-                    .setPositiveButton("Okay", (dialogInterface, i) -> dialogInterface.dismiss()).show();
-            profileDialogLayoutBinding.lackBtn.setOnClickListener(s-> {
+            dialog = Dialog.CustomDialog("Student Info.", pDetails, requireActivity(), profileDialogLayoutBinding.getRoot())
+                    .setPositiveButton("Okay", (dialogInterface, i) -> dialog.dismiss()).show();
+            profileDialogLayoutBinding.lackBtn.setOnClickListener(s -> {
                 startActivity(new Intent(requireActivity(), LackingActivity.class));
+                dialog.dismiss();
+            });
+            profileDialogLayoutBinding.chatAIBtn.setOnClickListener(s -> {
+                if(NetworkUtil.isConnected()){
+                    startActivity(new Intent(requireActivity(), ChatAIActivity.class));
+                    dialog.dismiss();
+                }else{
+                    PortalApp.showToast("No internet connection!");
+                }
+
             });
         });
         binding.btnSetting.setOnClickListener(v -> {
@@ -127,77 +135,11 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
             startActivity(new Intent(requireActivity(), EvaluationActivity.class));
         });
 
-        binding.subjectOffered.setOnClickListener(v->{
+        binding.subjectOffered.setOnClickListener(v -> {
             startActivity(new Intent(requireActivity(), SubjectOfferedActivity.class));
         });
 
         binding.evaluationIV.setImage(ImageSource.resource(R.drawable.paper));
-        binding.enrolledTV.setOnClickListener(v -> {
-            aiChatBot();
-           /* FormBody formBody = new FormBody.Builder()
-                    .add("_wpnonce", "b47cbc4aee")
-                    .add("post_id", "22")
-                    .add("url", "https://chatgptt.me")
-                    .add("action", "wpaicg_chat_shortcode_message")
-                    .add("message", "what is java?")
-                    .add("bot_id", "0")
-                    .build();
-
-            HttpClient.getInstance().POST_JSON("https://chatbotai.one/wp-admin/admin-ajax.php", formBody, new OnHttpResponseListener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    ChatBotAIModel model = new Gson().fromJson(response.toString(), ChatBotAIModel.class);
-                    System.out.println(model.getData().getData());
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    Log.e(TAG, "onFailure: ",e );
-                }
-
-                @Override
-                public void onResponseCode(int code) {
-                    System.out.println(code);
-                }
-            });*/
-        });
-
-        getERR();
-    }
-
-    void aiChatBot(){
-        String msg = "what is java?"; // sample chat
-        // post request
-        aiViewModel.postChatBotAI(msg).observe(requireActivity(),data->{
-            if(data!=null){
-                chatBotAIModel = data;
-                NestedScrollView scrollView = new NestedScrollView(requireActivity());
-                NestedScrollView.LayoutParams scrollParam = new NestedScrollView.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                );
-                LinearLayout linearLayout = new LinearLayout(requireActivity());
-                linearLayout.setOrientation(LinearLayout.VERTICAL);
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-
-                linearLayout.setLayoutParams(layoutParams);
-                linearLayout.setPadding(10,10,10,10);
-
-                TextView txt = new TextView(requireActivity());
-                txt.setText(chatBotAIModel.getData().getData());
-                linearLayout.addView(txt);
-                scrollView.setLayoutParams(scrollParam);
-                scrollView.addView(linearLayout);
-
-                Dialog.CustomDialog("AI CHAT SAMPLE RESPONSE",msg,requireActivity(),scrollView).show();
-            }
-        });
-    }
-    void getERR(){
-        aiViewModel.getErr().observe(requireActivity(), System.out::println);
     }
 
 

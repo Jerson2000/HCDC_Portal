@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <LinearLayout
+            android:id="@+id/chatBotBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="?android:listPreferredItemHeight"
+            android:orientation="horizontal"
+            android:paddingVertical="16dp">
+
+            <ImageView
+                android:id="@+id/ChatBotIV"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="fitXY"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ChatBotTV"
+                style="@style/TextAppearance.Material3.BodyMedium"
+                android:layout_width="match_parent"
+                android:text="ChatBot"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginVertical="2dp"
+                android:layout_marginEnd="24dp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/chatGTPBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="?android:listPreferredItemHeight"
+            android:orientation="horizontal"
+            android:paddingVertical="16dp">
+
+            <ImageView
+                android:id="@+id/ChatGTPIV"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="fitXY"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ChatGTPTV"
+                style="@style/TextAppearance.Material3.BodyMedium"
+                android:layout_width="match_parent"
+                android:text="ChatGTP"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginVertical="2dp"
+                android:layout_marginEnd="24dp" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/chatGBTBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="?android:listPreferredItemHeight"
+            android:orientation="horizontal"
+            android:paddingVertical="16dp">
+
+            <ImageView
+                android:id="@+id/ChatGBTIV"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="fitXY"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ChatGBTTV"
+                style="@style/TextAppearance.Material3.BodyMedium"
+                android:layout_width="match_parent"
+                android:text="ChatGBT"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginVertical="2dp"
+                android:layout_marginEnd="24dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/chatGPTTBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="?android:listPreferredItemHeight"
+            android:orientation="horizontal"
+            android:paddingVertical="16dp">
+
+            <ImageView
+                android:id="@+id/ChatGPTTIV"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="fitXY"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ChatGPTTTV"
+                style="@style/TextAppearance.Material3.BodyMedium"
+                android:layout_width="match_parent"
+                android:text="ChatGPTT"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginVertical="2dp"
+                android:layout_marginEnd="24dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/chatGPTBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="?android:listPreferredItemHeight"
+            android:orientation="horizontal"
+            android:paddingVertical="16dp">
+
+            <ImageView
+                android:id="@+id/ChatGPTIV"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="fitXY" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ChatGPTTV"
+                style="@style/TextAppearance.Material3.BodyMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="24dp"
+                android:text="ChatAIGPT" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llamaBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:minHeight="?android:listPreferredItemHeight"
+            android:orientation="horizontal"
+            android:paddingVertical="16dp">
+
+            <ImageView
+                android:id="@+id/llamaIV"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="fitXY"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/llamaTV"
+                style="@style/TextAppearance.Material3.BodyMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="24dp"
+                android:text="Llama2 (Unstable) " />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
