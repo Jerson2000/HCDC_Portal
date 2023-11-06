@@ -262,7 +262,7 @@ public class ChatAIActivity extends BaseActivity<ActivityChatAiactivityBinding> 
         }
         ProgressBar progressBar = new ProgressBar(this);
         progressBar.setIndeterminate(true);
-        dialog = Dialog.CustomDialog("Fetching Values", this, progressBar).show();
+        dialog = Dialog.CustomDialog(null, this, progressBar).show();
         aiViewModel.getParseValues(AI_URL, object -> {
             if (object != null) {
                 formBuilder = object;

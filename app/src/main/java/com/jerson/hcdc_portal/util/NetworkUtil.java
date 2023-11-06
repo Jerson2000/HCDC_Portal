@@ -52,7 +52,7 @@ public class NetworkUtil {
                 .add("password", PortalApp.getPreferenceManager().getString(PortalApp.KEY_PASSWORD))
                 .build();
 
-        HttpClient.getInstance().POST(PortalApp.baseUrl + PortalApp.loginPostUrl, formBody, new OnHttpResponseListener<Document>() {
+        HttpClient.getInstance().reLogin(PortalApp.baseUrl + PortalApp.loginPostUrl, formBody, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
                 boolean wrongPass = response.body().text().contains("CROSSIAN LOG-IN");

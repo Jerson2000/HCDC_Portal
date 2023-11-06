@@ -372,6 +372,70 @@ public class HttpClient {
         }
     }
 
+    public void reLogin(String url, FormBody formBody, OnHttpResponseListener<Document> listener) {
+        if (NetworkUtil.isConnected()) {
+            executor.execute(() -> {
+                try {
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .post(formBody)
+                            .build();
+
+                    call = client.newCall(request); // Assign the Call object
+
+                    Response response = call.execute();
+
+                    while (response.isRedirect()) {
+                        if (response.code() == 302 || response.code() == 307) {
+                            request = request.newBuilder()
+                                    .url(PortalApp.baseUrl+PortalApp.gradesUrl)
+                                    .post(formBody)
+                                    .build();
+
+                            call = client.newCall(request); // Update the Call object
+
+                            response = call.execute();
+                        }
+                        // Handle other redirects
+                        else {
+                            request = request.newBuilder()
+                                    .url(PortalApp.baseUrl+PortalApp.gradesUrl)
+                                    .build();
+
+                            call = client.newCall(request); // Update the Call object
+
+                            response = call.execute();
+                        }
+                    }
+
+                    Response finalResponse = response;
+                    // Handle the final response
+                    if (response.isSuccessful()) {
+                        // Success
+                        handler.post(() -> listener.onResponseCode(finalResponse.code()));
+                        ResponseBody body = response.body();
+                        if (body != null) {
+                            String responseData = body.string();
+                            Document document = Jsoup.parse(responseData);
+                            handler.post(() -> listener.onResponse(document));
+                        }
+                    } else {
+                        // Handle error
+                        handler.post(() -> listener.onResponseCode(finalResponse.code()));
+                    }
+                } catch (IOException e) {
+                    handler.post(() -> listener.onFailure(e));
+                } finally {
+                    if (call != null) {
+                        call.cancel(); // Cancel the Call object if it exists
+                    }
+                }
+            });
+        } else {
+            listener.onFailure(new IOException("No internet connection"));
+        }
+    }
+
 
     /*public void GET_Redirection(String url, final OnHttpResponseListener<Document> listener) {
         executor.execute(() -> {
