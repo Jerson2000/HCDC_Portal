@@ -2,10 +2,11 @@
   "building": [
     {
       "id": "j",
+      "name": "St. John Paul & St. John XXIII",
       "history": "St. John Paul & St. John XXIII are named after the two Popes. These halls opened in 2014, the same year these two Popes were canonized.",
       "located": "Left wing of the new building",
       "floor_desc": "1st Floor - 6th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/j/j.jpg",
+      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/j/j.jpg",
       "floors": [
         {
           "floor_no": 1,
@@ -81,42 +82,56 @@
     },
     {
       "id": "sa",
+      "name": "Sta. Ana Hall",
       "history": "Sta. Ana Hall is named after the location which Sta. Ana Avenue, Davao City where the school was erected.",
       "located": "Right wing of the new building",
       "floor_desc": "1st Floor - 6th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/sa/sa.jpg",
+      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/sa/sa.jpg",
       "floors": []
     },
     {
       "id": "mh",
+      "name": "Mabutas Hall",
       "history": "Mabutas Hall is named after Archbishop Antonio Ll. Mabutas, DD, JCD, the second Archbishop of the Archdiocese of Davao.",
       "located": "Right wing of the new building",
       "floor_desc": "1st Floor - 6th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/mh/mh.jpg",
+      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/mh/mh.jpg",
       "floors": []
     },
     {
       "id": "ch",
+      "name": "Capalla Hall",
       "history": "Capalla Hall is named after Archbishop Fernando Robles Capalla, DD, the third Archbishop of the Archdiocese of Davao and was designated as the corporate president of HCDC on November 28,19996.",
       "located": "Back view of Palma Gill Hall; near Gym area",
       "floor_desc": "1st Floor - 4th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/ch/ch.jpg",
+      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/ch/ch.jpg",
+      "floors": []
+    },
+    {
+      "id": "ph",
+      "name": "Palma Gil Hall",
+      "history": "Palma Gil Hall is named after Emillio P. Palma Gil who was appointed as the school president on July 1, 1961. HCDC achieved remarkable changes and growth during this term.",
+      "located": "Student Lounge Area",
+      "floor_desc": "1st Floor - 4th Floor",
+      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/ph/ph.jpg",
       "floors": []
     },
     {
       "id": "gh",
+      "name": "Gmeiner Hall",
       "history": "Gmeiner Hall is named after Prof. Hermann Gmeiner, founder of SOS kinderdorf International and one of HCDC's prime benefactors.",
       "located": "Gray building, Chapel and Main Library Area",
       "floor_desc": "1st Floor - 5th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/gh/gh.jpg",
+      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/gh/gh.jpg",
       "floors": []
     },
     {
       "id": "th",
+      "name": "Thibault Hall",
       "history": "Thibault Hall is named after Archbishop Clovis Joseph Thibault, PME, the first Apostolic Administrator and Bishop of Davao.",
       "located": "Center of the new building",
       "floor_desc": "1st Floor - 6th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/th/th.jpg",
+      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/th/th.jpg",
       "floors": []
     }
   ]
