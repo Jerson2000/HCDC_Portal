@@ -59,8 +59,8 @@ public class SubjectDetailActivity extends BaseActivity<ActivitySubjectDetailBin
         adapter = new RoomAdapter(imageList, this);
         binding.recyclerView.setAdapter(adapter);
 
-        getRooms();
-        observeRooms();
+        /*getRooms();
+        observeRooms();*/
         setViews();
 
 

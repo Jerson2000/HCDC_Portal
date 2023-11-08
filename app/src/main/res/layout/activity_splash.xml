@@ -37,7 +37,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/appCompatTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:shadowColor="?colorOnPrimary"
@@ -52,6 +53,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logo" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/displayS"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:shadowColor="?colorOnPrimary"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceHeadlineSmall"
+        android:textColor="@color/md_theme_light_onSecondaryContainer"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar3" />
 
 
     <ProgressBar

@@ -4,24 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.LackingActivity">
+    tools:context=".ui.activity.BuildingActivity">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclcerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipToPadding="false"/>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                tools:listitem="@layout/item_container_building"/>
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
@@ -29,12 +29,6 @@
     <include
         android:id="@+id/header"
         layout="@layout/view_header_expandable" />
-    <include
-        android:id="@+id/errLayout"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        layout="@layout/error_layout"
-        android:visibility="visible"
-        android:layout_height="wrap_content"/>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
