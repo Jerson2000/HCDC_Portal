@@ -1,12 +1,23 @@
-# HCDC Student Portal for android 
-I started working on this project in mid-December, as I was feeling bored and there wasn't much to do at home. Since the student portal could not handle too many requests, I came up with the idea of creating an Android app for the HCDC student portal that would allow users to view their subjects and accountabilities offline and to lessen unnecessary request just to view there schedules. [ still buggy and it needs more cleaner code o((>ω< ))o ]
+# Unofficial HCDC Student Portal exclusively for Android.
+### Why I came up with this idea
+
+* For my convenience haha
+
+I started working on this project in mid-December(2022) because I was feeling bored, and there wasn't much to do at home. Since the student portal couldn't handle too many requests and resulted in the site going down (it was a hassle, haha), I came up with the idea of creating an Android app for the HCDC student portal. This app would allow users to view their subjects and accountabilities (my primary problem) offline and reduce unnecessary requests just to view their schedules. The project is still in beta, so it is still buggy and there is a lot to fix and clean up (spaghetti code). LOL!
 
 > Only the Holy Cross of Davao College Student/s are able to use this app.
 
-### UI ( Pangit ang UI )
-![7o42az](https://github.com/Jerson2000/HCDC_Portal/assets/78902475/f1e2d849-0c26-4468-90fc-42655909948a)
+## Feature
+* Able to view subjects
+* Able to view accountabilities
+* Able to view grades
+* Able to view evaluation
+* Able to view enrollment history
+* Able to view subject offered
+* Able to view lacking credentials
+* Able to chat ai (have 6 sources)
+* Building,floors and rooms ( WIP - Still busy with capstone project)
 
-
-### Disclaimer:
-I only scrapes what's available in the student portal like text,images and etc. that can be accessible using any browser, it thanks <a href="https://jsoup.org/">jsoup</a> library to make this project possible.
+# Disclaimer:
+I only scrape what's available in the student portal, such as text, images, and other accessible content using any browser. This project is made possible thanks to the <a href="https://jsoup.org/">jsoup</a> library. It is important to note that this project is purely for fun and for my own learning experience in Android development. ( currently enrolled - 4th yr)
  
