@@ -52,8 +52,10 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> {
 
 
     void autoReLogin() {
+        getBinding().displayS.setText("Checking session...");
         NetworkUtil.checkSession(session -> {
             if (session) {
+                getBinding().displayS.setText("Syncing...");
                 NetworkUtil.reLogin(logged -> {
                     if (logged) {
                         startActivity(new Intent(this, MainActivity.class));
@@ -75,7 +77,7 @@ public class SplashActivity extends BaseActivity<ActivitySplashBinding> {
 
     void downloadRooms() {
         Data inputData = new Data.Builder()
-                .putString("url", "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/room.json")
+                .putString("url", "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/rooms.json")
                 .putString("fileName", "rooms.json")
                 .build();
 

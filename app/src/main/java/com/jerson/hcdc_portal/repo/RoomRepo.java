@@ -7,6 +7,8 @@ import androidx.room.Room;
 import com.google.gson.Gson;
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
+import com.jerson.hcdc_portal.model.BuildingDataModel;
+import com.jerson.hcdc_portal.model.BuildingModel;
 import com.jerson.hcdc_portal.model.RoomModel;
 import com.jerson.hcdc_portal.network.HttpClient;
 
@@ -50,6 +52,25 @@ public class RoomRepo {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             RoomModel room = new Gson().fromJson(inputStreamReader, RoomModel.class);
             data.setValue(room);
+
+            inputStreamReader.close();
+        } catch (IOException e) {
+            err.setValue(e);
+        }
+
+        return data;
+    }
+
+    public LiveData<BuildingDataModel> getBuilding(MutableLiveData<Throwable> err) {
+        MutableLiveData<BuildingDataModel> data = new MutableLiveData<>();
+        File file = new File(PortalApp.getAppContext().getFilesDir(), "rooms.json");
+        String filePath = file.getAbsolutePath();
+
+        try {
+            FileInputStream inputStream = new FileInputStream(filePath);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BuildingDataModel building = new Gson().fromJson(inputStreamReader, BuildingDataModel.class);
+            data.setValue(building);
 
             inputStreamReader.close();
         } catch (IOException e) {

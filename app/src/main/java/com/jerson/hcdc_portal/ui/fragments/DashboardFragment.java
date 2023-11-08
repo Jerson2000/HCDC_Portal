@@ -29,6 +29,7 @@ import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.model.chat_ai.ChatBotAIModel;
 import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.repo.ChatAIRepo;
+import com.jerson.hcdc_portal.ui.activity.BuildingActivity;
 import com.jerson.hcdc_portal.ui.activity.ChatAIActivity;
 import com.jerson.hcdc_portal.ui.activity.EvaluationActivity;
 import com.jerson.hcdc_portal.ui.activity.LackingActivity;
@@ -137,6 +138,9 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
 
         binding.subjectOffered.setOnClickListener(v -> {
             startActivity(new Intent(requireActivity(), SubjectOfferedActivity.class));
+        });
+        binding.buildings.setOnClickListener(v->{
+            startActivity(new Intent(requireActivity(), BuildingActivity.class));
         });
 
         binding.evaluationIV.setImage(ImageSource.resource(R.drawable.paper));

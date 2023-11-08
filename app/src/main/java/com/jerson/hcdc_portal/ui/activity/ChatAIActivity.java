@@ -211,7 +211,7 @@ public class ChatAIActivity extends BaseActivity<ActivityChatAiactivityBinding> 
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
 
-
+        if(!isShow) chatList.add(new ChatModel(ChatModel.TYPE_AI,"Hello!👋 I'm your helpful assistant."));
         aiChooserLayoutBinding.chatBotBtn.setOnClickListener(v -> {
             HttpClient.getInstance().cancelRequest();
             AI_URL = ChatAIRepo.CHATBOTAI_ENDPOINT;

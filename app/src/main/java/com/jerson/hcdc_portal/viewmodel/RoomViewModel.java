@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.jerson.hcdc_portal.model.BuildingDataModel;
+import com.jerson.hcdc_portal.model.BuildingModel;
 import com.jerson.hcdc_portal.model.RoomModel;
 import com.jerson.hcdc_portal.repo.RoomRepo;
 
@@ -28,5 +30,8 @@ public class RoomViewModel extends ViewModel {
     }
     public LiveData<RoomModel> getRoomx(){
         return repo.getRoomsx(err);
+    }
+    public LiveData<BuildingDataModel> getBuilding(){
+        return repo.getBuilding(err);
     }
 }
