@@ -7,16 +7,18 @@ I started working on this project in mid-December(2022) because I was feeling bo
 
 > Only the Holy Cross of Davao College Student/s are able to use this app.
 
-## Feature
-* Able to view subjects
-* Able to view accountabilities
-* Able to view grades
-* Able to view evaluation
-* Able to view enrollment history
-* Able to view subject offered
-* Able to view lacking credentials
+## Feature 
+> (✔ - Available offline once it is loaded. )
+* Able to view subjects (✔)
+* Able to view accountabilities (✔)
+* Able to view grades (✔)
+* Able to view evaluation (✔)
+* Able to view enrollment history (✔)
+* Able to view subject offered 
+* Able to view lacking credentials (✔)
 * Able to chat ai (have 6 sources)
 * Building,floors and rooms ( WIP - Still busy with capstone project)
+>PS: Some feature requires internet
 
 # Disclaimer:
 I only scrape what's available in the student portal, such as text, images, and other accessible content using any browser. This project is made possible thanks to the <a href="https://jsoup.org/">jsoup</a> library. It is important to note that this project is purely for fun and for my own learning experience in Android development. ( currently enrolled - 4th yr)
