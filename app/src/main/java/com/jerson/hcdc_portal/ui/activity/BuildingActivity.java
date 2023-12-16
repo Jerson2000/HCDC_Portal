@@ -1,5 +1,6 @@
 package com.jerson.hcdc_portal.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +44,7 @@ public class BuildingActivity extends BaseActivity<ActivityBuildingBinding> impl
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
             getBinding().header.collapsingToolbar.setTitle("Building");
-            getBinding().header.collapsingToolbar.setSubtitle("Buildings details");
+            getBinding().header.collapsingToolbar.setSubtitle("List of HCDC building");
         }
 
         roomViewModel = new ViewModelProvider(this).get(RoomViewModel.class);
@@ -76,6 +77,9 @@ public class BuildingActivity extends BaseActivity<ActivityBuildingBinding> impl
 
     @Override
     public void onItemClick(Integer object) {
+        Intent intent= new Intent(this, BuildingDetailsActivity.class);
+        intent.putExtra("building",list.get(object));
+        startActivity(intent);
     }
 
     @Override

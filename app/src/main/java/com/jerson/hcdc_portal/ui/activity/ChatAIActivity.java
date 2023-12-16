@@ -193,11 +193,11 @@ public class ChatAIActivity extends BaseActivity<ActivityChatAiactivityBinding> 
                 .load("https://chatbotai.one/wp-content/uploads/2023/06/cropped-Untitled_design__8_-removebg-preview-32x32.png")
                 .into(aiChooserLayoutBinding.ChatBotIV);
         Glide.with(this)
-                .load("https://chatgbt.one/wp-content/uploads/2023/05/cropped-cropped-chatgbt-32x32.png")
-                .into(aiChooserLayoutBinding.ChatGBTIV);
+                .load("https://chatgtp.ca/wp-content/uploads/2023/04/cropped-chatgpt.png")
+                .into(aiChooserLayoutBinding.ChatGTPIV);
         Glide.with(this)
                 .load("https://chatgbt.one/wp-content/uploads/2023/05/cropped-cropped-chatgbt-32x32.png")
-                .into(aiChooserLayoutBinding.ChatGTPIV);
+                .into(aiChooserLayoutBinding.ChatGBTIV);
         Glide.with(this)
                 .load("https://chatgbt.one/wp-content/uploads/2023/05/cropped-cropped-chatgbt-32x32.png")
                 .into(aiChooserLayoutBinding.ChatGPTTIV);

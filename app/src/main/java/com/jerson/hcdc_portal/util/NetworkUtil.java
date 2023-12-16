@@ -3,6 +3,7 @@ package com.jerson.hcdc_portal.util;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
+import android.util.Log;
 
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.listener.DynamicListener;
@@ -16,6 +17,7 @@ import org.jsoup.nodes.Document;
 import okhttp3.FormBody;
 
 public class NetworkUtil {
+    private static final String TAG = "NetworkUtil";
 
     public static boolean isConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) PortalApp.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -35,6 +37,7 @@ public class NetworkUtil {
             @Override
             public void onFailure(Exception e) {
                 PortalApp.showToast(e.getMessage());
+                Log.e(TAG, "onFailure: ", e);
             }
 
             @Override

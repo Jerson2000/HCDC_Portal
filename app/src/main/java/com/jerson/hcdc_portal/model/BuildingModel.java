@@ -1,8 +1,9 @@
 package com.jerson.hcdc_portal.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class BuildingModel {
+public class BuildingModel implements Serializable {
     private String id;
     private String name;
     private String history;
@@ -79,7 +80,7 @@ public class BuildingModel {
 
 
 
-    public static class Floor {
+    public static class Floor implements Serializable{
         private int floor_no;
         private List<Room> rooms;
 
@@ -107,7 +108,7 @@ public class BuildingModel {
 
 
 
-        public static class Room {
+        public static class Room implements Serializable{
             private String room_no;
             private String desc;
             private List<Preview> preview;
@@ -145,7 +146,7 @@ public class BuildingModel {
 
 
 
-            public static class Preview {
+            public static class Preview implements Serializable{
                 private String desc;
                 private String img_url;
 

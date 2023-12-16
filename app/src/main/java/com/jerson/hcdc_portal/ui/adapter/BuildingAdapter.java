@@ -84,6 +84,9 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingAdapter.ViewHo
             binding.getRoot().setOnClickListener(v->{
                 listener.onItemClick(getAdapterPosition());
             });
+            binding.buildingImage.setOnClickListener(v->{
+                listener.onItemClick(getAdapterPosition());
+            });
         }
     }
 }

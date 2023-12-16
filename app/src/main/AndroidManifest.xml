@@ -19,6 +19,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activity.BuildingDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activity.BuildingActivity"
             android:exported="false" />
         <activity

@@ -21,11 +21,21 @@ import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import nl.altindag.ssl.SSLFactory;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
@@ -46,20 +56,49 @@ public class HttpClient {
     private CacheControl cacheControl;
 
     private HttpClient() {
-        File cacheDirectory = new File(PortalApp.getAppContext().getCacheDir(), "http-cache");
-        int cacheSize = 100 * 1024 * 1024; // 10 MB
-        Cache cache = new Cache(cacheDirectory, cacheSize);
-        client = new OkHttpClient.Builder()
-                .addInterceptor(new TimingInterceptor())
-                .cookieJar(new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(PortalApp.getAppContext())))
-                .cache(cache)
-                .build();
-        cacheControl = new CacheControl.Builder()
-                .maxAge(5, TimeUnit.HOURS)
-                .maxStale(1, TimeUnit.DAYS)
-                .build();
-        handler = new Handler(Looper.getMainLooper());
-        executor = Executors.newSingleThreadExecutor();
+        try{
+            File cacheDirectory = new File(PortalApp.getAppContext().getCacheDir(), "http-cache");
+            int cacheSize = 100 * 1024 * 1024;
+            Cache cache = new Cache(cacheDirectory, cacheSize);
+
+            final TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(X509Certificate[] chain, String authType) {
+                        }
+
+                        @Override
+                        public void checkServerTrusted(X509Certificate[] chain, String authType) {
+                        }
+
+                        @Override
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return new X509Certificate[]{};
+                        }
+                    }
+            };
+
+            // Install the all-trusting trust manager
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+
+            client = new OkHttpClient.Builder()
+                    .addInterceptor(new TimingInterceptor())
+                    .cookieJar(new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(PortalApp.getAppContext())))
+                    .cache(cache)
+                    .sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) trustAllCerts[0])
+                    .hostnameVerifier((hostname, session) -> true)
+                    .build();
+            cacheControl = new CacheControl.Builder()
+                    .maxAge(5, TimeUnit.HOURS)
+                    .maxStale(1, TimeUnit.DAYS)
+                    .build();
+            handler = new Handler(Looper.getMainLooper());
+            executor = Executors.newSingleThreadExecutor();
+        }catch (GeneralSecurityException e){
+            throw new RuntimeException(e);
+        }
     }
 
 
