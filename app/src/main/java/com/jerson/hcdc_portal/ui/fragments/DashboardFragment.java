@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -91,17 +92,17 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
     void init() {
         profileDialogLayoutBinding = ProfileLayoutDialogBinding.inflate(LayoutInflater.from(requireActivity()));
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
-        adapter = new DashboardAdapter(requireActivity(), todayList, this::onItemClick);
+        adapter = new DashboardAdapter(requireActivity(), todayList, this);
         binding.recyclerView.setAdapter(adapter);
 
-        if (!preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE).equals("")) {
+        if (preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE) != null && !preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE).equals("")) {
             binding.enrollAnnounceLayout.setVisibility(View.VISIBLE);
             binding.enrollAnnounce.setText(preferenceManager.getString(PortalApp.KEY_ENROLL_ANNOUNCE));
         } else {
             binding.enrollAnnounceLayout.setVisibility(View.GONE);
         }
-        binding.enrolledTV.setText(preferenceManager.getString(PortalApp.KEY_IS_ENROLLED));
-        binding.unitsTV.setText(preferenceManager.getString(PortalApp.KEY_STUDENTS_UNITS));
+        binding.enrolledTV.setText(preferenceManager.getString(PortalApp.KEY_IS_ENROLLED)==null?"":preferenceManager.getString(PortalApp.KEY_IS_ENROLLED));
+        binding.unitsTV.setText(preferenceManager.getString(PortalApp.KEY_STUDENTS_UNITS)==null?"0":preferenceManager.getString(PortalApp.KEY_STUDENTS_UNITS));
 
         String pDetails = "ID number: " + preferenceManager.getString(PortalApp.KEY_STUDENT_ID) + "\n" +
                 "Name: " + preferenceManager.getString(PortalApp.KEY_STUDENT_NAME) + "\n" +
@@ -130,6 +131,7 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
         });
         binding.btnSetting.setOnClickListener(v -> {
             startActivity(new Intent(requireActivity(), SettingsActivity.class));
+            requireActivity().finish();
         });
 
         binding.evaluation.setOnClickListener(v -> {
@@ -144,6 +146,7 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
         });
 
         binding.evaluationIV.setImage(ImageSource.resource(R.drawable.paper));
+
     }
 
 
@@ -205,24 +208,17 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
 
 
     private void loadDashboard(DynamicListener<Boolean> isRetrieved) {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.loadDashboard()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
-                    if (data.size() > 0) {
-                        dashList.clear();
-                        dashList.addAll(data);
-                        isRetrieved.dynamicListener(true);
-                        isLoading(false);
+        viewModel.loadSubjects().observe(requireActivity(),data->{
+            if (data.size() > 0) {
+                dashList.clear();
+                dashList.addAll(data);
+                isRetrieved.dynamicListener(true);
+                isLoading(false);
 
-                    } else {
-                        isRetrieved.dynamicListener(false);
-                    }
-                }, throwable -> {
-                    isRetrieved.dynamicListener(false);
-                }));
-
+            } else {
+                isRetrieved.dynamicListener(false);
+            }
+        });
     }
 
     void errShow(String msg) {

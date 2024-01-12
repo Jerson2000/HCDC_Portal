@@ -22,8 +22,12 @@ public class DashboardRepo {
         HttpClient.getInstance().GET(PortalApp.baseUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
+                if(response.body().text().toLowerCase().contains("something went wrong")){
+                    getDashData(resCode,err);
+                }else{
                 data.setValue( parseDashboard(response));
                 PortalApp.parseUser(response);
+                }
             }
 
             @Override

@@ -15,15 +15,15 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
-/* NOTE: THIS A SUBJECTS VIEWMODEL - In the student portal the subject's schedule is in the dashboard so I just copy the name*/
 public class DashboardViewModel extends AndroidViewModel {
-    MutableLiveData<Integer> resCode = new MutableLiveData<>();
-    MutableLiveData<Throwable> err = new MutableLiveData<>();
-
-    DatabasePortal databasePortal;
-
-    DashboardRepo repo;
+    private MutableLiveData<Integer> resCode = new MutableLiveData<>();
+    private MutableLiveData<Throwable> err = new MutableLiveData<>();
+    private DatabasePortal databasePortal;
+    private DashboardRepo repo;
 
     public DashboardViewModel(@NonNull Application application) {
         super(application);
@@ -43,16 +43,33 @@ public class DashboardViewModel extends AndroidViewModel {
         return err;
     }
 
-    public Completable insertDashboard(List<DashboardModel> dashboardModel){
-        return databasePortal.dashboardDao().insertDashboard(dashboardModel);
+    public LiveData<Boolean> insertDashboard(List<DashboardModel> list){
+        MutableLiveData<Boolean> callback = new MutableLiveData<>();
+        new CompositeDisposable().add(databasePortal.dashboardDao().insertDashboard(list)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> callback.setValue(true), throwable -> callback.setValue(false))
+
+        );
+        return callback;
     }
 
-    public Flowable<List<DashboardModel>> loadDashboard(){
-        return databasePortal.dashboardDao().getDashboard();
+    public LiveData<Boolean> deleteDashboardData(){
+        MutableLiveData<Boolean> callback = new MutableLiveData<>();
+        new CompositeDisposable().add(databasePortal.dashboardDao().deleteDashboardData()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(()->callback.setValue(true), throwable ->callback.setValue(false)));
+        return callback;
     }
 
-    public Completable deleteDashboardData(){
-        return databasePortal.dashboardDao().deleteDashboardData();
+    public LiveData<List<DashboardModel>> loadSubjects(){
+        MutableLiveData<List<DashboardModel>> list = new MutableLiveData<>();
+        new CompositeDisposable().add(databasePortal.dashboardDao().getDashboard()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(list::setValue, err::setValue));
+        return list;
     }
 
 }

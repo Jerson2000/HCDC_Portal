@@ -10,29 +10,29 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="Room preview"/>
+        android:contentDescription="Room preview" />
 
     <TextView
         android:id="@+id/previewClose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
-        android:text="✕"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:background="@drawable/bg_close"
-        android:alpha="0.73"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="10dp"
-        android:textStyle="bold"
-        android:textColor="?colorOnSecondaryContainer"
+        android:alpha="0.73"
+        android:background="@drawable/bg_close"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="5dp"
         android:shadowColor="?colorOnPrimary"
         android:shadowDx="1"
-        android:layout_gravity="center_horizontal"
         android:shadowDy="1"
         android:shadowRadius="2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:text="✕"
+        android:textColor="?colorOnSecondaryContainer"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

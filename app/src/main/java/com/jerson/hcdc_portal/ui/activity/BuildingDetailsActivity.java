@@ -6,6 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -49,7 +50,7 @@ public class BuildingDetailsActivity extends BaseActivity<ActivityBuildingDetail
         }
         building = PortalApp.getSerializable(getIntent().getExtras(), "building", BuildingModel.class);
         adapter = new BuildingDetailsAdapter(list,this);
-        getBinding().recyclerView.setLayoutManager(new GridLayoutManager(this,2));
+        getBinding().recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
         getBinding().recyclerView.setAdapter(adapter);
         setViews();
     }

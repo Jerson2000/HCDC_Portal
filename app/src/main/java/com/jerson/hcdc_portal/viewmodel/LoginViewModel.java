@@ -12,16 +12,16 @@ import com.jerson.hcdc_portal.listener.OnHttpResponseListener;
 import com.jerson.hcdc_portal.model.DashboardModel;
 import com.jerson.hcdc_portal.network.HttpClient;
 import com.jerson.hcdc_portal.repo.DashboardRepo;
-import com.jerson.hcdc_portal.util.PreferenceManager;
+import com.jerson.hcdc_portal.util.NetworkUtil;
 
 import org.jsoup.nodes.Document;
 
-import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.FormBody;
 
 public class LoginViewModel extends ViewModel {
+    private static final String TAG = "LoginViewModel";
     MutableLiveData<Integer> resCode = new MutableLiveData<>();
     MutableLiveData<List<DashboardModel>> dashboardData = new MutableLiveData<>();
     MutableLiveData<String> res = new MutableLiveData<>();
@@ -35,10 +35,11 @@ public class LoginViewModel extends ViewModel {
                         .add("password", pass)
                         .build();
 
-                HttpClient.getInstance().POST(PortalApp.baseUrl + PortalApp.loginPostUrl, formBody, new OnHttpResponseListener<Document>() {
+                HttpClient.getInstance().POST_REDIRECT(PortalApp.baseUrl + PortalApp.loginPostUrl, formBody, new OnHttpResponseListener<Document>() {
                     @Override
                     public void onResponse(Document response) {
                         boolean wrongPass = response.body().text().contains("CROSSIAN LOG-IN");
+                        boolean wentWrong = response.body().text().toLowerCase().contains("something went wrong");
 
                         dashboardData.postValue(DashboardRepo.parseDashboard(response));
 
@@ -46,7 +47,11 @@ public class LoginViewModel extends ViewModel {
                             err.setValue(new Throwable("Incorrect Credentials!"));
                             listener.dynamicListener(false);
                         }
-                        if (!wrongPass) {
+                        if (wentWrong) {
+                            err.setValue(new Throwable("Something went wrong!"));
+                            listener.dynamicListener(false);
+                        }
+                        if (!wrongPass && !wentWrong) {
                             listener.dynamicListener(true);
                             PortalApp.parseUser(response);
                         }
@@ -109,26 +114,6 @@ public class LoginViewModel extends ViewModel {
 
         });
         return s;
-    }
-
-    public void checkSession(DynamicListener<Boolean> listener) {
-        HttpClient.getInstance().GET_Redirection(PortalApp.baseUrl + PortalApp.gradesUrl, new OnHttpResponseListener<Document>() {
-            @Override
-            public void onResponse(Document response) {
-                boolean isLoginPage = response.body().text().contains("CROSSIAN LOG-IN");
-                listener.dynamicListener(isLoginPage);
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                err.postValue(e);
-            }
-
-            @Override
-            public void onResponseCode(int code) {
-                resCode.postValue(code);
-            }
-        });
     }
 
 }

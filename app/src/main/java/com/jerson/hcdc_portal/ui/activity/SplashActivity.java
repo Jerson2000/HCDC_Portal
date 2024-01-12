@@ -15,7 +15,6 @@ import com.bumptech.glide.Glide;
 import com.jerson.hcdc_portal.PortalApp;
 import com.jerson.hcdc_portal.R;
 import com.jerson.hcdc_portal.databinding.ActivitySplashBinding;
-import com.jerson.hcdc_portal.ui.MainActivity;
 import com.jerson.hcdc_portal.util.BaseActivity;
 import com.jerson.hcdc_portal.util.DownloadRoomsWorker;
 import com.jerson.hcdc_portal.util.NetworkUtil;

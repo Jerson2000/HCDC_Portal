@@ -22,11 +22,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp">
+
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/bImage"
-                    android:scaleType="center"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"/>
+                    android:layout_height="250dp"
+                    android:scaleType="center" />
             </com.google.android.material.card.MaterialCardView>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -35,23 +36,24 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
                 android:text="Name"
-                android:textAppearance="?textAppearanceLabelMedium"/>
+                android:textAppearance="?textAppearanceLabelMedium" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/bName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
-                android:textAppearance="?attr/textAppearanceBodyLarge"/>
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="History"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="16dp"
-                android:textAppearance="?textAppearanceLabelMedium"/>
+                android:text="History"
+                android:textAppearance="?textAppearanceLabelMedium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/bHistory"
@@ -59,16 +61,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
-                android:textAppearance="?attr/textAppearanceBodyLarge"/>
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="Located"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="16dp"
-                android:textAppearance="?textAppearanceLabelMedium"/>
+                android:text="Located"
+                android:textAppearance="?textAppearanceLabelMedium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/bLocated"
@@ -76,16 +78,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
-                android:textAppearance="?attr/textAppearanceBodyLarge"/>
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="No. of floors"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="16dp"
-                android:textAppearance="?textAppearanceLabelMedium"/>
+                android:text="No. of floors"
+                android:textAppearance="?textAppearanceLabelMedium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/bFloorUpTo"
@@ -93,25 +95,53 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
-                android:textAppearance="?attr/textAppearanceBodyLarge"/>
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginEnd="16dp"
                 android:text="Floors:"
-                android:textAppearance="?attr/textAppearanceLabelLarge"/>
+                android:textAppearance="?attr/textAppearanceLabelLarge" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/item_container_building_floor"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="2"
-                android:clipToPadding="false"/>
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_container_building_floor" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"/>
+
+            <LinearLayout
+                android:id="@+id/roomsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+                
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceLabelLarge"
+                    android:text="Rooms"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/roomsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+            </LinearLayout>
 
 
         </LinearLayout>
@@ -128,9 +158,9 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            app:title="Building Details"
+            android:layout_height="wrap_content"
             android:backgroundTint="?colorSurface"
-            android:layout_height="wrap_content" />
+            app:title="Building Details" />
     </com.google.android.material.appbar.AppBarLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

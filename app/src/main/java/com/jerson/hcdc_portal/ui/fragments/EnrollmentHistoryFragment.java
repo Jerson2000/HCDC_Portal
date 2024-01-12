@@ -44,16 +44,12 @@ public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHi
     private ArrayAdapter<String> arrayAdapter;
     private List<EnrollHistModel> enrollData = new ArrayList<>();
     private EnrollHistoryAdapter adapter;
-    private LoginViewModel loginViewModel;
-    private PreferenceManager preferenceManager;
     private int selectedId = 0;
     private String selectedLink = "";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(EnrollHistoryViewModel.class);
-        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
-        preferenceManager = new PreferenceManager(requireActivity());
         loadEnrollHistoryLink(linkRetrieved);
     }
 
@@ -68,7 +64,7 @@ public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHi
     void init() {
 
         // dropdown/spinner
-        arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, list);
+        arrayAdapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_spinner_dropdown_item, list);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerSem.setAdapter(arrayAdapter);
 
@@ -136,8 +132,8 @@ public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHi
 
 
     void getLinks() {
-        try {
-            viewModel.getLinks().observe(requireActivity(), data -> {
+        if(!isGetViewLifecycleNull()){
+            viewModel.getLinks().observe(getViewLifecycleOwner(), data -> {
                 if (data != null) {
                     list.clear();
                     periodLinks.clear();
@@ -158,22 +154,13 @@ public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHi
                             });
                         }
                     });
-
-
                 }
             });
-
-        } catch (NullPointerException e) {
-            Log.d(TAG, "getLinks: " + e.getMessage());
         }
     }
 
     void observeErr() {
-        loginViewModel.getErr().observe(requireActivity(), err -> {
-            showErr(err.getMessage());
-        });
-
-        viewModel.getErr().observe(requireActivity(), err -> {
+        viewModel.getErr().observe(getViewLifecycleOwner(), err -> {
             showErr(err.getMessage());
         });
     }
@@ -332,7 +319,7 @@ public class EnrollmentHistoryFragment extends BaseFragment<FragmentEnrollmentHi
 
 
     void getData(String link, int id) {
-        viewModel.getData(link).observe(requireActivity(), data -> {
+        viewModel.getData(link).observe(getViewLifecycleOwner(), data -> {
             if (data != null) {
                 enrollData.clear();
                 enrollData.addAll(data);

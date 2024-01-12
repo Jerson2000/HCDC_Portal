@@ -45,18 +45,13 @@ public class GradesFragment extends BaseFragment<FragmentGradesBinding> {
     private GradeAdapter adapter;
     private GradesViewModel viewModel;
     private ArrayAdapter<String> arrayAdapter;
-
-    private LoginViewModel loginViewModel;
-    private PreferenceManager preferenceManager;
     private int selectedId = 0;
     private String selectedLink = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(requireActivity()).get(GradesViewModel.class);
-        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
-        preferenceManager = new PreferenceManager(requireActivity());
+        viewModel = new ViewModelProvider(this).get(GradesViewModel.class);
         loadGradeLink(linkListener);
     }
 
@@ -135,7 +130,7 @@ public class GradesFragment extends BaseFragment<FragmentGradesBinding> {
     }
 
     void getLink() {
-        viewModel.getLinks().observe(requireActivity(), data -> {
+        viewModel.getLinks().observe(getViewLifecycleOwner(), data -> {
             if (data != null) {
                 list.clear();
                 semGradeList.clear();
@@ -165,7 +160,7 @@ public class GradesFragment extends BaseFragment<FragmentGradesBinding> {
     }
 
     void getGrade(int link_id, String link) {
-        viewModel.gradeData(link).observe(requireActivity(), data -> {
+        viewModel.gradeData(link).observe(getViewLifecycleOwner(), data -> {
             if (data != null) {
                 gradeList.clear();
                 gradeList.addAll(data);
@@ -212,11 +207,7 @@ public class GradesFragment extends BaseFragment<FragmentGradesBinding> {
     }
 
     void observerErr() {
-        loginViewModel.getErr().observe(requireActivity(), err -> {
-            showErr(err.getMessage());
-        });
-
-        viewModel.getErr().observe(requireActivity(), err -> {
+        viewModel.getErr().observe(getViewLifecycleOwner(), err -> {
             showErr(err.getMessage());
         });
     }

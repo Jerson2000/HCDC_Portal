@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -23,9 +22,7 @@ import com.jerson.hcdc_portal.util.BaseActivity;
 import com.jerson.hcdc_portal.util.NetworkUtil;
 import com.jerson.hcdc_portal.util.PreferenceManager;
 import com.jerson.hcdc_portal.viewmodel.EvaluationViewModel;
-import com.jerson.hcdc_portal.viewmodel.LoginViewModel;
 
-import java.util.Locale;
 import java.util.Random;
 
 public class EvaluationActivity extends BaseActivity<ActivityEvaluationBinding> {
@@ -33,7 +30,6 @@ public class EvaluationActivity extends BaseActivity<ActivityEvaluationBinding> 
     private ActivityEvaluationBinding binding;
     private String evaluationHtml;
     private EvaluationViewModel viewModel;
-    private LoginViewModel loginViewModel;
     private PreferenceManager preferenceManager;
     private WebView myWebView;
 
@@ -43,7 +39,6 @@ public class EvaluationActivity extends BaseActivity<ActivityEvaluationBinding> 
         binding = getBinding();
 
         viewModel = new ViewModelProvider(this).get(EvaluationViewModel.class);
-        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         preferenceManager = new PreferenceManager(this);
 
         if (!getBindingNull()) init();

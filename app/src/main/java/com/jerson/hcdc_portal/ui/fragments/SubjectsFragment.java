@@ -50,8 +50,8 @@ public class SubjectsFragment extends BaseFragment<FragmentSubjectsBinding> impl
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
-        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
+        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
         preferenceManager = new PreferenceManager(requireActivity());
     }
 
@@ -150,58 +150,26 @@ public class SubjectsFragment extends BaseFragment<FragmentSubjectsBinding> impl
 
     /* database */
     private void loadSubject() {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.loadDashboard()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
+        viewModel.loadSubjects().observe(requireActivity(),data->{
+            if (data.size() > 0) {
+                subjectList.clear();
+                subjectList.addAll(data);
+                adapter.notifyDataSetChanged();
+                isLoading(false);
 
-                    if (data.size() > 0) {
-                        subjectList.clear();
-                        subjectList.addAll(data);
-                        adapter.notifyDataSetChanged();
-                        isLoading(false);
-
-                    } else {
-                        showErr("No subjects");
-                    }
-                    /* Log.d(TAG, "loadSubject: " + data.size());*/
-                }, throwable -> {
-                    Log.e(TAG, "loadSubject", throwable);
-                    showErr(throwable.getMessage());
-                }));
+            } else {
+                showErr("No subjects");
+            }
+        });
 
     }
 
     void saveSubjects(List<DashboardModel> data, DynamicListener<Boolean> listener) {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.insertDashboard(data)
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    /*Log.d(TAG, "saveSubjects: saved " + data.size());*/
-                    listener.dynamicListener(true);
-                }, throwable -> {
-                    Log.e(TAG, "saveSubjects: ", throwable);
-                    showErr(throwable.getMessage());
-                    listener.dynamicListener(false);
-                })
-        );
-
+        viewModel.insertDashboard(data).observe(requireActivity(), listener::dynamicListener);
     }
 
     void deleteSubjects(DynamicListener<Boolean> isDeleted) {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.deleteDashboardData()
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    isDeleted.dynamicListener(true);
-                    /*Log.d(TAG, "deleteSubjects: success");*/
-                }, throwable -> {
-                    isDeleted.dynamicListener(false);
-                    showErr(throwable.getMessage());
-                    Log.e(TAG, "deleteSubjects: ", throwable);
-                })
-        );
+       viewModel.deleteDashboardData().observe(requireActivity(),isDeleted::dynamicListener);
     }
 
 

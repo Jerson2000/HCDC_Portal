@@ -38,16 +38,11 @@ public class AccountFragment extends BaseFragment<FragmentAccountBinding> {
     private AccountViewModel viewModel;
     private AccountAdapter adapter;
     private List<AccountModel> accList = new ArrayList<>();
-    private LoginViewModel loginViewModel;
-    private PreferenceManager preferenceManager;
-    private boolean isInserted = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
-        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
-        preferenceManager = new PreferenceManager(requireActivity());
     }
 
 
@@ -86,26 +81,28 @@ public class AccountFragment extends BaseFragment<FragmentAccountBinding> {
 
 
     void getData() {
-        viewModel.getData().observe(requireActivity(), data -> {
-            if (data != null) {
-                accList.clear();
-                accList.addAll(data);
-                binding.dueText.setText(accList.get(0).getDueText());
-                binding.dueAmount.setText(accList.get(0).getDue());
+        if(!isGetViewLifecycleNull()){
+            viewModel.getData().observe(getViewLifecycleOwner(), data -> {
+                if (data != null) {
+                    accList.clear();
+                    accList.addAll(data);
+                    binding.dueText.setText(accList.get(0).getDueText());
+                    binding.dueAmount.setText(accList.get(0).getDue());
 
-                deleteAccount(object -> {
-                    if (object) {
-                        insertAccount(object1 -> {
-                            if (object1) {
-                                binding.refreshLayout.setRefreshing(false);
-                            }
-                        });
-                    }
-                });
-                adapter.notifyDataSetChanged();
-                isLoading(false);
-            }
-        });
+                    deleteAccount(object -> {
+                        if (object) {
+                            insertAccount(object1 -> {
+                                if (object1) {
+                                    binding.refreshLayout.setRefreshing(false);
+                                }
+                            });
+                        }
+                    });
+                    adapter.notifyDataSetChanged();
+                    isLoading(false);
+                }
+            });
+        }
     }
 
     void checkSession(DynamicListener<Boolean> listener) {
@@ -124,11 +121,7 @@ public class AccountFragment extends BaseFragment<FragmentAccountBinding> {
     }
 
     void observeErr() {
-        loginViewModel.getErr().observe(requireActivity(), err -> {
-            showErr(err.getMessage());
-        });
-
-        viewModel.getErr().observe(requireActivity(), err -> {
+        viewModel.getErr().observe(getViewLifecycleOwner(), err -> {
             showErr(err.getMessage());
         });
     }
@@ -158,59 +151,26 @@ public class AccountFragment extends BaseFragment<FragmentAccountBinding> {
     /* Database */
 
     void insertAccount(DynamicListener<Boolean> listener) {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.insertAccount(accList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    /*Log.d(TAG, "insertAccount: success");*/
-                    listener.dynamicListener(true);
-                }, throwable -> {
-                    Log.e(TAG, "insertAccount: ", throwable);
-                    listener.dynamicListener(false);
-                })
-
-        );
+        viewModel.insertAccount(accList).observe(requireActivity(),listener::dynamicListener);
     }
 
     void deleteAccount(DynamicListener<Boolean> listener) {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.deleteAccount()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    /*Log.d(TAG, "deleteAccount: success");*/
-                    listener.dynamicListener(true);
-                }, throwable -> {
-                    Log.e(TAG, "deleteAccount: ", throwable);
-                    listener.dynamicListener(false);
-                })
-
-        );
+        viewModel.deleteAccount().observe(requireActivity(),listener::dynamicListener);
     }
 
     void getAccounts(DynamicListener<Boolean> listener) {
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
-        compositeDisposable.add(viewModel.getAccounts()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> {
-                    if (data.size() > 0) {
-                        accList.clear();
-                        accList.addAll(data);
-                        adapter.notifyDataSetChanged();
-                        binding.dueText.setText(accList.get(0).getDueText());
-                        binding.dueAmount.setText(accList.get(0).getDue());
-                        isLoading(false);
+        viewModel.loadAccounts().observe(requireActivity(),data->{
+            if (data.size() > 0) {
+                accList.clear();
+                accList.addAll(data);
+                adapter.notifyDataSetChanged();
+                binding.dueText.setText(accList.get(0).getDueText());
+                binding.dueAmount.setText(accList.get(0).getDue());
+                isLoading(false);
 
-                        listener.dynamicListener(true);
-                    } else listener.dynamicListener(false);
-                    /*Log.d(TAG, "getAccounts: " + data.size());*/
-                }, throwable -> {
-                    Log.e(TAG, "getAccounts: ", throwable);
-                })
-
-        );
+                listener.dynamicListener(true);
+            } else listener.dynamicListener(false);
+        });
     }
 
 
@@ -224,7 +184,6 @@ public class AccountFragment extends BaseFragment<FragmentAccountBinding> {
                 });
             } else
                 showErr("No internet connection.");
-
         }
     };
 

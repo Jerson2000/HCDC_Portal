@@ -27,7 +27,8 @@ public class AccountRepo {
             @Override
             public void onResponse(Document response) {
 
-                System.out.println(response.body());
+                /*System.out.println(response.body());*/
+                boolean foundMessage = response.body().text().toLowerCase().contains("inquiry regarding your statement of account");
                 List<AccountModel> accounts = new ArrayList<>();
 
                 Elements table = response.select("div.col-md-9 section.invoice tbody");
@@ -116,11 +117,7 @@ public class AccountRepo {
         HttpClient.getInstance().GET(PortalApp.baseUrl + PortalApp.accountUrl, new OnHttpResponseListener<Document>() {
             @Override
             public void onResponse(Document response) {
-
-
-
                 data.setValue(parse(response));
-
             }
 
             @Override
