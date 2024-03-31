@@ -64,7 +64,7 @@ public class RoomPreviewAdapter extends PagerAdapter {
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
 
                         if (!resource.isRecycled()) {
-                            img.setImage(ImageSource.bitmap(resource));
+                            img.setImage(new ImageSource.Bitmap(resource));
                         } else resource.recycle();
 
 

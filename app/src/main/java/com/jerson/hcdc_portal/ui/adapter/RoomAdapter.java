@@ -61,7 +61,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.ViewHolder> {
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         /*holder.binding.roomIV.setImage(ImageSource.bitmap(resource));*/
                         if(!resource.isRecycled()){
-                            holder.binding.roomIV.setImage(ImageSource.bitmap(resource));
+                            holder.binding.roomIV.setImage(new ImageSource.Bitmap(resource));
                         }else resource.recycle();
                     }
 

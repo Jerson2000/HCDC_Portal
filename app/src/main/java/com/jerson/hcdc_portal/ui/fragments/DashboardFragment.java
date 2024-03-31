@@ -145,7 +145,7 @@ public class DashboardFragment extends BaseFragment<FragmentDashboardBinding> im
             startActivity(new Intent(requireActivity(), BuildingActivity.class));
         });
 
-        binding.evaluationIV.setImage(ImageSource.resource(R.drawable.paper));
+        binding.evaluationIV.setImage(new ImageSource.Resource(R.drawable.paper));
 
     }
 
