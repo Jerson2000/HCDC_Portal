@@ -51,6 +51,7 @@ class LoginRepositoryImpl @Inject constructor(
     override suspend fun checkSession(): Flow<Resource<Boolean>> = channelFlow {
         try{
             withContext(Dispatchers.IO){
+                send(Resource.Loading())
                 val response = client.newCall(HttpClients.getRequest("$baseUrl$gradesUrl")).await()
                 if(response.isSuccessful){
                     val bod = response.body.string()

@@ -20,7 +20,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".presentation.login.LoginKt"
+            android:name=".presentation.splash.SplashKt"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +29,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".presentation.main.MainKt"
+            android:exported="false"/>
+
+        <activity android:name=".presentation.login.LoginKt"
             android:exported="false"/>
 
         <!--<activity

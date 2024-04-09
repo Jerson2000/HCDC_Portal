@@ -1,8 +1,11 @@
 package com.jerson.hcdc_portal.domain.model
 
-
-data class Subject(
-    val subjectId:Int,
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+@Entity("schedules")
+data class Schedule(
+    @PrimaryKey(true)
+    val id:Int,
     val offeredNo:String?,
     val gClassCode:String?,
     val subjectCode:String?,
@@ -12,12 +15,4 @@ data class Subject(
     val time:String?,
     val room:String?,
     val lecLab:String?,
-    val midGrade:String?,
-    val midRemark:String?,
-    val finalGrade:String?,
-    val finalRemark:String?,
-    val earnedUnits:String?,
-    val weightedAve:String?,
-    val teacher:String?,
 )
-

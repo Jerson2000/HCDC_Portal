@@ -1,17 +1,17 @@
 package com.jerson.hcdc_portal.domain.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-data class Subject(
-    val subjectId:Int,
+@Entity("grades")
+data class Grade(
+    @PrimaryKey(true)
+    val id:Int,
+    val termId:Int?,
     val offeredNo:String?,
-    val gClassCode:String?,
     val subjectCode:String?,
     val description:String,
     val unit:String?,
-    val days:String?,
-    val time:String?,
-    val room:String?,
-    val lecLab:String?,
     val midGrade:String?,
     val midRemark:String?,
     val finalGrade:String?,
@@ -20,4 +20,3 @@ data class Subject(
     val weightedAve:String?,
     val teacher:String?,
 )
-
