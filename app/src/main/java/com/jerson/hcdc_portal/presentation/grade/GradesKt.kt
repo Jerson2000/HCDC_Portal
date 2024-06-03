@@ -1,4 +1,4 @@
-package com.jerson.hcdc_portal.presentation.dashboard
+package com.jerson.hcdc_portal.presentation.grade
 
 import android.os.Bundle
 import android.util.Log
@@ -10,48 +10,52 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
-import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
+import com.jerson.hcdc_portal.databinding.FragmentGradesKtBinding
+import com.jerson.hcdc_portal.presentation.grade.viewmodel.GradeViewModel
+import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.util.Resource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class DashboardKt : Fragment() {
-    private  var binding: FragmentDashboardKtBinding?=null
-    private val dashboardViewModel: DashboardViewModel by viewModels()
+class GradesKt : Fragment() {
+    private lateinit var binding: FragmentGradesKtBinding
+    private val gradesViewModel: GradeViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentDashboardKtBinding.inflate(inflater,container,false)
-        return binding!!.root
+        binding = FragmentGradesKtBinding.inflate(inflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        dashboardViewModel.fetchSchedules()
-//        dashboardViewModel.getSchedules()
-//        listenerFetch()
+        gradesViewModel.fetchGrades()
+        fetchGrades()
+
     }
 
-    private fun listenerFetch() {
+    private fun fetchGrades() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                dashboardViewModel.fetchSchedules.collect {
+                gradesViewModel.fetchGrades.collect {
                     when (it) {
                         is Resource.Loading -> {
 
                         }
 
                         is Resource.Success -> {
-                            for(x in it.data!!)
-                                Log.e("HUHU", "listenerFetch: ${x.subjectCode}", )
+                            /* Log.e("Grades", "fetchGrades: ${it.data!!.size}\t${it.data[0].term} - ${it.data[0].teacher}")*/
                         }
 
                         is Resource.Error -> {
-
+                            println(it.message)
+                            loginViewModel.reLogon()
                         }
 
                         else -> Unit
@@ -60,11 +64,5 @@ class DashboardKt : Fragment() {
             }
         }
     }
-
-    override fun onDestroyView() {
-        binding = null
-        super.onDestroyView()
-    }
-
 
 }

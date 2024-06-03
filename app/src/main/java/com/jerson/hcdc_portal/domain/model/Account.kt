@@ -13,6 +13,7 @@ data class Account(
     val period:String?,
     val added:String?,
     val deducted:String?,
+    val runningBal:String?,
     val dueTextPeriod:String?,
     val dueAmount:String?
 )

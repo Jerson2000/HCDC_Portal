@@ -8,6 +8,7 @@ data class EnrollHistory(
     @PrimaryKey(true)
     val id:Int,
     val termId:Int?,
+    val term:String?,
     val offeredNo:String?,
     val subjectCode:String?,
     val description:String,

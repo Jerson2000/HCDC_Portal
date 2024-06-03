@@ -71,8 +71,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
 
     // Navigation Components
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
 
 //    Okhttp
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
@@ -124,5 +124,5 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // Leak Canary
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:3.0-alpha-1")
+//    debugImplementation("com.squareup.leakcanary:leakcanary-android:3.0-alpha-1")
 }

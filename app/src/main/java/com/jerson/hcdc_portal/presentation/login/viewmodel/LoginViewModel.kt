@@ -3,25 +3,22 @@ package com.jerson.hcdc_portal.presentation.login.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jerson.hcdc_portal.data.remote.HttpClients
 import com.jerson.hcdc_portal.domain.repository.LoginRepository
+import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
+import com.jerson.hcdc_portal.util.Constants.KEY_EMAIL
+import com.jerson.hcdc_portal.util.Constants.KEY_PASSWORD
 import com.jerson.hcdc_portal.util.Resource
-import com.jerson.hcdc_portal.util.await
-import com.jerson.hcdc_portal.util.copy
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
-import java.net.HttpURLConnection
 import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel@Inject constructor(
     private val loginRepository: LoginRepository,
-    private val client:OkHttpClient
+    private val pref:AppPreference
 ) :ViewModel(){
 
     private val _login = MutableSharedFlow<Resource<String>>()
@@ -69,6 +66,53 @@ class LoginViewModel@Inject constructor(
                 }
             }
         }
+    }
+
+    fun reLogin(){
+        viewModelScope.launch {
+            loginRepository.checkSession().collect{ses->
+                when(ses){
+                    is Resource.Loading ->{
+
+                    }
+                    is Resource.Success ->{
+                        if(ses.data!!){
+                            loginRepository.login(pref.getStringPreference(KEY_EMAIL),pref.getStringPreference(KEY_PASSWORD)).collect{
+                                when(it){
+                                    is Resource.Success->{
+                                        Log.e("HUHU", "reLogin: ${it.data}" )
+                                    }
+                                    is Resource.Error ->{
+
+                                    }
+                                    else -> Unit
+                                }
+                            }
+                        }
+                    }
+                    is Resource.Error ->{
+
+                    }
+                    else -> Unit
+                }
+            }
+        }
+    }
+    fun reLogon(){
+        viewModelScope.launch {
+            loginRepository.login(pref.getStringPreference(KEY_EMAIL),pref.getStringPreference(KEY_PASSWORD)).collect{
+                when(it){
+                    is Resource.Success->{
+                        Log.e("HUHU", "reLogin: ${it.data}" )
+                    }
+                    is Resource.Error ->{
+
+                    }
+                    else -> Unit
+                }
+            }
+        }
+
     }
 
 

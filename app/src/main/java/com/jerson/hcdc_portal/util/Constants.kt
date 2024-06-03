@@ -12,11 +12,10 @@ object Constants {
     const val KEY_STUDENT_NAME = "studentName"
     const val KEY_STUDENT_COURSE = "studentCourse"
     const val KEY_STUDENTS_UNITS = "units"
-
     const val KEY_SETTINGS_THEME_MODE = "themeMode"
-
     const val KEY_HTML_EVALUATION = "evaluationHTML"
     const val KEY_CSRF_TOKEN = "csrf_token"
+    const val KEY_IS_SESSION = "isSession"
 
 
     // App

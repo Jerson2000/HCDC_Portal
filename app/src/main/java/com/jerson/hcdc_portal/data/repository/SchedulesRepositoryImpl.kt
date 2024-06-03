@@ -1,12 +1,16 @@
 package com.jerson.hcdc_portal.data.repository
 
+import com.jerson.hcdc_portal.App.Companion.appContext
 import com.jerson.hcdc_portal.data.local.PortalDB
-import com.jerson.hcdc_portal.data.remote.HttpClients
 import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.domain.repository.SchedulesRepository
+import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.await
+import com.jerson.hcdc_portal.util.getRequest
+import com.jerson.hcdc_portal.util.isConnected
+import com.jerson.hcdc_portal.util.sessionParse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -20,40 +24,47 @@ import javax.inject.Inject
 
 class SchedulesRepositoryImpl@Inject constructor(
     private val db: PortalDB,
-    private val client:OkHttpClient
+    private val client:OkHttpClient,
+    private val preference: AppPreference
 ): SchedulesRepository {
     override suspend fun fetchSchedules(): Flow<Resource<List<Schedule>>> = channelFlow{
         try{
-            withContext(Dispatchers.IO){
-                send(Resource.Loading())
-                val response = client.newCall(HttpClients.getRequest(Constants.baseUrl)).await()
-                if(response.isSuccessful){
-                    val bod = response.body.string()
-                    val html = Jsoup.parse(bod)
-                    if(html.body().text().lowercase().contains("something went wrong"))
-                        send(Resource.Error("${response.code} - ${response.message}"))
-                    else{
-                        db.scheduleDao().deleteAllSchedules()
-                        db.scheduleDao().upsertSchedules(parseSchedule(html))
-                        send(Resource.Success(parseSchedule(html)))
+            if(isConnected(appContext)){
+                withContext(Dispatchers.IO){
+                    send(Resource.Loading())
+                    val response = client.newCall(getRequest(Constants.baseUrl)).await()
+                    if(response.isSuccessful){
+                        val bod = response.body.string()
+                        val html = Jsoup.parse(bod)
+                        if(html.body().text().lowercase().contains("something went wrong"))
+                            send(Resource.Error("${response.code} - ${response.message}"))
+                        else if(sessionParse(preference,html))
+                            send(Resource.Error("session end - ${response.code}"))
+                        else{
+                            db.scheduleDao().deleteAllSchedules()
+                            db.scheduleDao().upsertSchedules(parseSchedule(html))
+                            send(Resource.Success(parseSchedule(html)))
+                        }
+                    }else{
+                        send(Resource.Error(response.message))
                     }
-                }else{
-                    send(Resource.Error(response.message))
                 }
+            }else{
+                send(Resource.Error("No internet connection!"))
             }
         }catch (e:Exception){
             send(Resource.Error(e.message))
         }
     }
 
-    override suspend fun getSchedules(): Flow<Resource<List<Schedule>>> = flow {
-        emit(Resource.Loading())
+    override suspend fun getSchedules(): Flow<Resource<List<Schedule>>> = channelFlow {
+        send(Resource.Loading())
         db.scheduleDao().getSchedules()
             .catch {
-                emit(Resource.Error(it.message))
+                send(Resource.Error(it.message))
             }
             .collect{
-                emit(Resource.Success(it))
+                send(Resource.Success(it))
             }
     }
     private fun parseSchedule(response: Document): List<Schedule> {

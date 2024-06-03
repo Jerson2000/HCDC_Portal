@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TermDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertHistory(grades: List<Term>)
+    suspend fun upsertTerm(grades: List<Term>)
 
     /**
      * @param isGrade is either 1 or 0 - it indicates that true ( 1 ) or false ( 0 )
      */
     @Query("delete from terms where isGrade = :isGrade")
-    suspend fun deleteAllHistory(isGrade:Int)
+    suspend fun deleteAllTerm(isGrade:Int)
 
     @Query("select * from terms where isGrade = :isGrade")
-    fun getHistory(isGrade:Int): Flow<List<Term>>
+    fun getTerms(isGrade:Int): Flow<List<Term>>
 }

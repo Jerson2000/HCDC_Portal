@@ -3,4 +3,9 @@
     <string name="app_subtitle">Holy Cross of Davao College Student Portal</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="subjects">Subjects</string>
+    <string name="grades">Grades</string>
+    <string name="enroll_history">Enroll History</string>
+    <string name="accounts">Accounts</string>
 </resources>

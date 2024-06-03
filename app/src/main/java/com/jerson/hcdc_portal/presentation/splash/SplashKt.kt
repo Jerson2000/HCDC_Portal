@@ -5,11 +5,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.jerson.hcdc_portal.databinding.ActivitySplashBinding
 import com.jerson.hcdc_portal.presentation.login.LoginKt
 import com.jerson.hcdc_portal.presentation.main.MainKt
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_LOGIN
+import com.jerson.hcdc_portal.util.DownloadWorkerKt
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -34,6 +38,14 @@ class SplashKt:AppCompatActivity() {
                 }
             }, 1500)
 
+        /*val map = hashMapOf<String,Any>()
+        map["url"] = "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/rooms.json"
+        map["fileName"] = "ss.json"
+        val data = Data.Builder()
+            .putAll(map)
+            .build()
+        val eye = OneTimeWorkRequestBuilder<DownloadWorkerKt>().setInputData(data).build()
+        WorkManager.getInstance(this).enqueue(eye)*/
 
 
     }
