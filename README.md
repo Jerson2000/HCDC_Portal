@@ -1,4 +1,5 @@
-# Unofficial HCDC Student Portal exclusively for Android.
+# Unofficial HCDC Student Portal exclusively for Android. 
+## > Rewriting to kotlin 
 ### Why I came up with this idea
 
 * For my convenience haha
