@@ -20,4 +20,9 @@
         android:name="com.jerson.hcdc_portal.presentation.grade.GradesKt"
         android:label="GradesKt"
         tools:layout="@layout/fragment_grades_kt"/>
+    <fragment
+        android:id="@+id/enrollHistory"
+        android:name="com.jerson.hcdc_portal.presentation.enrollhistory.EnrollHistoryKt"
+        android:label="EnrollHistoryKt"
+        tools:layout="@layout/fragment_enrollment_history_kt"/>
 </navigation>

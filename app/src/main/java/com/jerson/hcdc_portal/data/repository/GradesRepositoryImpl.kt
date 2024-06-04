@@ -146,39 +146,36 @@ class GradesRepositoryImpl @Inject constructor(
         val earnedUnits = table.select("tr:nth-last-child(2) > td:eq(1)").text()
         val term = doc.select("li.nav-item a.nav-link.active").text()
 
-        /*
-        *
-        *  Elements code = rowData.select("td:eq(0)");
-                Elements subject = rowData.select("td:eq(1)");
-                Elements desc = rowData.select("td:eq(2)");
-                Elements unit = rowData.select("td:eq(3)");
-                Elements midgrade = rowData.select("td:eq(4)");
-                Elements mideremark = rowData.select("td:eq(5)");
-                Elements finalgrade = rowData.select("td:eq(6)");
-                Elements finalremark = rowData.select("td:eq(7)");
-                Elements teacher = rowData.select("td:eq(8)");
-        *
-        * */
-
         val rows = table.select("tr")
         val excludedRows = rows.subList(0, rows.size - 3)
         for (x in excludedRows){
+
+            val offeredNo = x.select("td:eq(0)").text()
+            val subjectCode = x.select("td:eq(1)").text()
+            val description = x.select("td:eq(2)").text()
+            val unit = x.select("td:eq(3)").text()
+            val midtermGrade = x.select("td:eq(4)").text()
+            val midtermRemark = x.select("td:eq(5)").text()
+            val finalGrade = x.select("td:eq(6)").text()
+            val finalRemark = x.select("td:eq(7)").text()
+            val teacher = x.select("td:eq(8)").text()
+
             list.add(
                 Grade(
                     0,
                     termId,
                     term,
-                    x.select("td:eq(0)").text(),
-                    x.select("td:eq(1)").text(),
-                    x.select("td:eq(2)").text(),
-                    x.select("td:eq(3)").text(),
-                    x.select("td:eq(4)").text(),
-                    x.select("td:eq(5)").text(),
-                    x.select("td:eq(6)").text(),
-                    x.select("td:eq(7)").text(),
+                    offeredNo,
+                    subjectCode,
+                    description,
+                    unit,
+                    midtermGrade,
+                    midtermRemark,
+                    finalGrade,
+                    finalRemark,
                     earnedUnits,
                     weightedAve,
-                    x.select("td:eq(8)").text(),
+                    teacher,
                 )
             )
         }

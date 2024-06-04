@@ -38,6 +38,6 @@ abstract class RepositoryModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindsGradesRepository(enrollHistoryRepositoryImpl: EnrollHistoryRepositoryImpl): EnrollHistoryRepository
+    abstract fun bindsEnrollHistoryRepository(enrollHistoryRepositoryImpl: EnrollHistoryRepositoryImpl): EnrollHistoryRepository
 
 }

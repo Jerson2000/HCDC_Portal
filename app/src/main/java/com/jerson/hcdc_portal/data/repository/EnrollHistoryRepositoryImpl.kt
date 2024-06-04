@@ -26,8 +26,8 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
     private val client: OkHttpClient,
     private val db: PortalDB,
     private val preference: AppPreference
-):EnrollHistoryRepository {
-    override suspend fun fetchEnrollHistory(): Flow<Resource<List<EnrollHistory>>> = channelFlow{
+) : EnrollHistoryRepository {
+    override suspend fun fetchEnrollHistory(): Flow<Resource<List<EnrollHistory>>> = channelFlow {
         try {
             if (isConnected(App.appContext)) {
                 withContext(Dispatchers.IO) {
@@ -41,8 +41,8 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                             send(Resource.Error("session end - ${response.code}"))
                         else {
                             db.termDao().deleteAllTerm(0);
-                            db.termDao().upsertTerm(termLinksParse(html,0))
-                            send(Resource.Success(parseEnrollHistory(html,0)))
+                            db.termDao().upsertTerm(termLinksParse(html, 0))
+                            send(Resource.Success(parseEnrollHistory(html, 0)))
                         }
                     } else {
                         send(Resource.Error(response.message))
@@ -72,7 +72,31 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    private fun parseEnrollHistory(doc: Document,termId: Int):List<EnrollHistory>{
-        return mutableListOf()
+    private fun parseEnrollHistory(doc: Document, termId: Int): List<EnrollHistory> {
+        val list = mutableListOf<EnrollHistory>()
+        val tableBody = doc.select("div.col-md-9 table > tbody")
+        val term = doc.select("li.nav-item a.nav-link.active").text()
+
+        for (row in tableBody.select("tr")) {
+
+            val offeredNo = row.select("td:eq(0").text()
+            val subjectCode = row.select("td:eq(1").text()
+            val description = row.select("td:eq(2").text()
+            val unit = row.select("td:eq(3").text()
+
+            val item = EnrollHistory(
+                0,
+                termId,
+                term,
+                offeredNo,
+                subjectCode,
+                description,
+                unit
+            )
+            list.add(item)
+        }
+
+
+        return list
     }
 }
