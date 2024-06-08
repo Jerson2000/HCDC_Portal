@@ -40,4 +40,12 @@ class GradeViewModel @Inject constructor(
         }
     }
 
+    fun getGradeTerms(){
+        viewModelScope.launch {
+            db.termDao().getTerms(1).collect{
+
+            }
+        }
+    }
+
 }

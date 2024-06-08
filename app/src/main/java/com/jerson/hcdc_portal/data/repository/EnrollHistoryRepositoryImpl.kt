@@ -15,6 +15,7 @@ import com.jerson.hcdc_portal.util.sessionParse
 import com.jerson.hcdc_portal.util.termLinksParse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -42,6 +43,15 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                         else {
                             db.termDao().deleteAllTerm(0);
                             db.termDao().upsertTerm(termLinksParse(html, 0))
+                            if (parseEnrollHistory(html, 0).isNotEmpty()) {
+                                db.termDao().getTerms(0).collect {
+                                    for (x in it) {
+                                        if (x.term == parseEnrollHistory(html, 0)[0].term) {
+                                            db.enrollHistoryDao().upsertHistory(parseEnrollHistory(html, x.id))
+                                        }
+                                    }
+                                }
+                            }
                             send(Resource.Success(parseEnrollHistory(html, 0)))
                         }
                     } else {
@@ -64,12 +74,26 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getEnrollHistory(term: Term): Flow<Resource<List<EnrollHistory>>> {
-        TODO("Not yet implemented")
+    override suspend fun getEnrollHistory(term: Term): Flow<Resource<List<EnrollHistory>>> = channelFlow{
+        send(Resource.Loading())
+        db.enrollHistoryDao().getHistory(term.id)
+            .catch {
+                send(Resource.Error(it.message))
+            }
+            .collect{
+                send(Resource.Success(it))
+            }
     }
 
-    override suspend fun getEnrollHistoryTerms(): Flow<Resource<List<Term>>> {
-        TODO("Not yet implemented")
+    override suspend fun getEnrollHistoryTerms(): Flow<Resource<List<Term>>> = channelFlow{
+        send(Resource.Loading())
+        db.termDao().getTerms(0)
+            .catch {
+                send(Resource.Error(it.message))
+            }
+            .collect{
+                send(Resource.Success(it))
+            }
     }
 
     private fun parseEnrollHistory(doc: Document, termId: Int): List<EnrollHistory> {

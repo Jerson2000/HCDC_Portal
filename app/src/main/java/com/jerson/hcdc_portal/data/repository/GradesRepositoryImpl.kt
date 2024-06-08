@@ -43,6 +43,15 @@ class GradesRepositoryImpl @Inject constructor(
                         else {
                             db.termDao().deleteAllTerm(1);
                             db.termDao().upsertTerm(termLinksParse(html,1))
+                            if (parseGrades(html, 0).isNotEmpty()) {
+                                db.termDao().getTerms(1).collect {
+                                    for (x in it) {
+                                        if (x.term == parseGrades(html, 0)[0].term) {
+                                            db.gradeDao().upsertGrade(parseGrades(html, x.id))
+                                        }
+                                    }
+                                }
+                            }
                             send(Resource.Success(parseGrades(html,0)))
                         }
                     } else {
