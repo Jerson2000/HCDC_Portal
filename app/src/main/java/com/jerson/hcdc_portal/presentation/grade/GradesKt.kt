@@ -1,7 +1,6 @@
 package com.jerson.hcdc_portal.presentation.grade
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +13,8 @@ import com.jerson.hcdc_portal.databinding.FragmentGradesKtBinding
 import com.jerson.hcdc_portal.presentation.grade.viewmodel.GradeViewModel
 import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.util.Resource
+import com.jerson.hcdc_portal.util.SnackBarKt
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 import kotlinx.coroutines.launch
 
@@ -37,6 +36,7 @@ class GradesKt : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         gradesViewModel.fetchGrades()
         fetchGrades()
+        reLogonResponse()
 
     }
 
@@ -54,8 +54,34 @@ class GradesKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            println(it.message)
-                            loginViewModel.reLogon()
+                            if (it.message!!.equals("session end", true))
+                                loginViewModel.reLogon()
+                            else
+                                SnackBarKt.snackBarLong(binding.root,it.message)
+                        }
+
+                        else -> Unit
+                    }
+                }
+            }
+        }
+    }
+    
+    private fun reLogonResponse(){
+        lifecycleScope.launch { 
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                loginViewModel.login.collect{
+                    when (it) {
+                        is Resource.Loading -> {
+
+                        }
+
+                        is Resource.Success -> {
+                            gradesViewModel.fetchGrades()
+                        }
+
+                        is Resource.Error -> {
+                            it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
                         }
 
                         else -> Unit

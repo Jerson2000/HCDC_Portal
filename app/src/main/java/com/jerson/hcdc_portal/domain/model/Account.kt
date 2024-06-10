@@ -7,6 +7,8 @@ import androidx.room.PrimaryKey
 data class Account(
     @PrimaryKey(true)
     val id:Int,
+    val termId:Int?,
+    val term:String?,
     val date:String?,
     val reference:String?,
     val description:String?,

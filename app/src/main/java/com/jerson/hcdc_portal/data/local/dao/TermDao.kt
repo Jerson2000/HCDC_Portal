@@ -12,7 +12,7 @@ interface TermDao{
     suspend fun upsertTerm(grades: List<Term>)
 
     /**
-     * @param isGrade is either 1 or 0 - it indicates that true ( 1 ) or false ( 0 )
+     * @param isGrade is either 1 or 0 or 2 - it indicates that Grades ( 1  ) or Enroll History ( 0 ) or Accounts (2)
      */
     @Query("delete from terms where isGrade = :isGrade")
     suspend fun deleteAllTerm(isGrade:Int)

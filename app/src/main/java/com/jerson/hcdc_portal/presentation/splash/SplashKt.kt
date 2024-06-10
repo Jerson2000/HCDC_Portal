@@ -5,15 +5,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.jerson.hcdc_portal.databinding.ActivitySplashBinding
 import com.jerson.hcdc_portal.presentation.login.LoginKt
 import com.jerson.hcdc_portal.presentation.main.MainKt
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_LOGIN
-import com.jerson.hcdc_portal.util.DownloadWorkerKt
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,7 +23,7 @@ class SplashKt:AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        setContentView(binding.root)
 
         Handler(Looper.getMainLooper())
             .postDelayed({

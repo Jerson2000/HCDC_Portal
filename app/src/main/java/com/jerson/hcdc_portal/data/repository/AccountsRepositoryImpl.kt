@@ -11,11 +11,11 @@ import com.jerson.hcdc_portal.util.await
 import com.jerson.hcdc_portal.util.getRequest
 import com.jerson.hcdc_portal.util.isConnected
 import com.jerson.hcdc_portal.util.sessionParse
+import com.jerson.hcdc_portal.util.termLinksParse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import org.jsoup.Jsoup
@@ -40,10 +40,24 @@ class AccountsRepositoryImpl @Inject constructor(
                         if(sessionParse(preference,html))
                             send(Resource.Error("session end - ${response.code}"))
                         else{
-                            db.accountDao().deleteAllAccounts()
-                            db.accountDao().upsertAccount(parseAccount(html))
-                            send(Resource.Success(parseAccount(html)))
+                            db.termDao().deleteAllTerm(2)
+                            db.termDao().upsertTerm(termLinksParse(html, 2))
+                            if (parseAccount(html, 0).isNotEmpty()) {
+                                db.termDao().getTerms(2).collect {
+                                    for (x in it) {
+                                        if (x.term == parseAccount(html, 0)[0].term) {
+                                            db.accountDao().deleteAccount(x.id)
+                                            db.accountDao().upsertAccount(parseAccount(html, x.id))
+                                            send(Resource.Success(parseAccount(html,x.id)))
+                                            break
+                                        }
+                                    }
+                                }
+                            }
+                            send(Resource.Success(parseAccount(html,0)))
+
                         }
+                        response.body.close()
                     }else{
                         send(Resource.Error(response.message))
                     }
@@ -67,31 +81,17 @@ class AccountsRepositoryImpl @Inject constructor(
             }
     }
 
-    private fun parseAccount(response:Document):List<Account>{
+    private fun parseAccount(response:Document,termId:Int):List<Account>{
         val list = mutableListOf<Account>()
-        val table = response.select("div.col-md-9 section.invoice tbody")
-        for (tabData in table) {
-            val rowsData = tabData.select("tr")
-            val iDue = rowsData.size - 1
-            var indexDue = 0
-            val iData = rowsData.size - 2
-            var indexData = 0
-            var dueTex: String? = null
-            var dueDat: String? = null
+        val table = response.select("div.col-md-9 section.invoice table > tbody")
+        val term = response.select("li.nav-item a.nav-link.active").text()
+        val dueText = response.select("tbody tr:nth-last-child(2) > td:eq(0)").text()
+        val dueAmount = response.select("tbody tr:nth-last-child(2) > td:eq(1)").text()
 
-            // Get Due Payment
-            for (row in rowsData) {
-                indexDue++
-                val dueText = row.select("td:eq(0)")
-                val dueData = row.select("td:eq(1)")
-                if (indexDue == iDue) {
-                    dueTex = dueText.text()
-                    dueDat = dueData.text()
-                    break
-                }
-            }
-            for (row in rowsData) {
-                indexData++
+        val rows = table.select("tr")
+        val excludedRows = rows.subList(0, rows.size - 2)
+
+            for (row in excludedRows) {
                 val date = row.select("td:eq(0)")
                 val ref = row.select("td:eq(1)")
                 val desc = row.select("td:eq(2)")
@@ -101,6 +101,8 @@ class AccountsRepositoryImpl @Inject constructor(
                 val runBal = row.select("td:eq(6)")
                 val model = Account(
                     0,
+                    termId,
+                    term,
                     date.text(),
                     ref.text(),
                     desc.text(),
@@ -108,14 +110,28 @@ class AccountsRepositoryImpl @Inject constructor(
                     added.text(),
                     deducted.text(),
                     runBal.text(),
-                    dueTex,
-                    dueDat
+                    dueText,
+                    dueAmount
                 )
                 list.add(model)
-                if (indexData == iData) {
-                    break
-                }
             }
+        if(list.size == 0 && response.select("li.nav-item a").hasClass("active")){
+            list.add(
+                Account(
+                    0,
+                    termId,
+                    term,
+                   "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    dueText,
+                    dueAmount
+            )
+            )
         }
 
 

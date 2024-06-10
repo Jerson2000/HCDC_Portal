@@ -15,6 +15,12 @@ interface AccountDao {
     @Query("delete from accounts")
     suspend fun deleteAllAccounts()
 
+    @Query("delete from accounts where termId = :termId")
+    suspend fun deleteAccount(termId:Int)
+
     @Query("select * from accounts")
     fun getAccounts(): Flow<List<Account>>
+
+    @Query("select * from accounts where termId = :termId")
+    fun getAccounts(termId:Int): Flow<List<Account>>
 }

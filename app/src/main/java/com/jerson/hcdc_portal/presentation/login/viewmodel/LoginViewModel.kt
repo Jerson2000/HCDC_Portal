@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jerson.hcdc_portal.domain.repository.LoginRepository
 import com.jerson.hcdc_portal.util.AppPreference
-import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Constants.KEY_EMAIL
 import com.jerson.hcdc_portal.util.Constants.KEY_PASSWORD
 import com.jerson.hcdc_portal.util.Resource
@@ -13,8 +12,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
 import javax.inject.Inject
+
 @HiltViewModel
 class LoginViewModel@Inject constructor(
     private val loginRepository: LoginRepository,
@@ -102,11 +101,15 @@ class LoginViewModel@Inject constructor(
         viewModelScope.launch {
             loginRepository.login(pref.getStringPreference(KEY_EMAIL),pref.getStringPreference(KEY_PASSWORD)).collect{
                 when(it){
+                    is Resource.Loading->{
+                        _login.emit(Resource.Loading())
+                    }
                     is Resource.Success->{
                         Log.e("HUHU", "reLogin: ${it.data}" )
+                        _login.emit(it)
                     }
                     is Resource.Error ->{
-
+                        _login.emit(Resource.Error(it.message))
                     }
                     else -> Unit
                 }

@@ -49,6 +49,7 @@ class LoginRepositoryImpl @Inject constructor(
                 }else{
                     emit(Resource.Error(response.message))
                 }
+                response.body.close()
             }else{
                 emit(Resource.Error("No internet connection!"))
             }
@@ -72,6 +73,7 @@ class LoginRepositoryImpl @Inject constructor(
                     }else{
                         send(Resource.Error(response.message))
                     }
+                    response.body.close()
                 }
             }else{
                 send(Resource.Error("No internet connection!"))

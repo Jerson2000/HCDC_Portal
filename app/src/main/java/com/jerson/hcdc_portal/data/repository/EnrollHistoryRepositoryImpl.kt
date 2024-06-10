@@ -41,13 +41,15 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                         if (sessionParse(preference, html))
                             send(Resource.Error("session end - ${response.code}"))
                         else {
-                            db.termDao().deleteAllTerm(0);
+                            db.termDao().deleteAllTerm(0)
                             db.termDao().upsertTerm(termLinksParse(html, 0))
                             if (parseEnrollHistory(html, 0).isNotEmpty()) {
                                 db.termDao().getTerms(0).collect {
                                     for (x in it) {
                                         if (x.term == parseEnrollHistory(html, 0)[0].term) {
+                                            db.enrollHistoryDao().deleteAllHistory(x.id)
                                             db.enrollHistoryDao().upsertHistory(parseEnrollHistory(html, x.id))
+                                            send(Resource.Success(parseEnrollHistory(html, x.id)))
                                         }
                                     }
                                 }
@@ -57,6 +59,7 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                     } else {
                         send(Resource.Error(response.message))
                     }
+                    response.body.close()
                 }
             } else {
                 send(Resource.Error("No internet connection!"))

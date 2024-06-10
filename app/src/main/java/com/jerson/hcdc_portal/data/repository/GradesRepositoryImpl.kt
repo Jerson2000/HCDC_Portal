@@ -41,13 +41,15 @@ class GradesRepositoryImpl @Inject constructor(
                         if (sessionParse(preference, html))
                             send(Resource.Error("session end - ${response.code}"))
                         else {
-                            db.termDao().deleteAllTerm(1);
+                            db.termDao().deleteAllTerm(1)
                             db.termDao().upsertTerm(termLinksParse(html,1))
                             if (parseGrades(html, 0).isNotEmpty()) {
                                 db.termDao().getTerms(1).collect {
                                     for (x in it) {
                                         if (x.term == parseGrades(html, 0)[0].term) {
+                                            db.gradeDao().deleteAllGrades(x.id)
                                             db.gradeDao().upsertGrade(parseGrades(html, x.id))
+                                            send(Resource.Success(parseGrades(html,x.id)))
                                         }
                                     }
                                 }
@@ -116,6 +118,7 @@ class GradesRepositoryImpl @Inject constructor(
                     } else {
                         send(Resource.Error(response.message))
                     }
+                    response.body.close()
                 }
             } else {
                 send(Resource.Error("No internet connection!"))
@@ -151,8 +154,8 @@ class GradesRepositoryImpl @Inject constructor(
         val list = mutableListOf<Grade>()
 
         val table = doc.select("div.col-md-9 tbody")
-        val weightedAve = table.select("tr:nth-last-child(2) > td:eq(3)").text()
-        val earnedUnits = table.select("tr:nth-last-child(2) > td:eq(1)").text()
+        val weightedAve = table.select("tbody tr:nth-last-child(2) > td:eq(3)").text()
+        val earnedUnits = table.select("tbody tr:nth-last-child(2) > td:eq(1)").text()
         val term = doc.select("li.nav-item a.nav-link.active").text()
 
         val rows = table.select("tr")
