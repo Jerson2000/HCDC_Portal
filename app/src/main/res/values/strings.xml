@@ -8,4 +8,11 @@
     <string name="grades">Grades</string>
     <string name="enroll_history">Enroll History</string>
     <string name="accounts">Accounts</string>
+    <string name="total_earned_units">Total Earned Units:</string>
+    <string name="general_weighted_average_gwa">General Weighted Average (GWA)</string>
+    <string name="_00">0.0</string>
+    <string name="_2023_2024_2nd_semester">2023-2024 2nd Semester</string>
+    <string name="midterm">Midterm</string>
+    <string name="final">Final</string>
+    <string name="_final">Final</string>
 </resources>
