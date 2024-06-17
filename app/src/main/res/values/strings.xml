@@ -13,6 +13,13 @@
     <string name="_00">0.0</string>
     <string name="_2023_2024_2nd_semester">2023-2024 2nd Semester</string>
     <string name="midterm">Midterm</string>
-    <string name="final">Final</string>
     <string name="_final">Final</string>
+    <string name="units">Units</string>
+    <string name="no_of_enrolled_units">No. of enrolled units.</string>
+    <string name="no_of_enrolled_subjects">No. of enrolled subjects.</string>
+    <string name="view_evaluation">View Evaluation</string>
+    <string name="view_subject_offered">View Subject Offered</string>
+    <string name="view_buildings_wip">View Buildings ( WIP )</string>
+    <string name="today_s_subject_s">Today\'s subject/s.</string>
+    <string name="view_details">View Details</string>
 </resources>

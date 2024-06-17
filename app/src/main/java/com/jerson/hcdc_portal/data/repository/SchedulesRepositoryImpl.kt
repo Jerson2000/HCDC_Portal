@@ -11,6 +11,7 @@ import com.jerson.hcdc_portal.util.await
 import com.jerson.hcdc_portal.util.getRequest
 import com.jerson.hcdc_portal.util.isConnected
 import com.jerson.hcdc_portal.util.sessionParse
+import com.jerson.hcdc_portal.util.userParse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -68,6 +69,7 @@ class SchedulesRepositoryImpl@Inject constructor(
             }
     }
     private fun parseSchedule(response: Document): List<Schedule> {
+        userParse(response,preference)
         val list = mutableListOf<Schedule>()
         val tBody = response.select("div.col-sm-9 tbody")
         for (body in tBody) {

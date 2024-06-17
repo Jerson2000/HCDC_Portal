@@ -12,14 +12,22 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
+import com.jerson.hcdc_portal.util.AppPreference
+import com.jerson.hcdc_portal.util.Constants
+import com.jerson.hcdc_portal.util.Constants.KEY_STUDENTS_UNITS
 import com.jerson.hcdc_portal.util.Resource
+import com.jerson.hcdc_portal.util.SnackBarKt
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardKt : Fragment() {
     private  var binding: FragmentDashboardKtBinding?=null
     private val dashboardViewModel: DashboardViewModel by viewModels()
+
+    @Inject
+    lateinit var pref:AppPreference
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -31,9 +39,8 @@ class DashboardKt : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        dashboardViewModel.fetchSchedules()
-//        dashboardViewModel.getSchedules()
-//        listenerFetch()
+        dashboardViewModel.getSchedules()
+        listenerFetch()
     }
 
     private fun listenerFetch() {
@@ -42,16 +49,18 @@ class DashboardKt : Fragment() {
                 dashboardViewModel.fetchSchedules.collect {
                     when (it) {
                         is Resource.Loading -> {
-
+                            Log.e("HUHU", "listenerFetch: Loading...", )
                         }
 
                         is Resource.Success -> {
-                            for(x in it.data!!)
-                                Log.e("HUHU", "listenerFetch: ${x.subjectCode}", )
+                            binding?.apply{
+                                totalSubTV.text = it.data!!.size.toString()
+                                unitsTV.text = pref.getStringPreference(KEY_STUDENTS_UNITS)
+                            }
                         }
 
                         is Resource.Error -> {
-
+                            it.message?.let { it1 -> SnackBarKt.snackBarLong(binding!!.root, it1) }
                         }
 
                         else -> Unit

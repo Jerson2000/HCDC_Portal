@@ -14,6 +14,7 @@ import com.jerson.hcdc_portal.databinding.FragmentAccountKtBinding
 import com.jerson.hcdc_portal.presentation.accounts.viewmodel.AccountViewModel
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
 import com.jerson.hcdc_portal.util.Resource
+import com.jerson.hcdc_portal.util.SnackBarKt
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -32,12 +33,9 @@ class AccountsKt : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        accountViewModel.fetchAccounts()
+
+        accountViewModel.getAccounts()
         getAccounts()
-
-//        dashboardViewModel.getSchedules()
-//        listenerFetch()
-
     }
 
 
@@ -47,15 +45,20 @@ class AccountsKt : Fragment() {
                 accountViewModel.fetchAccounts.collect {
                     when (it) {
                         is Resource.Loading -> {
-
+                            Log.e("HUHU", "getAccounts: Loading...")
                         }
 
                         is Resource.Success -> {
-                            Log.e("HUHU", "getAccounts: ${it.data!!.size}")
+                           binding.apply{
+                               tvDue.text = it.data?.get(0)?.dueAmount ?: "00"
+                               tvDueText.text = it.data?.get(0)?.dueTextPeriod ?: "Due Amount"
+                               tvTerm.text = it.data?.get(0)?.term ?: "Select Term"
+
+                           }
                         }
 
                         is Resource.Error -> {
-                            Log.e("HUHU", "getAccounts: ${it.message}")
+                            it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
                         }
 
                         else -> Unit
