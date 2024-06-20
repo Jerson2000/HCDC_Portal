@@ -17,6 +17,17 @@ object Constants {
     const val KEY_CSRF_TOKEN = "csrf_token"
     const val KEY_IS_SESSION = "isSession"
 
+    const val KEY_IS_SCHEDULE_LOADED = "scheduleLoaded"
+
+    const val KEY_IS_GRADE_LOADED = "gradeLoaded"
+    const val KEY_SELECT_GRADE_TERM = "gradeSelectedTerm"
+
+    const val KEY_IS_ENROLL_HISTORY_LOADED = "enrollHistoryLoaded"
+    const val KEY_SELECTED_ENROLL_HISTORY_TERM = "selectedEnrollHistoryTerm"
+
+    const val KEY_IS_ACCOUNT_LOADED = "accountLoaded"
+    const val KEY_SELECTED_ACCOUNT_TERM = "selectAccountTerm"
+
 
     // App
     const val userAgent =

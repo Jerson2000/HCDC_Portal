@@ -3,6 +3,7 @@ package com.jerson.hcdc_portal.data.repository
 import com.jerson.hcdc_portal.App
 import com.jerson.hcdc_portal.data.local.PortalDB
 import com.jerson.hcdc_portal.domain.model.Account
+import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.domain.repository.AccountsRepository
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
@@ -48,6 +49,7 @@ class AccountsRepositoryImpl @Inject constructor(
                                         if (x.term == parseAccount(html, 0)[0].term) {
                                             db.accountDao().deleteAccount(x.id)
                                             db.accountDao().upsertAccount(parseAccount(html, x.id))
+                                            preference.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM,x.id)
                                             send(Resource.Success(parseAccount(html,x.id)))
                                             break
                                         }
@@ -70,9 +72,51 @@ class AccountsRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun fetchAccounts(term: Term): Flow<Resource<List<Account>>> = channelFlow{
+        try{
+            if(isConnected(App.appContext)){
+                withContext(Dispatchers.IO){
+                    send(Resource.Loading())
+                    val response = client.newCall(getRequest(Constants.baseUrl+Constants.accountUrl+term.urlPath)).await()
+                    if(response.isSuccessful){
+                        val bod = response.body.string()
+                        val html = Jsoup.parse(bod)
+                        if(sessionParse(preference,html))
+                            send(Resource.Error("session end - ${response.code}"))
+                        else{
+                            db.accountDao().deleteAccount(term.id)
+                            db.accountDao().upsertAccount(parseAccount(html, term.id))
+                            preference.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM,term.id)
+                            send(Resource.Success(parseAccount(html,term.id)))
+
+                        }
+                        response.body.close()
+                    }else{
+                        send(Resource.Error(response.message))
+                    }
+                }
+            }else{
+                send(Resource.Error("No internet connection!"))
+            }
+        }catch (e:Exception){
+            send(Resource.Error(e.message))
+        }
+    }
+
     override suspend fun getAccounts(): Flow<Resource<List<Account>>> = channelFlow{
         send(Resource.Loading())
         db.accountDao().getAccounts()
+            .catch {
+                send(Resource.Error(it.message))
+            }
+            .collect{
+                send(Resource.Success(it))
+            }
+    }
+
+    override suspend fun getAccounts(termId: Int): Flow<Resource<List<Account>>> = channelFlow{
+        send(Resource.Loading())
+        db.accountDao().getAccounts(termId)
             .catch {
                 send(Resource.Error(it.message))
             }

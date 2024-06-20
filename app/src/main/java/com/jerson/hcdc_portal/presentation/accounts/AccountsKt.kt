@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.jerson.hcdc_portal.databinding.FragmentAccountKtBinding
 import com.jerson.hcdc_portal.presentation.accounts.viewmodel.AccountViewModel
-import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,7 +21,6 @@ import kotlinx.coroutines.launch
 class AccountsKt : Fragment() {
     private lateinit var binding: FragmentAccountKtBinding
     private val accountViewModel: AccountViewModel by viewModels()
-    private val dashboardViewModel: DashboardViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -34,7 +32,6 @@ class AccountsKt : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        accountViewModel.getAccounts()
         getAccounts()
     }
 
@@ -49,12 +46,19 @@ class AccountsKt : Fragment() {
                         }
 
                         is Resource.Success -> {
-                           binding.apply{
-                               tvDue.text = it.data?.get(0)?.dueAmount ?: "00"
-                               tvDueText.text = it.data?.get(0)?.dueTextPeriod ?: "Due Amount"
-                               tvTerm.text = it.data?.get(0)?.term ?: "Select Term"
-
-                           }
+                            if(it.data!!.isNotEmpty()){
+                                binding.apply {
+                                    tvDue.text = it.data[0].dueAmount
+                                    tvDueText.text = it.data[0].dueTextPeriod
+                                    tvTerm.text = it.data[0].term
+                                }
+                            }else{
+                                binding.apply {
+                                    tvDue.text = "Php 0.0"
+                                    tvDueText.text = "Due Amount"
+                                    tvTerm.text = "Select term"
+                                }
+                            }
                         }
 
                         is Resource.Error -> {
@@ -63,31 +67,6 @@ class AccountsKt : Fragment() {
 
                         else -> Unit
 
-                    }
-                }
-            }
-        }
-    }
-
-    private fun listenerFetch() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                dashboardViewModel.fetchSchedules.collect {
-                    when (it) {
-                        is Resource.Loading -> {
-
-                        }
-
-                        is Resource.Success -> {
-                            for(x in it.data!!)
-                                Log.e("HUHU", "listenerFetch: ${x.subjectCode}", )
-                        }
-
-                        is Resource.Error -> {
-
-                        }
-
-                        else -> Unit
                     }
                 }
             }

@@ -35,7 +35,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     lint {
-        disable += "NotifyDataSetChanged"
+        disable += listOf("NotifyDataSetChanged", "SetTextI18n")
     }
 
     afterEvaluate {

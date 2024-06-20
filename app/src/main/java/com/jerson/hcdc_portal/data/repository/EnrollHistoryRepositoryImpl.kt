@@ -1,5 +1,6 @@
 package com.jerson.hcdc_portal.data.repository
 
+import android.util.Log
 import com.jerson.hcdc_portal.App
 import com.jerson.hcdc_portal.data.local.PortalDB
 import com.jerson.hcdc_portal.domain.model.EnrollHistory
@@ -34,7 +35,7 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                 withContext(Dispatchers.IO) {
                     send(Resource.Loading())
                     val response =
-                        client.newCall(getRequest(Constants.baseUrl + Constants.gradesUrl)).await()
+                        client.newCall(getRequest(Constants.baseUrl + Constants.enrollHistory)).await()
                     if (response.isSuccessful) {
                         val bod = response.body.string()
                         val html = Jsoup.parse(bod)
@@ -69,17 +70,44 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchEnrollHistory(term: Term): Flow<Resource<List<EnrollHistory>>> {
-        TODO("Not yet implemented")
+    override suspend fun fetchEnrollHistory(term: Term): Flow<Resource<List<EnrollHistory>>> = channelFlow{
+        try {
+            if (isConnected(App.appContext)) {
+                withContext(Dispatchers.IO) {
+                    send(Resource.Loading())
+                    val response =
+                        client.newCall(getRequest(Constants.baseUrl + Constants.enrollHistory+term.urlPath)).await()
+                    if (response.isSuccessful) {
+                        val bod = response.body.string()
+                        val html = Jsoup.parse(bod)
+                        if (sessionParse(preference, html))
+                            send(Resource.Error("session end - ${response.code}"))
+                        else {
+
+                            db.enrollHistoryDao().deleteAllHistory(term.id)
+                            db.enrollHistoryDao().upsertHistory(parseEnrollHistory(html, term.id))
+                            send(Resource.Success(parseEnrollHistory(html, term.id)))
+                        }
+                    } else {
+                        send(Resource.Error(response.message))
+                    }
+                    response.body.close()
+                }
+            } else {
+                send(Resource.Error("No internet connection!"))
+            }
+        } catch (e: Exception) {
+            send(Resource.Error(e.message))
+        }
     }
 
     override suspend fun fetchEnrollHistoryTerm(): Flow<Resource<List<Term>>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getEnrollHistory(term: Term): Flow<Resource<List<EnrollHistory>>> = channelFlow{
+    override suspend fun getEnrollHistory(termId: Int): Flow<Resource<List<EnrollHistory>>> = channelFlow{
         send(Resource.Loading())
-        db.enrollHistoryDao().getHistory(term.id)
+        db.enrollHistoryDao().getHistory(termId)
             .catch {
                 send(Resource.Error(it.message))
             }
@@ -106,10 +134,10 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
 
         for (row in tableBody.select("tr")) {
 
-            val offeredNo = row.select("td:eq(0").text()
-            val subjectCode = row.select("td:eq(1").text()
-            val description = row.select("td:eq(2").text()
-            val unit = row.select("td:eq(3").text()
+            val offeredNo = row.select("td:eq(0)").text()
+            val subjectCode = row.select("td:eq(1)").text()
+            val description = row.select("td:eq(2)").text()
+            val unit = row.select("td:eq(3)").text()
 
             val item = EnrollHistory(
                 0,

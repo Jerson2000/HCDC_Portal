@@ -128,9 +128,9 @@ class GradesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getGrades(term: Term): Flow<Resource<List<Grade>>> = channelFlow{
+    override suspend fun getGrades(termId: Int): Flow<Resource<List<Grade>>> = channelFlow{
         send(Resource.Loading())
-        db.gradeDao().getGrades(term.id)
+        db.gradeDao().getGrades(termId)
             .catch {
                 send(Resource.Error(it.message))
             }
