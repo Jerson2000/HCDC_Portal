@@ -66,37 +66,6 @@ class LoginViewModel@Inject constructor(
             }
         }
     }
-
-    fun reLogin(){
-        viewModelScope.launch {
-            loginRepository.checkSession().collect{ses->
-                when(ses){
-                    is Resource.Loading ->{
-
-                    }
-                    is Resource.Success ->{
-                        if(ses.data!!){
-                            loginRepository.login(pref.getStringPreference(KEY_EMAIL),pref.getStringPreference(KEY_PASSWORD)).collect{
-                                when(it){
-                                    is Resource.Success->{
-                                        Log.e("HUHU", "reLogin: ${it.data}" )
-                                    }
-                                    is Resource.Error ->{
-
-                                    }
-                                    else -> Unit
-                                }
-                            }
-                        }
-                    }
-                    is Resource.Error ->{
-
-                    }
-                    else -> Unit
-                }
-            }
-        }
-    }
     fun reLogon(){
         viewModelScope.launch {
             loginRepository.login(pref.getStringPreference(KEY_EMAIL),pref.getStringPreference(KEY_PASSWORD)).collect{

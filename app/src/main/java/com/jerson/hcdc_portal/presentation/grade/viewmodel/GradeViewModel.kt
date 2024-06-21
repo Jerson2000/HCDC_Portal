@@ -29,6 +29,7 @@ init {
         getGrades()
     }else{
         fetchGrades()
+        pref.setBooleanPreference(Constants.KEY_IS_GRADE_LOADED,true)
     }
 
 }

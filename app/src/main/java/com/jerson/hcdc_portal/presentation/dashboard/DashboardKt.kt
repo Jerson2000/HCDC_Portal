@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardKt : Fragment() {
-    private  var binding: FragmentDashboardKtBinding?=null
+    private lateinit var binding: FragmentDashboardKtBinding
     private val dashboardViewModel: DashboardViewModel by viewModels()
 
     @Inject
@@ -34,7 +34,7 @@ class DashboardKt : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDashboardKtBinding.inflate(inflater,container,false)
-        return binding!!.root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,7 +53,7 @@ class DashboardKt : Fragment() {
                         }
 
                         is Resource.Success -> {
-                            binding?.apply{
+                            binding.apply{
                                 totalSubTV.text = it.data!!.size.toString()
                                 unitsTV.text = pref.getStringPreference(KEY_STUDENTS_UNITS)
                             }
@@ -71,7 +71,6 @@ class DashboardKt : Fragment() {
     }
 
     override fun onDestroyView() {
-        binding = null
         super.onDestroyView()
     }
 

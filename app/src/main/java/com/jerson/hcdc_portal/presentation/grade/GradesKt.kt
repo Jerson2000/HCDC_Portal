@@ -1,6 +1,7 @@
 package com.jerson.hcdc_portal.presentation.grade
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +35,6 @@ class GradesKt : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        gradesViewModel.fetchGrades()
         fetchGrades()
         reLogonResponse()
 
@@ -46,11 +46,23 @@ class GradesKt : Fragment() {
                 gradesViewModel.fetchGrades.collect {
                     when (it) {
                         is Resource.Loading -> {
-
+                            Log.e("HUHU", "fetchGrades: Loading...", )
                         }
 
                         is Resource.Success -> {
-                            /* Log.e("Grades", "fetchGrades: ${it.data!!.size}\t${it.data[0].term} - ${it.data[0].teacher}")*/
+                            if(it.data!!.isNotEmpty()){
+                                binding.apply {
+                                    tvTerm.text = it.data[0].term
+                                    tvUnits.text = it.data[0].earnedUnits
+                                    tvGWA.text = it.data[0].weightedAve
+                                }
+                            }else{
+                                binding.apply {
+                                    tvTerm.text = "Select term"
+                                    tvUnits.text = "0"
+                                    tvGWA.text = "0.0"
+                                }
+                            }
                         }
 
                         is Resource.Error -> {

@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.domain.repository.SchedulesRepository
+import com.jerson.hcdc_portal.util.AppPreference
+import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,11 +15,22 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val schedulesRepository: SchedulesRepository
+    private val schedulesRepository: SchedulesRepository,
+    private val pref: AppPreference
 ) : ViewModel() {
 
     private val _fetchSchedules = MutableSharedFlow<Resource<List<Schedule>>>()
     val fetchSchedules = _fetchSchedules.asSharedFlow()
+
+    init {
+        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_SCHEDULE_LOADED)
+        if (isLoaded) {
+            fetchSchedules
+        } else {
+            getSchedules()
+            pref.setBooleanPreference(Constants.KEY_IS_SCHEDULE_LOADED, true)
+        }
+    }
 
     fun fetchSchedules() {
         viewModelScope.launch {

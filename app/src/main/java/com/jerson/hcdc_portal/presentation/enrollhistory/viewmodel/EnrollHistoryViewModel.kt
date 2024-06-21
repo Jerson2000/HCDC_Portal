@@ -29,6 +29,7 @@ class EnrollHistoryViewModel @Inject constructor(
             getEnrollHistory()
         }else{
             fetchEnrollHistory()
+            pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED,true)
         }
 
     }
