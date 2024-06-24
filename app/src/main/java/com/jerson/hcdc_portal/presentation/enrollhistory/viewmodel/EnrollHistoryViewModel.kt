@@ -25,9 +25,7 @@ class EnrollHistoryViewModel @Inject constructor(
 
     init {
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
-        if(isLoaded){
-            getEnrollHistory()
-        }else{
+        if(!isLoaded){
             fetchEnrollHistory()
             pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED,true)
         }
@@ -53,7 +51,7 @@ class EnrollHistoryViewModel @Inject constructor(
         }
     }
 
-    private fun getEnrollHistory(){
+    fun getEnrollHistory(){
         viewModelScope.launch {
             repository.getEnrollHistory(pref.getIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM))
                 .collect {

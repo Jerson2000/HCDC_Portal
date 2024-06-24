@@ -18,8 +18,8 @@ import javax.inject.Inject
 class AccountViewModel @Inject constructor(
     private val db: PortalDB,
     private val repository: AccountsRepository,
-    private val pref:AppPreference
-) :ViewModel(){
+    private val pref: AppPreference
+) : ViewModel() {
 
     private val _fetchAccounts = MutableSharedFlow<Resource<List<Account>>>()
     val fetchAccounts = _fetchAccounts.asSharedFlow()
@@ -28,16 +28,14 @@ class AccountViewModel @Inject constructor(
     init {
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED)
 
-        if (isLoaded)
-        {
-            getAccounts()
-        }else{
+        if (!isLoaded) {
             fetchAccounts()
-            pref.setBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED,true)
+            pref.setBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED, true)
         }
+
     }
 
-    fun fetchAccounts(){
+    fun fetchAccounts() {
         viewModelScope.launch {
             repository.fetchAccounts().collect {
                 when (it) {
@@ -60,25 +58,26 @@ class AccountViewModel @Inject constructor(
 
     }
 
-    private fun getAccounts(){
+    fun getAccounts() {
         viewModelScope.launch {
-            repository.getAccounts(pref.getIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM)).collect {
-                when (it) {
-                    is Resource.Loading -> {
-                        _fetchAccounts.emit(Resource.Loading())
-                    }
+            repository.getAccounts(pref.getIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM))
+                .collect {
+                    when (it) {
+                        is Resource.Loading -> {
+                            _fetchAccounts.emit(Resource.Loading())
+                        }
 
-                    is Resource.Success -> {
-                        _fetchAccounts.emit(it)
-                    }
+                        is Resource.Success -> {
+                            _fetchAccounts.emit(it)
+                        }
 
-                    is Resource.Error -> {
-                        _fetchAccounts.emit(Resource.Error(it.message))
-                    }
+                        is Resource.Error -> {
+                            _fetchAccounts.emit(Resource.Error(it.message))
+                        }
 
-                    else -> Unit
+                        else -> Unit
+                    }
                 }
-            }
         }
     }
 

@@ -49,6 +49,7 @@ class GradesRepositoryImpl @Inject constructor(
                                         if (x.term == parseGrades(html, 0)[0].term) {
                                             db.gradeDao().deleteAllGrades(x.id)
                                             db.gradeDao().upsertGrade(parseGrades(html, x.id))
+                                            preference.setIntPreference(Constants.KEY_SELECT_GRADE_TERM,x.id)
                                             send(Resource.Success(parseGrades(html,x.id)))
                                         }
                                     }
@@ -84,6 +85,7 @@ class GradesRepositoryImpl @Inject constructor(
                         else {
                             db.gradeDao().deleteAllGrades(term.id)
                             db.gradeDao().upsertGrade(parseGrades(html,term.id))
+                            preference.setIntPreference(Constants.KEY_SELECT_GRADE_TERM,term.id)
                             send(Resource.Success(parseGrades(html,term.id)))
                         }
                     } else {

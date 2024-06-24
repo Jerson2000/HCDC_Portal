@@ -15,6 +15,7 @@ import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewMode
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENTS_UNITS
+import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +26,7 @@ import javax.inject.Inject
 class DashboardKt : Fragment() {
     private lateinit var binding: FragmentDashboardKtBinding
     private val dashboardViewModel: DashboardViewModel by viewModels()
+    private var loadingDialog: LoadingDialog? = null
 
     @Inject
     lateinit var pref:AppPreference
@@ -41,6 +43,8 @@ class DashboardKt : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         dashboardViewModel.getSchedules()
         listenerFetch()
+        loadingDialog = context?.let { LoadingDialog(it) }
+        loadingDialog?.show()
     }
 
     private fun listenerFetch() {

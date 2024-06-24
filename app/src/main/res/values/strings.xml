@@ -22,4 +22,6 @@
     <string name="view_buildings_wip">View Buildings ( WIP )</string>
     <string name="today_s_subject_s">Today\'s subject/s.</string>
     <string name="view_details">View Details</string>
+    <string name="offer_no">Offer No.</string>
+    <string name="loading">Loading...</string>
 </resources>

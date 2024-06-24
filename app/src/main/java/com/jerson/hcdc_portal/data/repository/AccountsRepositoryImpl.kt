@@ -1,5 +1,6 @@
 package com.jerson.hcdc_portal.data.repository
 
+import android.util.Log
 import com.jerson.hcdc_portal.App
 import com.jerson.hcdc_portal.data.local.PortalDB
 import com.jerson.hcdc_portal.domain.model.Account
@@ -121,6 +122,7 @@ class AccountsRepositoryImpl @Inject constructor(
                 send(Resource.Error(it.message))
             }
             .collect{
+                Log.e("HUHU", "getAccounts: Term-ID: ${preference.getIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM)}", )
                 send(Resource.Success(it))
             }
     }

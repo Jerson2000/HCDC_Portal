@@ -1,0 +1,34 @@
+package com.jerson.hcdc_portal.util
+
+import android.content.Context
+import android.view.LayoutInflater
+import android.widget.ProgressBar
+import androidx.appcompat.app.AlertDialog
+import com.jerson.hcdc_portal.R
+import com.jerson.hcdc_portal.databinding.DialogLoadingBinding
+
+
+class LoadingDialog(context: Context) : AlertDialog(context, com.google.android.material.R.style.ThemeOverlay_Material3_Dialog) {
+    private var binding:DialogLoadingBinding
+    init {
+        binding = DialogLoadingBinding.inflate(LayoutInflater.from(context))
+        setView(binding.root)
+        setCancelable(false)
+        setCanceledOnTouchOutside(false)
+    }
+    override fun show(){
+      if(isShowing){
+         super.dismiss()
+      }else{
+          super.show()
+      }
+    }
+
+    override fun dismiss() {
+        if (isShowing) {
+            super.dismiss()
+        }
+    }
+
+
+}

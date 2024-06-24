@@ -50,6 +50,7 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                                         if (x.term == parseEnrollHistory(html, 0)[0].term) {
                                             db.enrollHistoryDao().deleteAllHistory(x.id)
                                             db.enrollHistoryDao().upsertHistory(parseEnrollHistory(html, x.id))
+                                            preference.setIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM,x.id)
                                             send(Resource.Success(parseEnrollHistory(html, x.id)))
                                         }
                                     }
@@ -86,6 +87,7 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
 
                             db.enrollHistoryDao().deleteAllHistory(term.id)
                             db.enrollHistoryDao().upsertHistory(parseEnrollHistory(html, term.id))
+                            preference.setIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM,term.id)
                             send(Resource.Success(parseEnrollHistory(html, term.id)))
                         }
                     } else {
@@ -112,6 +114,7 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                 send(Resource.Error(it.message))
             }
             .collect{
+                Log.e("HUHU", "getEnrollHistory: Term-ID: ${preference.getIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM)}", )
                 send(Resource.Success(it))
             }
     }
