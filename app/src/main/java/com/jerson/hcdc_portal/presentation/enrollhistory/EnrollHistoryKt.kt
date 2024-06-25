@@ -17,7 +17,10 @@ import com.jerson.hcdc_portal.presentation.enrollhistory.adapter.EnrollHistoryAd
 import com.jerson.hcdc_portal.presentation.enrollhistory.viewmodel.EnrollHistoryViewModel
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
+import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
+import com.jerson.hcdc_portal.util.SnackBarKt
+import com.jerson.hcdc_portal.util.TermSelectionDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +31,9 @@ class EnrollHistoryKt : Fragment() {
     private val enrollHistoryViewModel: EnrollHistoryViewModel by viewModels()
     private lateinit var adapter: EnrollHistoryAdapter
     private val list = mutableListOf<EnrollHistory>()
+    private var termDialog: TermSelectionDialog? = null
+    private var loadingDialog: LoadingDialog? = null
+
     @Inject
     lateinit var pref: AppPreference
     override fun onCreateView(
@@ -42,6 +48,11 @@ class EnrollHistoryKt : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
+        loadingDialog = context?.let { LoadingDialog(it) }
+        termDialog = context?.let {
+            TermSelectionDialog(it)
+        }
+
 
         adapter = EnrollHistoryAdapter(list)
         binding.apply {
@@ -51,9 +62,22 @@ class EnrollHistoryKt : Fragment() {
         }
 
         if (isLoaded)
-            enrollHistoryViewModel.getEnrollHistory()
-
+            enrollHistoryViewModel.getEnrollHistory(pref.getIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM))
         fetchEnrollHistory()
+        enrollHistoryViewModel.getEnrollHistoryTerm()
+        getTerms()
+        binding.cardTerm.setOnClickListener {
+            termDialog?.showDialog { term ->
+                enrollHistoryViewModel.hasData(term) {
+                    pref.setIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM,term.id)
+                    if (!it) {
+                        enrollHistoryViewModel.fetchEnrollHistory(term)
+                    }else{
+                        enrollHistoryViewModel.getEnrollHistory(term.id)
+                    }
+                }
+            }
+        }
     }
 
     private fun fetchEnrollHistory() {
@@ -62,14 +86,16 @@ class EnrollHistoryKt : Fragment() {
                 enrollHistoryViewModel.fetchEnrollHistory.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            Log.e("HUHU", "fetchEnrollHistory: Loading...")
+                            loadingDialog?.show()
                         }
 
                         is Resource.Success -> {
+                            loadingDialog?.dismiss()
                             if (it.data!!.isNotEmpty()) {
                                 binding.apply {
                                     tvTerm.text = it.data[0].term
                                 }
+                                list.clear()
                                 list.addAll(it.data)
                                 adapter.notifyDataSetChanged()
                             } else {
@@ -80,7 +106,37 @@ class EnrollHistoryKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            Log.e("HUHU", "fetchEnrollHistory: ${it.message}")
+                            loadingDialog?.dismiss()
+                            it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
+                        }
+
+                        else -> Unit
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun getTerms() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                enrollHistoryViewModel.fetchTerms.collect {
+                    when (it) {
+                        is Resource.Loading -> {
+                            loadingDialog?.show()
+                            Log.e("HUHU", "getTerms: Loading...")
+                        }
+
+                        is Resource.Success -> {
+                            loadingDialog?.dismiss()
+                            it.data?.let { it1 -> termDialog?.setTerms(it1) }
+
+                        }
+
+                        is Resource.Error -> {
+                            loadingDialog?.dismiss()
+                            it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
                         }
 
                         else -> Unit

@@ -2,9 +2,7 @@ package com.jerson.hcdc_portal.util
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
-import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.DialogLoadingBinding
 
 

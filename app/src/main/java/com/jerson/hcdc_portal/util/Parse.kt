@@ -26,17 +26,22 @@ fun termLinksParse(doc: Document, isGrade: Int): List<Term> {
     val list = mutableListOf<Term>()
     val items = doc.select("main.app-content ul li.nav-item")
 
-    for (x in items) {
+    for (i in 1 until items.size) {
+
+        val item = items[i]
+        val term = item.select("a.nav-link").text()
+        val link = item.select("a.nav-link").attr("href")
+
         list.add(
             Term(
                 0,
-                x.select("a.nav-link").attr("href"),
-                x.select("a.nav-link").text(),
+                link,
+                term,
                 isGrade
             )
         )
     }
-    return list
+    return list.sortedByDescending { it.term }
 }
 
 fun userParse(doc: Document, pref: AppPreference) {

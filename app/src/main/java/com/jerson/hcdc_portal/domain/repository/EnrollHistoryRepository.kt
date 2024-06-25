@@ -13,4 +13,5 @@ interface EnrollHistoryRepository {
     // Database
     suspend fun getEnrollHistory(termId:Int): Flow<Resource<List<EnrollHistory>>>
     suspend fun  getEnrollHistoryTerms(): Flow<Resource<List<Term>>>
+    suspend fun hasData(term: Term,hasData:(Boolean)-> Unit)
 }

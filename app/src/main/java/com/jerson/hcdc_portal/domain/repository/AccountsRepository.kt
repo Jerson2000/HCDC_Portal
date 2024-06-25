@@ -11,4 +11,6 @@ interface AccountsRepository {
     // Database
     suspend fun getAccounts(): Flow<Resource<List<Account>>>
     suspend fun getAccounts(termId: Int): Flow<Resource<List<Account>>>
+    suspend fun  getAccountTerm(): Flow<Resource<List<Term>>>
+    suspend fun hasData(term: Term,hasData:(Boolean)-> Unit)
 }

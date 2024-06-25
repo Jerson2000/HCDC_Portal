@@ -13,4 +13,5 @@ interface GradesRepository {
     // Database
     suspend fun getGrades(termId:Int): Flow<Resource<List<Grade>>>
     suspend fun  getGradeTerms():Flow<Resource<List<Term>>>
+    suspend fun hasData(term: Term,hasData:(Boolean)-> Unit)
 }

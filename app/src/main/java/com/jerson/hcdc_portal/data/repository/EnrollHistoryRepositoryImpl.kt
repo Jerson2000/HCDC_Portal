@@ -77,7 +77,7 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                 withContext(Dispatchers.IO) {
                     send(Resource.Loading())
                     val response =
-                        client.newCall(getRequest(Constants.baseUrl + Constants.enrollHistory+term.urlPath)).await()
+                        client.newCall(getRequest(Constants.baseUrl +term.urlPath)).await()
                     if (response.isSuccessful) {
                         val bod = response.body.string()
                         val html = Jsoup.parse(bod)
@@ -114,7 +114,6 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                 send(Resource.Error(it.message))
             }
             .collect{
-                Log.e("HUHU", "getEnrollHistory: Term-ID: ${preference.getIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM)}", )
                 send(Resource.Success(it))
             }
     }
@@ -128,6 +127,15 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
             .collect{
                 send(Resource.Success(it))
             }
+    }
+
+    override suspend fun hasData(term: Term,hasData:(Boolean)-> Unit){
+      db.enrollHistoryDao().getHistory(term.id)
+          .catch {
+              hasData(false)
+          }.collect{
+              hasData(it.isNotEmpty())
+          }
     }
 
     private fun parseEnrollHistory(doc: Document, termId: Int): List<EnrollHistory> {

@@ -76,7 +76,7 @@ class GradesRepositoryImpl @Inject constructor(
                 withContext(Dispatchers.IO) {
                     send(Resource.Loading())
                     val response =
-                        client.newCall(getRequest(Constants.baseUrl + Constants.gradesUrl+term.urlPath)).await()
+                        client.newCall(getRequest(Constants.baseUrl +term.urlPath)).await()
                     if (response.isSuccessful) {
                         val bod = response.body.string()
                         val html = Jsoup.parse(bod)
@@ -149,6 +149,15 @@ class GradesRepositoryImpl @Inject constructor(
             }
             .collect{
                 send(Resource.Success(it))
+            }
+    }
+
+    override suspend fun hasData(term: Term, hasData: (Boolean) -> Unit) {
+        db.gradeDao().getGrades(term.id)
+            .catch {
+                hasData(false)
+            }.collect{
+                hasData(it.isNotEmpty())
             }
     }
 

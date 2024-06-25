@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jerson.hcdc_portal.data.local.PortalDB
 import com.jerson.hcdc_portal.domain.model.EnrollHistory
+import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.domain.repository.EnrollHistoryRepository
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
@@ -23,6 +24,9 @@ class EnrollHistoryViewModel @Inject constructor(
     private val _fetchEnrollHistory = MutableSharedFlow<Resource<List<EnrollHistory>>>()
     val fetchEnrollHistory = _fetchEnrollHistory.asSharedFlow()
 
+    private val _fetchTerms = MutableSharedFlow<Resource<List<Term>>>()
+    val fetchTerms = _fetchTerms.asSharedFlow()
+
     init {
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
         if(!isLoaded){
@@ -30,6 +34,24 @@ class EnrollHistoryViewModel @Inject constructor(
             pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED,true)
         }
 
+    }
+    fun fetchEnrollHistory(term:Term){
+        viewModelScope.launch {
+            repository.fetchEnrollHistory(term).collect{
+                when(it){
+                    is Resource.Loading->{
+                        _fetchEnrollHistory.emit(Resource.Loading())
+                    }
+                    is Resource.Success ->{
+                        _fetchEnrollHistory.emit(it)
+                    }
+                    is Resource.Error->{
+                        _fetchEnrollHistory.emit(Resource.Error(it.message))
+                    }
+                    else -> Unit
+                }
+            }
+        }
     }
 
     fun fetchEnrollHistory(){
@@ -51,9 +73,9 @@ class EnrollHistoryViewModel @Inject constructor(
         }
     }
 
-    fun getEnrollHistory(){
+    fun getEnrollHistory(termId:Int){
         viewModelScope.launch {
-            repository.getEnrollHistory(pref.getIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM))
+            repository.getEnrollHistory(termId)
                 .collect {
                     when(it){
                         is Resource.Loading->{
@@ -68,6 +90,31 @@ class EnrollHistoryViewModel @Inject constructor(
                         else -> Unit
                     }
                 }
+        }
+    }
+    fun getEnrollHistoryTerm(){
+        viewModelScope.launch {
+            repository.getEnrollHistoryTerms()
+                .collect {
+                    when(it){
+                        is Resource.Loading->{
+                            _fetchTerms.emit(Resource.Loading())
+                        }
+                        is Resource.Success ->{
+                            _fetchTerms.emit(it)
+                        }
+                        is Resource.Error->{
+                            _fetchTerms.emit(Resource.Error(it.message))
+                        }
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    fun hasData(term:Term,hasData:(Boolean)-> Unit){
+        viewModelScope.launch {
+            repository.hasData(term,hasData)
         }
     }
 

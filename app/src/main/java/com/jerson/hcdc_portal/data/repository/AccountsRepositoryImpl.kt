@@ -78,7 +78,7 @@ class AccountsRepositoryImpl @Inject constructor(
             if(isConnected(App.appContext)){
                 withContext(Dispatchers.IO){
                     send(Resource.Loading())
-                    val response = client.newCall(getRequest(Constants.baseUrl+Constants.accountUrl+term.urlPath)).await()
+                    val response = client.newCall(getRequest(Constants.baseUrl+term.urlPath)).await()
                     if(response.isSuccessful){
                         val bod = response.body.string()
                         val html = Jsoup.parse(bod)
@@ -122,8 +122,27 @@ class AccountsRepositoryImpl @Inject constructor(
                 send(Resource.Error(it.message))
             }
             .collect{
-                Log.e("HUHU", "getAccounts: Term-ID: ${preference.getIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM)}", )
                 send(Resource.Success(it))
+            }
+    }
+
+    override suspend fun getAccountTerm(): Flow<Resource<List<Term>>> = channelFlow{
+        send(Resource.Loading())
+        db.termDao().getTerms(2)
+            .catch {
+                send(Resource.Error(it.message))
+            }
+            .collect{
+                send(Resource.Success(it))
+            }
+    }
+
+    override suspend fun hasData(term: Term, hasData: (Boolean) -> Unit) {
+        db.accountDao().getAccounts(term.id)
+            .catch {
+                hasData(false)
+            }.collect{
+                hasData(it.isNotEmpty())
             }
     }
 
