@@ -1,5 +1,6 @@
 package com.jerson.hcdc_portal.util
 
+import android.util.Log
 import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.util.Constants.KEY_ENROLL_ANNOUNCE
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_ENROLLED
@@ -13,9 +14,11 @@ import org.jsoup.nodes.Document
 fun sessionParse(preference: AppPreference, doc: Document): Boolean {
     val token = doc.select("meta[name=csrf-token]").attr("content")
     val isLogin = doc.body().text().contains("CROSSIAN LOG-IN")
+    val isNameEmpty = doc.body().select(".app-sidebar__user-name").hasText().not()
     preference.setStringPreference(Constants.KEY_CSRF_TOKEN, token)
     preference.setBooleanPreference(Constants.KEY_IS_SESSION, isLogin)
-    return isLogin
+    Log.e("HUHU-PARSE", "sessionParse: $isLogin\t$isNameEmpty", )
+    return isLogin or isNameEmpty
 }
 
 /***

@@ -1,7 +1,6 @@
 package com.jerson.hcdc_portal.presentation.accounts
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.jerson.hcdc_portal.databinding.FragmentAccountKtBinding
+import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.presentation.accounts.viewmodel.AccountViewModel
+import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.LoadingDialog
@@ -26,8 +27,10 @@ import javax.inject.Inject
 class AccountsKt : Fragment() {
     private lateinit var binding: FragmentAccountKtBinding
     private val accountViewModel: AccountViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
     private var loadingDialog: LoadingDialog? = null
     private var termDialog: TermSelectionDialog? = null
+    private var selectedTerm: Term? = null
 
     @Inject
     lateinit var pref: AppPreference
@@ -50,14 +53,14 @@ class AccountsKt : Fragment() {
         getAccounts()
         accountViewModel.getAccountTerm()
         getTerms()
-
+        reLogonResponse()
         binding.cardTerm.setOnClickListener {
-            termDialog?.showDialog {term ->
+            termDialog?.showDialog { term ->
                 accountViewModel.hasData(term) {
-                    pref.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM,term.id)
+                    pref.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM, term.id)
                     if (!it) {
                         accountViewModel.fetchAccounts(term)
-                    }else{
+                    } else {
                         accountViewModel.getAccounts(term.id)
                     }
                 }
@@ -93,8 +96,12 @@ class AccountsKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            loadingDialog?.dismiss()
-                            it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
+                            if (it.message!!.contains("session end", true))
+                                loginViewModel.reLogon()
+                            else {
+                                loadingDialog?.dismiss()
+                                SnackBarKt.snackBarLong(binding.root, it.message)
+                            }
                         }
 
                         else -> Unit
@@ -123,6 +130,33 @@ class AccountsKt : Fragment() {
                         is Resource.Error -> {
                             loadingDialog?.dismiss()
                             it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
+                        }
+
+                        else -> Unit
+                    }
+                }
+            }
+        }
+    }
+
+    private fun reLogonResponse() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                loginViewModel.login.collect {
+                    when (it) {
+                        is Resource.Loading -> {
+                            loadingDialog?.show()
+                        }
+
+                        is Resource.Success -> {
+                            selectedTerm?.let { term -> accountViewModel.fetchAccounts(term) }
+                        }
+
+                        is Resource.Error -> {
+                            loadingDialog?.dismiss()
+                            if (!it.message!!.contains("null")) {
+                                it.message.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
+                            }
                         }
 
                         else -> Unit

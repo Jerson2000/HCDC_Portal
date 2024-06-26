@@ -1,6 +1,7 @@
 package com.jerson.hcdc_portal.presentation.grade
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jerson.hcdc_portal.databinding.FragmentGradesKtBinding
 import com.jerson.hcdc_portal.domain.model.Grade
+import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.presentation.grade.adapter.GradeAdapter
 import com.jerson.hcdc_portal.presentation.grade.viewmodel.GradeViewModel
 import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
@@ -34,6 +36,7 @@ class GradesKt : Fragment() {
     private var loadingDialog: LoadingDialog? = null
     private var termDialog: TermSelectionDialog? = null
     private lateinit var adapter:GradeAdapter
+    private var selectedTerm:Term?=null
 
     @Inject
     lateinit var pref:AppPreference
@@ -68,6 +71,7 @@ class GradesKt : Fragment() {
 
         binding.cardTerm.setOnClickListener {
             termDialog?.showDialog {term ->
+                selectedTerm = term
                 gradesViewModel.hasData(term) {
                     pref.setIntPreference(Constants.KEY_SELECT_GRADE_TERM,term.id)
                     if (!it) {
@@ -111,11 +115,12 @@ class GradesKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            loadingDialog?.dismiss()
-                            if (it.message!!.equals("session end", true))
+                            if (it.message!!.contains("session end", true))
                                 loginViewModel.reLogon()
-                            else
+                            else{
+                                loadingDialog?.dismiss()
                                 SnackBarKt.snackBarLong(binding.root,it.message)
+                            }
                         }
 
                         else -> Unit
@@ -135,7 +140,7 @@ class GradesKt : Fragment() {
                         }
 
                         is Resource.Success -> {
-                            gradesViewModel.fetchGrades()
+                            selectedTerm?.let { term -> gradesViewModel.fetchGrades(term) }
                         }
 
                         is Resource.Error -> {

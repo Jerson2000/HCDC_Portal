@@ -1,7 +1,6 @@
 package com.jerson.hcdc_portal.presentation.enrollhistory
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +12,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jerson.hcdc_portal.databinding.FragmentEnrollmentHistoryKtBinding
 import com.jerson.hcdc_portal.domain.model.EnrollHistory
+import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.presentation.enrollhistory.adapter.EnrollHistoryAdapter
 import com.jerson.hcdc_portal.presentation.enrollhistory.viewmodel.EnrollHistoryViewModel
+import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.LoadingDialog
@@ -29,10 +30,12 @@ import javax.inject.Inject
 class EnrollHistoryKt : Fragment() {
     private lateinit var binding: FragmentEnrollmentHistoryKtBinding
     private val enrollHistoryViewModel: EnrollHistoryViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
     private lateinit var adapter: EnrollHistoryAdapter
     private val list = mutableListOf<EnrollHistory>()
     private var termDialog: TermSelectionDialog? = null
     private var loadingDialog: LoadingDialog? = null
+    private var selectedTerm: Term?=null
 
     @Inject
     lateinit var pref: AppPreference
@@ -66,8 +69,10 @@ class EnrollHistoryKt : Fragment() {
         fetchEnrollHistory()
         enrollHistoryViewModel.getEnrollHistoryTerm()
         getTerms()
+        reLogonResponse()
         binding.cardTerm.setOnClickListener {
             termDialog?.showDialog { term ->
+                selectedTerm = term
                 enrollHistoryViewModel.hasData(term) {
                     pref.setIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM,term.id)
                     if (!it) {
@@ -106,8 +111,12 @@ class EnrollHistoryKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            loadingDialog?.dismiss()
-                            it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
+                            if (it.message!!.contains("session end", true))
+                                loginViewModel.reLogon()
+                            else{
+                                loadingDialog?.dismiss()
+                                SnackBarKt.snackBarLong(binding.root,it.message)
+                            }
                         }
 
                         else -> Unit
@@ -125,13 +134,37 @@ class EnrollHistoryKt : Fragment() {
                     when (it) {
                         is Resource.Loading -> {
                             loadingDialog?.show()
-                            Log.e("HUHU", "getTerms: Loading...")
                         }
 
                         is Resource.Success -> {
                             loadingDialog?.dismiss()
                             it.data?.let { it1 -> termDialog?.setTerms(it1) }
 
+                        }
+
+                        is Resource.Error -> {
+                            loadingDialog?.dismiss()
+                            it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
+                        }
+
+                        else -> Unit
+                    }
+                }
+            }
+        }
+    }
+
+    private fun reLogonResponse(){
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                loginViewModel.login.collect{
+                    when (it) {
+                        is Resource.Loading -> {
+                            loadingDialog?.show()
+                        }
+
+                        is Resource.Success -> {
+                            selectedTerm?.let { term -> enrollHistoryViewModel.fetchEnrollHistory(term) }
                         }
 
                         is Resource.Error -> {
