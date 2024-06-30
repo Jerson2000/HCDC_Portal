@@ -1,5 +1,8 @@
 package com.jerson.hcdc_portal.util
 
+import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.util.Constants.KEY_ENROLL_ANNOUNCE
@@ -66,4 +69,17 @@ fun userParse(doc: Document, pref: AppPreference) {
     pref.setStringPreference(KEY_ENROLL_ANNOUNCE,enrollAnnounce)
     pref.setStringPreference(KEY_IS_ENROLLED,enrolled)
 
+}
+
+
+// reusable function getParcelableArrayList
+inline fun <reified T : Parcelable> Bundle.getParcelableArrayListCompat(key: String): ArrayList<T>? {
+    return if (Build.VERSION.SDK_INT >= 33) {
+        // Use the updated getParcelableArrayList() method with the Class object parameter
+        getParcelableArrayList(key, T::class.java)
+    } else {
+        // Use the older, deprecated getParcelableArrayList() method
+        @Suppress("DEPRECATION")
+        getParcelableArrayList(key)
+    }
 }

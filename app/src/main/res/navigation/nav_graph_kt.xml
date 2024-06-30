@@ -13,7 +13,11 @@
         android:id="@+id/accounts"
         android:name="com.jerson.hcdc_portal.presentation.accounts.AccountsKt"
         android:label="AccountsKt"
-        tools:layout="@layout/fragment_account_kt"/>
+        tools:layout="@layout/fragment_account_kt">
+        <action
+            android:id="@+id/action_accounts_to_accountDetails"
+            app:destination="@id/accountDetails" />
+    </fragment>
 
     <fragment
         android:id="@+id/grades"
@@ -25,4 +29,13 @@
         android:name="com.jerson.hcdc_portal.presentation.enrollhistory.EnrollHistoryKt"
         android:label="EnrollHistoryKt"
         tools:layout="@layout/fragment_enrollment_history_kt"/>
+    <fragment
+        android:id="@+id/accountDetails"
+        android:name="com.jerson.hcdc_portal.presentation.accounts.AccountDetails"
+        android:label="AccountDetails"
+        tools:layout="@layout/fragment_account_detail">
+        <action
+            android:id="@+id/action_accountDetails_to_accounts"
+            app:destination="@id/accounts" />
+    </fragment>
 </navigation>

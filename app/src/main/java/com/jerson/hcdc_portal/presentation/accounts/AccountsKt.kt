@@ -4,12 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentAccountKtBinding
+import com.jerson.hcdc_portal.domain.model.Account
 import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.presentation.accounts.viewmodel.AccountViewModel
 import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
@@ -31,6 +36,7 @@ class AccountsKt : Fragment() {
     private var loadingDialog: LoadingDialog? = null
     private var termDialog: TermSelectionDialog? = null
     private var selectedTerm: Term? = null
+    private val list = mutableListOf<Account>()
 
     @Inject
     lateinit var pref: AppPreference
@@ -66,6 +72,12 @@ class AccountsKt : Fragment() {
                 }
             }
         }
+
+        binding.btnViewDetails.setOnClickListener {
+            val bundle = bundleOf("objectList" to list)
+            setFragmentResult("requestKey", bundle)
+            findNavController().navigate(R.id.action_accounts_to_accountDetails,bundle)
+        }
     }
 
 
@@ -85,6 +97,9 @@ class AccountsKt : Fragment() {
                                     tvDue.text = it.data[0].dueAmount
                                     tvDueText.text = it.data[0].dueTextPeriod
                                     tvTerm.text = it.data[0].term
+
+                                    list.clear()
+                                    list.addAll(it.data)
                                 }
                             } else {
                                 binding.apply {

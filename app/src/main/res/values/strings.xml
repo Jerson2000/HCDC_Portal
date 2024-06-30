@@ -24,4 +24,10 @@
     <string name="view_details">View Details</string>
     <string name="offer_no">Offer No.</string>
     <string name="loading">Loading...</string>
+    <string name="date">Date</string>
+    <string name="reference">Reference</string>
+    <string name="description">Description</string>
+    <string name="running_balance">Running Balance</string>
+    <string name="deducted">Deducted</string>
+    <string name="added">Added</string>
 </resources>
