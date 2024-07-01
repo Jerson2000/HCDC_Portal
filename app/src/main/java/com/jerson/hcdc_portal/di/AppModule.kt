@@ -1,7 +1,9 @@
 package com.jerson.hcdc_portal.di
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
+import coil.ImageLoader
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
@@ -12,6 +14,7 @@ import com.jerson.hcdc_portal.util.bypassSSLErrors
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import java.security.cert.X509Certificate
@@ -42,6 +45,13 @@ object AppModule {
     @Singleton
     fun providesAppPreference(application:Application):AppPreference{
         return AppPreference(application.applicationContext)
+    }
+
+    @Provides
+    fun providesImageLoader(app:Application): ImageLoader {
+        return ImageLoader.Builder(app)
+            .okHttpClient(OkHttpClient())
+            .build()
     }
 
 

@@ -16,6 +16,7 @@ object Constants {
     const val KEY_HTML_EVALUATION = "evaluationHTML"
     const val KEY_CSRF_TOKEN = "csrf_token"
     const val KEY_IS_SESSION = "isSession"
+    const val KEY_USER_AVATAR = "avatar"
 
     const val KEY_IS_SCHEDULE_LOADED = "scheduleLoaded"
 

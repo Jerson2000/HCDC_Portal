@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
+import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.util.Constants.KEY_ENROLL_ANNOUNCE
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_ENROLLED
@@ -11,15 +12,21 @@ import com.jerson.hcdc_portal.util.Constants.KEY_STUDENTS_UNITS
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_COURSE
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_ID
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_NAME
+import com.jerson.hcdc_portal.util.Constants.KEY_USER_AVATAR
 import org.jsoup.nodes.Document
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 
 fun sessionParse(preference: AppPreference, doc: Document): Boolean {
     val token = doc.select("meta[name=csrf-token]").attr("content")
     val isLogin = doc.body().text().contains("CROSSIAN LOG-IN")
     val isNameEmpty = doc.body().select(".app-sidebar__user-name").hasText().not()
+    val avatar = doc.body().select("app-sidebar__user-avatar").attr("src").toString()
+
     preference.setStringPreference(Constants.KEY_CSRF_TOKEN, token)
     preference.setBooleanPreference(Constants.KEY_IS_SESSION, isLogin)
+    preference.setStringPreference(KEY_USER_AVATAR, avatar)
     Log.e("HUHU-PARSE", "sessionParse: $isLogin\t$isNameEmpty", )
     return isLogin or isNameEmpty
 }
@@ -69,6 +76,15 @@ fun userParse(doc: Document, pref: AppPreference) {
     pref.setStringPreference(KEY_ENROLL_ANNOUNCE,enrollAnnounce)
     pref.setStringPreference(KEY_IS_ENROLLED,enrolled)
 
+}
+
+@OptIn(ExperimentalEncodingApi::class)
+fun userAvatar(pref:AppPreference):Any{
+    val avatar = pref.getStringPreference(KEY_USER_AVATAR)
+    return if(!avatar.contains("logo")){
+        Base64.decode(avatar.toByteArray(), 0, avatar.toByteArray().size)
+    }else
+        R.drawable.logo
 }
 
 

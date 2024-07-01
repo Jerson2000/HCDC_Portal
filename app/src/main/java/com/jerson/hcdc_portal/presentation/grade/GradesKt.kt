@@ -145,7 +145,8 @@ class GradesKt : Fragment() {
 
                         is Resource.Error -> {
                             loadingDialog?.dismiss()
-                            it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
+                            if(!it.message!!.contains("null"))
+                                SnackBarKt.snackBarLong(binding.root, it.message)
                         }
 
                         else -> Unit

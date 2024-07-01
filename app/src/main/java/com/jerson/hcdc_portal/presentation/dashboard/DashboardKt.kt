@@ -5,25 +5,27 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import coil.load
 import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
 import com.jerson.hcdc_portal.util.AppPreference
-import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENTS_UNITS
 import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt
+import com.jerson.hcdc_portal.util.userAvatar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import javax.inject.Inject
+import kotlin.io.encoding.ExperimentalEncodingApi
 
+@OptIn(ExperimentalEncodingApi::class)
 @AndroidEntryPoint
 class DashboardKt : Fragment() {
     private lateinit var binding: FragmentDashboardKtBinding
@@ -32,6 +34,8 @@ class DashboardKt : Fragment() {
 
     @Inject
     lateinit var pref:AppPreference
+    @Inject
+    lateinit var okHttpClient: OkHttpClient
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,7 +50,20 @@ class DashboardKt : Fragment() {
         dashboardViewModel.getSchedules()
         listenerFetch()
         loadingDialog = context?.let { LoadingDialog(it) }
-//        loadingDialog?.show()
+
+       /* val imageLoader = context?.let { ImageLoader.Builder(it).okHttpClient(okHttpClient).build() }
+        if (imageLoader != null) {
+            binding.asd.load("https://studentportal.hcdc.edu.ph/images/hcdc_logo.png",imageLoader) {
+                placeholder(R.drawable.ic_article)
+                error(R.drawable.ic_dashboard)
+                listener(
+                    onError = { request, throwable ->
+                        Log.e("HUHU", "onViewCreated: ${throwable.throwable.message}\nrequest: ${request.data}", )
+                    }
+                )
+            }
+        }*/
+
     }
 
     private fun listenerFetch() {
@@ -59,10 +76,10 @@ class DashboardKt : Fragment() {
                         }
 
                         is Resource.Success -> {
-                            binding.apply{
+                          /*  binding.apply{
                                 totalSubTV.text = it.data!!.size.toString()
                                 unitsTV.text = pref.getStringPreference(KEY_STUDENTS_UNITS)
-                            }
+                            }*/
                         }
 
                         is Resource.Error -> {
@@ -74,10 +91,6 @@ class DashboardKt : Fragment() {
                 }
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
     }
 
 
