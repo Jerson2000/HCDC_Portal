@@ -11,7 +11,6 @@ import com.jerson.hcdc_portal.domain.model.Account
 import com.jerson.hcdc_portal.domain.model.EnrollHistory
 import com.jerson.hcdc_portal.domain.model.Grade
 import com.jerson.hcdc_portal.domain.model.Schedule
-import com.jerson.hcdc_portal.domain.model.Subject
 import com.jerson.hcdc_portal.domain.model.Term
 
 @Database(

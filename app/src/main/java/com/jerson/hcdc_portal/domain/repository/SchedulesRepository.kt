@@ -1,7 +1,6 @@
 package com.jerson.hcdc_portal.domain.repository
 
 import com.jerson.hcdc_portal.domain.model.Schedule
-import com.jerson.hcdc_portal.domain.model.Subject
 import com.jerson.hcdc_portal.util.Resource
 import kotlinx.coroutines.flow.Flow
 

@@ -16,6 +16,7 @@ import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants.KEY_EMAIL
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_LOGIN
 import com.jerson.hcdc_portal.util.Constants.KEY_PASSWORD
+import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt.snackBarLong
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,22 +24,27 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginKt:AppCompatActivity(R.layout.activity_login_kt) {
-    private lateinit var binding:ActivityLoginKtBinding
+class LoginKt : AppCompatActivity(R.layout.activity_login_kt) {
+    private lateinit var binding: ActivityLoginKtBinding
     private val viewModel: LoginViewModel by viewModels()
-    private var loadToken:Int = 0
+    private var loadToken: Int = 0
+    private var loadingDialog: LoadingDialog? = null
 
     @Inject
-    lateinit var pref:AppPreference
+    lateinit var pref: AppPreference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginKtBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        loadingDialog = LoadingDialog(this)
 
 
         binding.loginBtn.setOnClickListener {
-            if(checkFields()) viewModel.login(binding.emailET.text.toString().trim(),binding.passET.text.toString().trim())
+            if (checkFields()) viewModel.login(
+                binding.emailET.text.toString().trim(),
+                binding.passET.text.toString().trim()
+            )
         }
 
         viewModel.checkSession()
@@ -47,25 +53,33 @@ class LoginKt:AppCompatActivity(R.layout.activity_login_kt) {
 
     }
 
-    private fun checkFields():Boolean{
-        return !(binding.emailET.text.toString().isEmpty() || binding.passET.text.toString().isEmpty())
+    private fun checkFields(): Boolean {
+        return !(binding.emailET.text.toString().isEmpty() || binding.passET.text.toString()
+            .isEmpty())
     }
-    private fun login(){
+
+    private fun login() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.login.collect{
-                    when(it){
-                        is Resource.Loading->{
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.login.collect {
+                    when (it) {
+                        is Resource.Loading -> {
                             binding.loginBtn.isEnabled = false
+                            loadingDialog!!.show()
                         }
-                        is Resource.Success ->{
+
+                        is Resource.Success -> {
                             viewModel.checkSession()
                         }
 
-                        is Resource.Error->{
-                            binding.loginBtn.isEnabled = true
-                            snackBarLong(binding.root,it.message.toString())
+                        is Resource.Error -> {
+                            if (!it.message.equals("null")) {
+                                loadingDialog!!.dismiss()
+                                binding.loginBtn.isEnabled = true
+                                snackBarLong(binding.root, it.message.toString())
+                            }
                         }
+
                         else -> Unit
                     }
                 }
@@ -73,39 +87,56 @@ class LoginKt:AppCompatActivity(R.layout.activity_login_kt) {
         }
     }
 
-    private fun checkSession(){
+    private fun checkSession() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.session.collect{
-                    when(it){
-                        is Resource.Loading->{
-                            Log.e("HUHU", "checkSession: Loading..." )
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.session.collect {
+                    when (it) {
+                        is Resource.Loading -> {
                         }
-                        is Resource.Success ->{
+
+                        is Resource.Success -> {
                             loadToken++
-                            if(loadToken > 1){
-                                if(it.data!!){
-                                    snackBarLong(binding.root,"Incorrect Credentials")
+                            if (loadToken > 1) {
+                                if (it.data!!) {
+                                    snackBarLong(binding.root, "Incorrect Credentials")
                                     binding.loginBtn.isEnabled = true
-                                }else{
-                                    pref.setStringPreference(KEY_EMAIL,binding.emailET.text.toString())
-                                    pref.setStringPreference(KEY_PASSWORD,binding.passET.text.toString())
-                                    pref.setBooleanPreference(KEY_IS_LOGIN,true)
-                                    startActivity(Intent(applicationContext, MainKt::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
+                                    loadingDialog!!.dismiss()
+                                } else {
+                                    loadingDialog!!.dismiss()
+                                    pref.setStringPreference(
+                                        KEY_EMAIL,
+                                        binding.emailET.text.toString()
+                                    )
+                                    pref.setStringPreference(
+                                        KEY_PASSWORD,
+                                        binding.passET.text.toString()
+                                    )
+                                    pref.setBooleanPreference(KEY_IS_LOGIN, true)
+                                    startActivity(
+                                        Intent(
+                                            applicationContext,
+                                            MainKt::class.java
+                                        ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    )
                                 }
                             }
 
                         }
-                        is Resource.Error->{
-                            snackBarLong(binding.root,it.message.toString())
+
+                        is Resource.Error -> {
+                            if (!it.message.equals("null")) {
+                                loadingDialog!!.dismiss()
+                                snackBarLong(binding.root, it.message.toString())
+                            }
                         }
+
                         else -> Unit
                     }
                 }
             }
         }
     }
-
 
 
 }

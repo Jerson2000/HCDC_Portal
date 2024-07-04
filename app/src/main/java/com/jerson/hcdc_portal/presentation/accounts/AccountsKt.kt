@@ -74,9 +74,12 @@ class AccountsKt : Fragment() {
         }
 
         binding.btnViewDetails.setOnClickListener {
-            val bundle = bundleOf("objectList" to list)
-            setFragmentResult("requestKey", bundle)
-            findNavController().navigate(R.id.action_accounts_to_accountDetails,bundle)
+            if(list.size > 0 && list[0].description!!.isNotBlank()){
+                val bundle = bundleOf("objectList" to list)
+                setFragmentResult("requestKey", bundle)
+                findNavController().navigate(R.id.action_accounts_to_accountDetails,bundle)
+            }
+
         }
     }
 
@@ -87,7 +90,7 @@ class AccountsKt : Fragment() {
                 accountViewModel.fetchAccounts.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog?.show()
+                            loadingDialog!!.show()
                         }
 
                         is Resource.Success -> {

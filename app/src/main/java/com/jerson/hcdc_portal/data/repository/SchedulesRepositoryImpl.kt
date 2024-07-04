@@ -1,5 +1,6 @@
 package com.jerson.hcdc_portal.data.repository
 
+import android.util.Log
 import com.jerson.hcdc_portal.App.Companion.appContext
 import com.jerson.hcdc_portal.data.local.PortalDB
 import com.jerson.hcdc_portal.domain.model.Schedule
@@ -22,35 +23,34 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import javax.inject.Inject
 
-class SchedulesRepositoryImpl@Inject constructor(
+class SchedulesRepositoryImpl @Inject constructor(
     private val db: PortalDB,
-    private val client:OkHttpClient,
+    private val client: OkHttpClient,
     private val preference: AppPreference
-): SchedulesRepository {
-    override suspend fun fetchSchedules(): Flow<Resource<List<Schedule>>> = channelFlow{
-        try{
-            if(isConnected(appContext)){
-                withContext(Dispatchers.IO){
+) : SchedulesRepository {
+    override suspend fun fetchSchedules(): Flow<Resource<List<Schedule>>> = channelFlow {
+        try {
+            if (isConnected(appContext)) {
+                withContext(Dispatchers.IO) {
                     send(Resource.Loading())
                     val response = client.newCall(getRequest(Constants.baseUrl)).await()
-                    if(response.isSuccessful){
+                    if (response.isSuccessful) {
                         val bod = response.body.string()
                         val html = Jsoup.parse(bod)
-                        if(html.body().text().lowercase().contains("something went wrong"))
+                        if (html.body().text().lowercase().contains("something went wrong"))
                             send(Resource.Error("${response.code} - ${response.message}"))
-                        else if(sessionParse(preference,html))
+                        else if (sessionParse(preference, html))
                             send(Resource.Error("session end - ${response.code}"))
-                        else{
+                        else {
                             db.scheduleDao().deleteAllSchedules()
                             db.scheduleDao().upsertSchedules(parseSchedule(html))
                             send(Resource.Success(parseSchedule(html)))
                         }
-                    }else{
+                    } else {
                         send(Resource.Error(response.message))
                     }
-                    response.body.close()
                 }
-            }else{
+            } else {
                 send(Resource.Error("No internet connection!"))
             }
         }catch (e:Exception){
@@ -64,12 +64,13 @@ class SchedulesRepositoryImpl@Inject constructor(
             .catch {
                 send(Resource.Error(it.message))
             }
-            .collect{
+            .collect {
                 send(Resource.Success(it))
             }
     }
+
     private fun parseSchedule(response: Document): List<Schedule> {
-        userParse(response,preference)
+        userParse(response, preference)
         val list = mutableListOf<Schedule>()
         val tBody = response.select("div.col-sm-9 tbody")
         for (body in tBody) {

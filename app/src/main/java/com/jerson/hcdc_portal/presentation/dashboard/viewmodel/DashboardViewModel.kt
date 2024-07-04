@@ -24,10 +24,8 @@ class DashboardViewModel @Inject constructor(
 
     init {
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_SCHEDULE_LOADED)
-        if (isLoaded) {
-            fetchSchedules
-        } else {
-            getSchedules()
+        if (!isLoaded) {
+            fetchSchedules()
             pref.setBooleanPreference(Constants.KEY_IS_SCHEDULE_LOADED, true)
         }
     }

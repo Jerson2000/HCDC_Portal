@@ -30,4 +30,5 @@
     <string name="running_balance">Running Balance</string>
     <string name="deducted">Deducted</string>
     <string name="added">Added</string>
+    <string name="welcome">Welcome!</string>
 </resources>

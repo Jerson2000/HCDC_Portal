@@ -65,7 +65,7 @@ class LoginRepositoryImpl @Inject constructor(
             if(isConnected(appContext)){
                 withContext(Dispatchers.IO){
                     send(Resource.Loading())
-                    val response = client.newCall(getRequest("$baseUrl$gradesUrl")).await()
+                    val response = client.newCall(getRequest("$baseUrl$gradesUrl/punpun")).await()
                     if(response.isSuccessful){
                         val bod = response.body.string()
                         val html = Jsoup.parse(bod)

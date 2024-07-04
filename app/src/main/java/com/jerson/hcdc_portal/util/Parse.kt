@@ -22,7 +22,7 @@ fun sessionParse(preference: AppPreference, doc: Document): Boolean {
     val token = doc.select("meta[name=csrf-token]").attr("content")
     val isLogin = doc.body().text().contains("CROSSIAN LOG-IN")
     val isNameEmpty = doc.body().select(".app-sidebar__user-name").hasText().not()
-    val avatar = doc.body().select("app-sidebar__user-avatar").attr("src").toString()
+    val avatar = doc.body().select(".app-sidebar__user-avatar").attr("src")
 
     preference.setStringPreference(Constants.KEY_CSRF_TOKEN, token)
     preference.setBooleanPreference(Constants.KEY_IS_SESSION, isLogin)
@@ -60,9 +60,9 @@ fun termLinksParse(doc: Document, isGrade: Int): List<Term> {
 fun userParse(doc: Document, pref: AppPreference) {
 
     val units = doc.select("div.col-sm-9 > b").text().replace("Total Units: ", "")
-    val name = doc.select(".app-sidebar__user-name").text().lowercase()
-    val id = doc.select("app-sidebar__user-designation").text().replace(Regex("\\(\\)"), "")[1].toString()
-    val course = doc.select("app-sidebar__user-designation").text().replace(Regex("\\(\\)"), "")[0].toString()
+    val name = doc.select(".app-sidebar__user-name").text().lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { x-> x.uppercase() } }
+    val id = doc.select(".app-sidebar__user-designation").text().replace(Regex("\\(\\)"), "").split(" ")[1]
+    val course = doc.select(".app-sidebar__user-designation").text().replace(Regex("\\(\\)"), "").split(" ")[0]
     val enrollAnnounce = doc.select(".mybox-body > center > h5").text()
     val isEnrolled = doc.body().text().contains("Officially Enrolled")
     val enrolled = if(isEnrolled)
@@ -80,7 +80,7 @@ fun userParse(doc: Document, pref: AppPreference) {
 
 @OptIn(ExperimentalEncodingApi::class)
 fun userAvatar(pref:AppPreference):Any{
-    val avatar = pref.getStringPreference(KEY_USER_AVATAR)
+    val avatar = pref.getStringPreference(KEY_USER_AVATAR).substringAfter(",")
     return if(!avatar.contains("logo")){
         Base64.decode(avatar.toByteArray(), 0, avatar.toByteArray().size)
     }else

@@ -38,4 +38,9 @@
             android:id="@+id/action_accountDetails_to_accounts"
             app:destination="@id/accounts" />
     </fragment>
+    <fragment
+        android:id="@+id/subjects"
+        android:name="com.jerson.hcdc_portal.presentation.subjects.SubjectKt"
+        android:label="SubjectKt"
+        tools:layout="@layout/fragment_subjects_kt"/>
 </navigation>
