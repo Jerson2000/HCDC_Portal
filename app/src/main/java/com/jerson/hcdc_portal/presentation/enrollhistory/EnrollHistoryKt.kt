@@ -45,17 +45,14 @@ class EnrollHistoryKt : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentEnrollmentHistoryKtBinding.inflate(inflater)
+        loadingDialog = context?.let { LoadingDialog(it) }
+        termDialog = context?.let {TermSelectionDialog(it) }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
-        loadingDialog = context?.let { LoadingDialog(it) }
-        termDialog = context?.let {
-            TermSelectionDialog(it)
-        }
-
 
         adapter = EnrollHistoryAdapter(list)
         binding.apply {
@@ -91,11 +88,11 @@ class EnrollHistoryKt : Fragment() {
                 enrollHistoryViewModel.fetchEnrollHistory.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog?.show()
+                            loadingDialog!!.show()
                         }
 
                         is Resource.Success -> {
-                            loadingDialog?.dismiss()
+                            loadingDialog!!.dismiss()
                             if (it.data!!.isNotEmpty()) {
                                 binding.apply {
                                     tvTerm.text = it.data[0].term
@@ -114,7 +111,7 @@ class EnrollHistoryKt : Fragment() {
                             if (it.message!!.contains("session end", true))
                                 loginViewModel.reLogon()
                             else{
-                                loadingDialog?.dismiss()
+                                loadingDialog!!.dismiss()
                                 SnackBarKt.snackBarLong(binding.root,it.message)
                             }
                         }
@@ -133,17 +130,17 @@ class EnrollHistoryKt : Fragment() {
                 enrollHistoryViewModel.fetchTerms.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog?.show()
+                            loadingDialog!!.show()
                         }
 
                         is Resource.Success -> {
-                            loadingDialog?.dismiss()
+                            loadingDialog!!.dismiss()
                             it.data?.let { it1 -> termDialog?.setTerms(it1) }
 
                         }
 
                         is Resource.Error -> {
-                            loadingDialog?.dismiss()
+                            loadingDialog!!.dismiss()
                             it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
                         }
 
@@ -160,7 +157,7 @@ class EnrollHistoryKt : Fragment() {
                 loginViewModel.login.collect{
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog?.show()
+                            loadingDialog!!.show()
                         }
 
                         is Resource.Success -> {
@@ -168,7 +165,7 @@ class EnrollHistoryKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            loadingDialog?.dismiss()
+                            loadingDialog!!.dismiss()
                             it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
                         }
 

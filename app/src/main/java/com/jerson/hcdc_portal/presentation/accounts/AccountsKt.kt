@@ -45,13 +45,13 @@ class AccountsKt : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentAccountKtBinding.inflate(inflater, container, false)
+        loadingDialog = context?.let { LoadingDialog(it) }
+        termDialog = context?.let { TermSelectionDialog(it) }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadingDialog = context?.let { LoadingDialog(it) }
-        termDialog = context?.let { TermSelectionDialog(it) }
 
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED)
 
@@ -94,7 +94,7 @@ class AccountsKt : Fragment() {
                         }
 
                         is Resource.Success -> {
-                            loadingDialog?.dismiss()
+                            loadingDialog!!.dismiss()
                             if (it.data!!.isNotEmpty()) {
                                 binding.apply {
                                     tvDue.text = it.data[0].dueAmount
@@ -136,17 +136,17 @@ class AccountsKt : Fragment() {
                 accountViewModel.fetchTerms.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog?.show()
+                            loadingDialog!!.show()
                         }
 
                         is Resource.Success -> {
-                            loadingDialog?.dismiss()
+                            loadingDialog!!.dismiss()
                             it.data?.let { it1 -> termDialog?.setTerms(it1) }
 
                         }
 
                         is Resource.Error -> {
-                            loadingDialog?.dismiss()
+                            loadingDialog!!.dismiss()
                             it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
                         }
 
@@ -163,7 +163,7 @@ class AccountsKt : Fragment() {
                 loginViewModel.login.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog?.show()
+                            loadingDialog!!.show()
                         }
 
                         is Resource.Success -> {
@@ -171,7 +171,7 @@ class AccountsKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            loadingDialog?.dismiss()
+                            loadingDialog!!.dismiss()
                             if (!it.message!!.contains("null")) {
                                 it.message.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
                             }

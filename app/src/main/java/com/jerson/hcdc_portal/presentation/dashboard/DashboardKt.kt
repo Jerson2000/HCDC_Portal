@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.ImageLoader
 import coil.load
 import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
@@ -18,6 +19,7 @@ import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.presentation.subjects.adapter.SubjectAdapter
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
+import com.jerson.hcdc_portal.util.Constants.KEY_IS_ENROLLED
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENTS_UNITS
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_COURSE
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_ID
@@ -41,12 +43,14 @@ class DashboardKt : Fragment() {
     private lateinit var binding: FragmentDashboardKtBinding
     private val dashboardViewModel: DashboardViewModel by viewModels()
     private var loadingDialog: LoadingDialog? = null
-    private val loginViewModel:LoginViewModel by viewModels()
-    private lateinit var adapter:SubjectAdapter
-    private val list= mutableListOf<Schedule>()
+    private val loginViewModel: LoginViewModel by viewModels()
+    private lateinit var adapter: SubjectAdapter
+    private val list = mutableListOf<Schedule>()
+    private lateinit var imageLoader:ImageLoader
 
     @Inject
-    lateinit var pref:AppPreference
+    lateinit var pref: AppPreference
+
     @Inject
     lateinit var okHttpClient: OkHttpClient
     override fun onCreateView(
@@ -54,13 +58,14 @@ class DashboardKt : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentDashboardKtBinding.inflate(inflater,container,false)
+        binding = FragmentDashboardKtBinding.inflate(inflater, container, false)
+        imageLoader = context?.let { ImageLoader.Builder(it).allowHardware(false).okHttpClient(okHttpClient).build() }!!
+        loadingDialog = context?.let { LoadingDialog(it) }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadingDialog = context?.let { LoadingDialog(it) }
         adapter = SubjectAdapter(list)
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED)
 
@@ -68,9 +73,11 @@ class DashboardKt : Fragment() {
         listenerFetch()
 
         binding.apply {
-            recyclerView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
+            recyclerView.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             recyclerView.adapter = adapter
         }
+
 
     }
 
@@ -85,17 +92,20 @@ class DashboardKt : Fragment() {
 
                         is Resource.Success -> {
                             loadingDialog!!.dismiss()
-                            binding.apply{
+                            binding.apply {
                                 var listSize = it.data!!.size
-                                if(it.data.isNotEmpty())
-                                    listSize = it.data.distinctBy { x-> x.subjectCode }.size
+                                if (it.data.isNotEmpty())
+                                    listSize = it.data.distinctBy { x -> x.subjectCode }.size
                                 totalSubTV.text = listSize.toString()
                                 unitsTV.text = pref.getStringPreference(KEY_STUDENTS_UNITS)
-                                profileIV.load(userAvatar(pref))
+                                profileIV.load(userAvatar(pref), imageLoader)
                                 nameTV.text = pref.getStringPreference(KEY_STUDENT_NAME)
-                                couseTV.text =pref.getStringPreference(KEY_STUDENT_COURSE) +" ${pref.getStringPreference(KEY_STUDENT_ID)}"
+                                couseTV.text = pref.getStringPreference(KEY_STUDENT_COURSE) + " ${
+                                    pref.getStringPreference(KEY_STUDENT_ID)
+                                }"
+                                enrolledTV.text = pref.getStringPreference(KEY_IS_ENROLLED)
                                 list.clear()
-                                val filtered = it.data.filter {x->
+                                val filtered = it.data.filter { x ->
                                     x.days?.contains(getToday()) == true
                                 }
                                 list.addAll(filtered)
@@ -114,27 +124,25 @@ class DashboardKt : Fragment() {
             }
         }
     }
+
     private fun getToday(): String {
         val day = when (SimpleDateFormat("EEE", Locale.getDefault()).format(Date())) {
             "Thu" -> "Th"
             "Sun" -> "Su"
-            else -> SimpleDateFormat("EEE",Locale.getDefault()).format(Date()).first().toString()
+            else -> SimpleDateFormat("EEE", Locale.getDefault()).format(Date()).first().toString()
         }
         return day
     }
 
-    /* val imageLoader = context?.let { ImageLoader.Builder(it).okHttpClient(okHttpClient).build() }
-        if (imageLoader != null) {
-            binding.asd.load("https://studentportal.hcdc.edu.ph/images/hcdc_logo.png",imageLoader) {
-                placeholder(R.drawable.ic_article)
-                error(R.drawable.ic_dashboard)
-                listener(
-                    onError = { request, throwable ->
-                        Log.e("HUHU", "onViewCreated: ${throwable.throwable.message}\nrequest: ${request.data}", )
-                    }
-                )
-            }
-        }*/
-
-
+    /*  if (imageLoader != null) {
+               binding.asd.load("https://studentportal.hcdc.edu.ph/images/hcdc_logo.png",imageLoader) {
+                   placeholder(R.drawable.ic_article)
+                   error(R.drawable.ic_dashboard)
+                   listener(
+                       onError = { request, throwable ->
+                           Log.e("HUHU", "onViewCreated: ${throwable.throwable.message}\nrequest: ${request.data}", )
+                       }
+                   )
+               }
+           }*/
 }

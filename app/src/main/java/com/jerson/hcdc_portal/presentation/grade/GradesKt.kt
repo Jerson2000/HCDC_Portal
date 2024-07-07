@@ -35,29 +35,28 @@ class GradesKt : Fragment() {
     private val list = mutableListOf<Grade>()
     private var loadingDialog: LoadingDialog? = null
     private var termDialog: TermSelectionDialog? = null
-    private lateinit var adapter:GradeAdapter
-    private var selectedTerm:Term?=null
+    private lateinit var adapter: GradeAdapter
+    private var selectedTerm: Term? = null
 
     @Inject
-    lateinit var pref:AppPreference
+    lateinit var pref: AppPreference
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGradesKtBinding.inflate(inflater)
+        loadingDialog = context?.let { LoadingDialog(it) }
+        termDialog = context?.let { TermSelectionDialog(it) }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        loadingDialog = context?.let { LoadingDialog(it) }
-        termDialog = context?.let { TermSelectionDialog(it) }
-
         adapter = GradeAdapter(list)
         binding.apply {
-            recyclcerView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL,false)
+            recyclcerView.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             recyclcerView.adapter = adapter
         }
 
@@ -70,13 +69,13 @@ class GradesKt : Fragment() {
         getTerms()
 
         binding.cardTerm.setOnClickListener {
-            termDialog?.showDialog {term ->
+            termDialog?.showDialog { term ->
                 selectedTerm = term
                 gradesViewModel.hasData(term) {
-                    pref.setIntPreference(Constants.KEY_SELECT_GRADE_TERM,term.id)
+                    pref.setIntPreference(Constants.KEY_SELECT_GRADE_TERM, term.id)
                     if (!it) {
                         gradesViewModel.fetchGrades(term)
-                    }else{
+                    } else {
                         gradesViewModel.getGrades(term.id)
                     }
                 }
@@ -91,12 +90,12 @@ class GradesKt : Fragment() {
                 gradesViewModel.fetchGrades.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog?.show()
+                            loadingDialog!!.show()
                         }
 
                         is Resource.Success -> {
-                            loadingDialog?.dismiss()
-                            if(it.data!!.isNotEmpty()){
+                            loadingDialog!!.dismiss()
+                            if (it.data!!.isNotEmpty()) {
                                 binding.apply {
                                     tvTerm.text = it.data[0].term
                                     tvUnits.text = it.data[0].earnedUnits
@@ -105,7 +104,7 @@ class GradesKt : Fragment() {
                                 list.clear()
                                 list.addAll(it.data)
                                 adapter.notifyDataSetChanged()
-                            }else{
+                            } else {
                                 binding.apply {
                                     tvTerm.text = "Select term"
                                     tvUnits.text = "0"
@@ -117,9 +116,9 @@ class GradesKt : Fragment() {
                         is Resource.Error -> {
                             if (it.message!!.contains("session end", true))
                                 loginViewModel.reLogon()
-                            else{
-                                loadingDialog?.dismiss()
-                                SnackBarKt.snackBarLong(binding.root,it.message)
+                            else {
+                                loadingDialog!!.dismiss()
+                                SnackBarKt.snackBarLong(binding.root, it.message)
                             }
                         }
 
@@ -129,14 +128,14 @@ class GradesKt : Fragment() {
             }
         }
     }
-    
-    private fun reLogonResponse(){
-        lifecycleScope.launch { 
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                loginViewModel.login.collect{
+
+    private fun reLogonResponse() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                loginViewModel.login.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog?.show()
+                            loadingDialog!!.show()
                         }
 
                         is Resource.Success -> {
@@ -144,8 +143,8 @@ class GradesKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            loadingDialog?.dismiss()
-                            if(!it.message!!.contains("null"))
+                            loadingDialog!!.dismiss()
+                            if (!it.message!!.contains("null"))
                                 SnackBarKt.snackBarLong(binding.root, it.message)
                         }
 
@@ -155,23 +154,24 @@ class GradesKt : Fragment() {
             }
         }
     }
+
     private fun getTerms() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 gradesViewModel.fetchTerms.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog?.show()
+                            loadingDialog!!.show()
                         }
 
                         is Resource.Success -> {
-                            loadingDialog?.dismiss()
+                            loadingDialog!!.dismiss()
                             it.data?.let { it1 -> termDialog?.setTerms(it1) }
 
                         }
 
                         is Resource.Error -> {
-                            loadingDialog?.dismiss()
+                            loadingDialog!!.dismiss()
                             it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
                         }
 
