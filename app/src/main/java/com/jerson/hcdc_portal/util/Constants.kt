@@ -29,6 +29,7 @@ object Constants {
     const val KEY_IS_ACCOUNT_LOADED = "accountLoaded"
     const val KEY_SELECTED_ACCOUNT_TERM = "selectAccountTerm"
 
+    const val KEY_HTML_EVALUATION_LOADED = "evalLoaded"
 
     // App
     const val userAgent =

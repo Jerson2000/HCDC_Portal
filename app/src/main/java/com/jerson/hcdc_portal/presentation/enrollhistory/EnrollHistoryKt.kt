@@ -130,17 +130,17 @@ class EnrollHistoryKt : Fragment() {
                 enrollHistoryViewModel.fetchTerms.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog!!.show()
+                            /*loadingDialog!!.show()*/
                         }
 
                         is Resource.Success -> {
-                            loadingDialog!!.dismiss()
+                            /*loadingDialog!!.dismiss()*/
                             it.data?.let { it1 -> termDialog?.setTerms(it1) }
 
                         }
 
                         is Resource.Error -> {
-                            loadingDialog!!.dismiss()
+                            /*loadingDialog!!.dismiss()*/
                             it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
                         }
 

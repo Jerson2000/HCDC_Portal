@@ -84,7 +84,7 @@ class GradeViewModel @Inject constructor(
 
     fun getGrades(termId: Int) {
         viewModelScope.launch {
-            repository.getGrades(pref.getIntPreference(Constants.KEY_SELECT_GRADE_TERM)).collect {
+            repository.getGrades(termId).collect {
                 when (it) {
                     is Resource.Loading -> {
                         _fetchGrades.emit(Resource.Loading())

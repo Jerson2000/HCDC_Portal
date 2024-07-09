@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
 
     <application
         android:name=".App"
@@ -32,6 +33,8 @@
             android:exported="false"/>
 
         <activity android:name=".presentation.login.LoginKt"
+            android:exported="false"/>
+        <activity android:name=".presentation.evaluation.EvaluationKt"
             android:exported="false"/>
 
         <!--<activity

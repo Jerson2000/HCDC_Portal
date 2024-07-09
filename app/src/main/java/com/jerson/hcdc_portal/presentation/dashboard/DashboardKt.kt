@@ -1,5 +1,6 @@
 package com.jerson.hcdc_portal.presentation.dashboard
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +16,10 @@ import coil.load
 import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
+import com.jerson.hcdc_portal.presentation.evaluation.EvaluationKt
 import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.presentation.subjects.adapter.SubjectAdapter
+import com.jerson.hcdc_portal.presentation.subjects_offered.viewmodel.SubjectOfferedViewModel
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_ENROLLED
@@ -47,6 +50,7 @@ class DashboardKt : Fragment() {
     private lateinit var adapter: SubjectAdapter
     private val list = mutableListOf<Schedule>()
     private lateinit var imageLoader:ImageLoader
+    private val huhuViewModel:SubjectOfferedViewModel by viewModels()
 
     @Inject
     lateinit var pref: AppPreference
@@ -76,7 +80,17 @@ class DashboardKt : Fragment() {
             recyclerView.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             recyclerView.adapter = adapter
+            evaluation.setOnClickListener{
+                startActivity(Intent(context,EvaluationKt::class.java))
+            }
         }
+        val announcement = pref.getStringPreference(Constants.KEY_ENROLL_ANNOUNCE)
+        if(announcement.isNotEmpty() || announcement.isNotBlank()){
+            binding.enrollAnnounce.text = announcement
+            binding.enrollAnnounceLayout.visibility = View.VISIBLE
+        }
+
+        huhuViewModel.huhu()
 
 
     }
