@@ -17,11 +17,13 @@ import coil.load
 import com.jerson.hcdc_portal.App
 import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
+import com.jerson.hcdc_portal.domain.model.SubjectOffered
 import com.jerson.hcdc_portal.domain.repository.SubjectOfferedRepository
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
 import com.jerson.hcdc_portal.presentation.evaluation.EvaluationKt
 import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.presentation.subjects.adapter.SubjectAdapter
+import com.jerson.hcdc_portal.presentation.subjects_offered.SubjectOfferedKt
 import com.jerson.hcdc_portal.presentation.subjects_offered.viewmodel.SubjectOfferedViewModel
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
@@ -109,6 +111,10 @@ class DashboardKt : Fragment() {
                 pref.getStringPreference(KEY_STUDENT_ID)
             }"
             enrolledTV.text = pref.getStringPreference(KEY_IS_ENROLLED)
+        }
+
+        binding.subjectOffered.setOnClickListener{
+            startActivity(Intent(context, SubjectOfferedKt::class.java))
         }
     }
 

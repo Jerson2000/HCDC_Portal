@@ -8,7 +8,6 @@ import com.jerson.hcdc_portal.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,7 +20,7 @@ class SubjectOfferedViewModel @Inject constructor(
     val fetchSubjectOffered = _fetchSubjectOffered.asSharedFlow()
 
 
-    fun huhu(){
+    fun fetchSubjectOffered(){
         viewModelScope.launch {
             repo.fetchSubjectOffered(1).collect{
                 when(it){
