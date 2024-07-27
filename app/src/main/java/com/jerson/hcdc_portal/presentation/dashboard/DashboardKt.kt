@@ -2,7 +2,6 @@ package com.jerson.hcdc_portal.presentation.dashboard
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,17 +13,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.load
-import com.jerson.hcdc_portal.App
 import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
-import com.jerson.hcdc_portal.domain.model.SubjectOffered
-import com.jerson.hcdc_portal.domain.repository.SubjectOfferedRepository
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
 import com.jerson.hcdc_portal.presentation.evaluation.EvaluationKt
 import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.presentation.subjects.adapter.SubjectAdapter
 import com.jerson.hcdc_portal.presentation.subjects_offered.SubjectOfferedKt
-import com.jerson.hcdc_portal.presentation.subjects_offered.viewmodel.SubjectOfferedViewModel
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_ENROLLED
@@ -32,17 +27,13 @@ import com.jerson.hcdc_portal.util.Constants.KEY_STUDENTS_UNITS
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_COURSE
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_ID
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_NAME
+import com.jerson.hcdc_portal.util.CustomProfileDialog
 import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt
-import com.jerson.hcdc_portal.util.await
-import com.jerson.hcdc_portal.util.isConnected
-import com.jerson.hcdc_portal.util.postRequest
 import com.jerson.hcdc_portal.util.userAvatar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -50,7 +41,7 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-@OptIn(ExperimentalEncodingApi::class)
+
 @AndroidEntryPoint
 class DashboardKt : Fragment() {
     private lateinit var binding: FragmentDashboardKtBinding
@@ -87,7 +78,10 @@ class DashboardKt : Fragment() {
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED)
 
         if (isLoaded) dashboardViewModel.getSchedules()
-        listenerFetch()
+        listenerFetch{
+            if(it)loadProfileView()
+            else loadProfileView()
+        }
 
         binding.apply {
             recyclerView.layoutManager =
@@ -102,23 +96,20 @@ class DashboardKt : Fragment() {
             binding.enrollAnnounce.text = announcement
             binding.enrollAnnounceLayout.visibility = View.VISIBLE
         }
-
-        binding.apply {
-            unitsTV.text = pref.getStringPreference(KEY_STUDENTS_UNITS)
-            profileIV.load(userAvatar(pref), imageLoader)
-            nameTV.text = pref.getStringPreference(KEY_STUDENT_NAME)
-            couseTV.text = pref.getStringPreference(KEY_STUDENT_COURSE) + " ${
-                pref.getStringPreference(KEY_STUDENT_ID)
-            }"
-            enrolledTV.text = pref.getStringPreference(KEY_IS_ENROLLED)
-        }
-
         binding.subjectOffered.setOnClickListener{
             startActivity(Intent(context, SubjectOfferedKt::class.java))
         }
+
+        binding.profileIV.setOnLongClickListener{
+            val dialog = CustomProfileDialog(pref){
+                binding.profileIV.load(it)
+            }
+            dialog.show(parentFragmentManager, "CustomProfileDialog")
+            true
+        }
     }
 
-    private fun listenerFetch() {
+    private fun listenerFetch(isDone:(Boolean)-> Unit) {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 dashboardViewModel.fetchSchedules.collect {
@@ -140,10 +131,12 @@ class DashboardKt : Fragment() {
                                 }
                                 list.addAll(filtered)
                                 adapter.notifyDataSetChanged()
+                                isDone(true)
                             }
                         }
 
                         is Resource.Error -> {
+                            isDone(true)
                             loadingDialog!!.dismiss()
                             it.message?.let { it1 -> SnackBarKt.snackBarLong(binding.root, it1) }
                         }
@@ -163,16 +156,15 @@ class DashboardKt : Fragment() {
         }
         return day
     }
-
-    /*  if (imageLoader != null) {
-               binding.asd.load("https://studentportal.hcdc.edu.ph/images/hcdc_logo.png",imageLoader) {
-                   placeholder(R.drawable.ic_article)
-                   error(R.drawable.ic_dashboard)
-                   listener(
-                       onError = { request, throwable ->
-                           Log.e("HUHU", "onViewCreated: ${throwable.throwable.message}\nrequest: ${request.data}", )
-                       }
-                   )
-               }
-           }*/
+    private fun loadProfileView(){
+        binding.apply {
+            unitsTV.text = pref.getStringPreference(KEY_STUDENTS_UNITS)
+            profileIV.load(userAvatar(pref), imageLoader)
+            nameTV.text = pref.getStringPreference(KEY_STUDENT_NAME)
+            couseTV.text = pref.getStringPreference(KEY_STUDENT_COURSE) + " ${
+                pref.getStringPreference(KEY_STUDENT_ID)
+            }"
+            enrolledTV.text = pref.getStringPreference(KEY_IS_ENROLLED)
+        }
+    }
 }

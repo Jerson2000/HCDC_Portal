@@ -6,7 +6,9 @@ import android.os.Parcelable
 import android.util.Log
 import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.domain.model.Term
+import com.jerson.hcdc_portal.util.Constants.KEY_CUSTOM_PROFILE_VALUE
 import com.jerson.hcdc_portal.util.Constants.KEY_ENROLL_ANNOUNCE
+import com.jerson.hcdc_portal.util.Constants.KEY_IS_CUSTOM_PROFILE
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_ENROLLED
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENTS_UNITS
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_COURSE
@@ -81,10 +83,14 @@ fun userParse(doc: Document, pref: AppPreference) {
 @OptIn(ExperimentalEncodingApi::class)
 fun userAvatar(pref:AppPreference):Any{
     val avatar = pref.getStringPreference(KEY_USER_AVATAR).substringAfter(",")
-    return if(!avatar.contains("logo")){
-        Base64.decode(avatar.toByteArray(), 0, avatar.toByteArray().size)
-    }else
-        R.drawable.logo
+    return  if(pref.getBooleanPreference(KEY_IS_CUSTOM_PROFILE)){
+        pref.getIntPreference(KEY_CUSTOM_PROFILE_VALUE)
+    }else{
+        if(!avatar.contains("logo")){
+            Base64.decode(avatar.toByteArray(), 0, avatar.toByteArray().size)
+        }else
+            R.drawable.logo
+    }
 }
 
 

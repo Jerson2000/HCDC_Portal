@@ -10,9 +10,8 @@ import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,11 +22,12 @@ class AccountViewModel @Inject constructor(
     private val pref: AppPreference
 ) : ViewModel() {
 
-    private val _fetchAccounts = MutableSharedFlow<Resource<List<Account>>>()
-    val fetchAccounts = _fetchAccounts.asSharedFlow()
+    private val _fetchAccounts = MutableStateFlow<Resource<List<Account>>?>(null)
+    val fetchAccounts: StateFlow<Resource<List<Account>>?> = _fetchAccounts
 
-    private val _fetchTerms = MutableSharedFlow<Resource<List<Term>>>()
-    val fetchTerms = _fetchTerms.asSharedFlow()
+    private val _fetchTerms = MutableStateFlow<Resource<List<Term>>?>(null)
+    val fetchTerms: StateFlow<Resource<List<Term>>?> = _fetchTerms
+
     init {
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED)
 
@@ -38,20 +38,20 @@ class AccountViewModel @Inject constructor(
 
     }
 
-    fun fetchAccounts(termId:Term) {
+    fun fetchAccounts(termId: Term) {
         viewModelScope.launch {
             repository.fetchAccounts(termId).collect {
                 when (it) {
                     is Resource.Loading -> {
-                        _fetchAccounts.emit(Resource.Loading())
+                        _fetchAccounts.value = Resource.Loading()
                     }
 
                     is Resource.Success -> {
-                        _fetchAccounts.emit(it)
+                        _fetchAccounts.value = it
                     }
 
                     is Resource.Error -> {
-                        _fetchAccounts.emit(Resource.Error(it.message))
+                        _fetchAccounts.value = Resource.Error(it.message)
                     }
 
                     else -> Unit
@@ -66,15 +66,15 @@ class AccountViewModel @Inject constructor(
             repository.fetchAccounts().collect {
                 when (it) {
                     is Resource.Loading -> {
-                        _fetchAccounts.emit(Resource.Loading())
+                        _fetchAccounts.value = Resource.Loading()
                     }
 
                     is Resource.Success -> {
-                        _fetchAccounts.emit(it)
+                        _fetchAccounts.value = it
                     }
 
                     is Resource.Error -> {
-                        _fetchAccounts.emit(Resource.Error(it.message))
+                        _fetchAccounts.value = Resource.Error(it.message)
                     }
 
                     else -> Unit
@@ -84,21 +84,21 @@ class AccountViewModel @Inject constructor(
 
     }
 
-    fun getAccounts(termId:Int) {
+    fun getAccounts(termId: Int) {
         viewModelScope.launch {
             repository.getAccounts(termId)
                 .collect {
                     when (it) {
                         is Resource.Loading -> {
-                            _fetchAccounts.emit(Resource.Loading())
+                            _fetchAccounts.value = Resource.Loading()
                         }
 
                         is Resource.Success -> {
-                            _fetchAccounts.emit(it)
+                            _fetchAccounts.value = it
                         }
 
                         is Resource.Error -> {
-                            _fetchAccounts.emit(Resource.Error(it.message))
+                            _fetchAccounts.value = Resource.Error(it.message)
                         }
 
                         else -> Unit
@@ -106,29 +106,33 @@ class AccountViewModel @Inject constructor(
                 }
         }
     }
-    fun getAccountTerm(){
+
+    fun getAccountTerm() {
         viewModelScope.launch {
             repository.getAccountTerm()
                 .collect {
-                    when(it){
-                        is Resource.Loading->{
-                            _fetchTerms.emit(Resource.Loading())
+                    when (it) {
+                        is Resource.Loading -> {
+                            _fetchTerms.value = Resource.Loading()
                         }
-                        is Resource.Success ->{
-                            _fetchTerms.emit(it)
+
+                        is Resource.Success -> {
+                            _fetchTerms.value = it
                         }
-                        is Resource.Error->{
-                            _fetchTerms.emit(Resource.Error(it.message))
+
+                        is Resource.Error -> {
+                            _fetchTerms.value = Resource.Error(it.message)
                         }
+
                         else -> Unit
                     }
                 }
         }
     }
 
-    fun hasData(term: Term, hasData:(Boolean)-> Unit){
+    fun hasData(term: Term, hasData: (Boolean) -> Unit) {
         viewModelScope.launch {
-            repository.hasData(term,hasData)
+            repository.hasData(term, hasData)
         }
     }
 

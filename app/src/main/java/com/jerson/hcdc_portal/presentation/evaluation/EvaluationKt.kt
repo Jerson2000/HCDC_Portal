@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.jerson.hcdc_portal.databinding.ActivityEvaluationKtBinding
 import com.jerson.hcdc_portal.presentation.evaluation.viewmodel.EvaluationViewModel
+import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.LoadingDialog
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class EvaluationKt:AppCompatActivity() {
     private lateinit var binding:ActivityEvaluationKtBinding
     private val evalViewModel:EvaluationViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
     private lateinit var loadingDialog: LoadingDialog
     private lateinit var webView: WebView
 
@@ -48,6 +50,7 @@ class EvaluationKt:AppCompatActivity() {
         webView = binding.myWebView
         display2WebView(pref.getStringPreference(Constants.KEY_HTML_EVALUATION))
         fetchEvaluation()
+        reLogonResponse()
     }
 
     private fun fetchEvaluation(){
@@ -61,12 +64,18 @@ class EvaluationKt:AppCompatActivity() {
                         is Resource.Success->{
                             loadingDialog.dismiss()
                             val evalHtml = "<html><body>${it.data}</body></html>"
-                            println("EvalHTML: $evalHtml")
+//                            println("EvalHTML: $evalHtml")
                             webView.loadDataWithBaseURL(null,evalHtml, "text/html", "UTF-8", null)
                         }
                         is Resource.Error ->{
-                            loadingDialog.dismiss()
-                            it.message?.let { it1 -> SnackBarKt.snackBarLong(binding.root, it1) }
+                            it.message?.let {msg->
+                                if (msg.contains("session end", true))
+                                    loginViewModel.reLogon()
+                                else {
+                                    loadingDialog.dismiss()
+                                    SnackBarKt.snackBarLong(binding.root, it.message)
+                                }
+                            }
                         }
                         else -> Unit
                     }
@@ -78,6 +87,35 @@ class EvaluationKt:AppCompatActivity() {
     private fun display2WebView(htmlData:String){
         val html = "<html><body>$htmlData</body></html>"
         webView.loadDataWithBaseURL(null,html, "text/html", "UTF-8", null)
+    }
+
+    private fun reLogonResponse() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                loginViewModel.login.collect {
+                    when (it) {
+                        is Resource.Loading -> {
+                            loadingDialog.show()
+                        }
+
+                        is Resource.Success -> {
+                            evalViewModel.fetchEvaluation()
+                        }
+
+                        is Resource.Error -> {
+                            it.message?.let{msg->
+                                if(msg.contains("null")){
+                                    loadingDialog.dismiss()
+                                    SnackBarKt.snackBarLong(binding.root, msg)
+                                }
+                            }
+                        }
+
+                        else -> Unit
+                    }
+                }
+            }
+        }
     }
 
 }

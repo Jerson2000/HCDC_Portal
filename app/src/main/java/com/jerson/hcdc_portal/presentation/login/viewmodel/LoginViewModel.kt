@@ -10,6 +10,8 @@ import com.jerson.hcdc_portal.util.Constants.KEY_PASSWORD
 import com.jerson.hcdc_portal.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,11 +22,11 @@ class LoginViewModel@Inject constructor(
     private val pref:AppPreference
 ) :ViewModel(){
 
-    private val _login = MutableSharedFlow<Resource<String>>()
-    val login = _login.asSharedFlow()
+    private val _login = MutableStateFlow<Resource<String>?>(null)
+    val login: StateFlow<Resource<String>?> = _login
 
-    private val _session = MutableSharedFlow<Resource<Boolean>>()
-    val session = _session.asSharedFlow()
+    private val _session = MutableStateFlow<Resource<Boolean>?>(null)
+    val session: StateFlow<Resource<Boolean>?> = _session
 
 
     fun login(email:String,pass:String){
@@ -32,14 +34,14 @@ class LoginViewModel@Inject constructor(
             loginRepository.login(email, pass).collect{
                 when(it){
                     is Resource.Loading->{
-                        _login.emit(Resource.Loading())
+                        _login.value = Resource.Loading()
                     }
                     is Resource.Success ->{
-                        _login.emit(it)
+                        _login.value  = it
                     }
 
                     is Resource.Error->{
-                        _login.emit(Resource.Error(it.message))
+                        _login.value = Resource.Error(it.message)
                     }
                     else -> Unit
                 }
@@ -52,14 +54,14 @@ class LoginViewModel@Inject constructor(
             loginRepository.checkSession().collect{
                 when(it){
                     is Resource.Loading->{
-                        _session.emit(Resource.Loading())
+                        _session.value = Resource.Loading()
                     }
                     is Resource.Success ->{
-                        _session.emit(it)
+                        _session.value = it
                     }
 
                     is Resource.Error->{
-                        _session.emit(Resource.Error(it.message))
+                        _session.value = Resource.Error(it.message)
                     }
                     else -> Unit
                 }
@@ -71,14 +73,13 @@ class LoginViewModel@Inject constructor(
             loginRepository.login(pref.getStringPreference(KEY_EMAIL),pref.getStringPreference(KEY_PASSWORD)).collect{
                 when(it){
                     is Resource.Loading->{
-                        _login.emit(Resource.Loading())
+                        _login.value = Resource.Loading()
                     }
                     is Resource.Success->{
-                        Log.e("HUHU", "reLogin: ${it.data}" )
-                        _login.emit(it)
+                        _login.value = it
                     }
                     is Resource.Error ->{
-                        _login.emit(Resource.Error(it.message))
+                        _login.value = Resource.Error(it.message)
                     }
                     else -> Unit
                 }

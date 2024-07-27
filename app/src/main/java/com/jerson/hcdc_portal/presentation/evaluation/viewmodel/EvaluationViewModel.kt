@@ -38,7 +38,7 @@ class EvaluationViewModel @Inject constructor(
                         _fetchEvaluation.emit(Resource.Loading())
                     }
                     is Resource.Success->{
-                        Log.e("HUHU", "fetchEvaluation: $it", )
+//                        Log.e("HUHU", "fetchEvaluation: $it", )
                         _fetchEvaluation.emit(it)
                     }
                     is Resource.Error ->{

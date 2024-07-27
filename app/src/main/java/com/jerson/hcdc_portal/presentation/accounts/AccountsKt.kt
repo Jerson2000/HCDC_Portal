@@ -56,12 +56,17 @@ class AccountsKt : Fragment() {
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED)
 
         if (isLoaded) accountViewModel.getAccounts(pref.getIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM))
-        getAccounts()
-        accountViewModel.getAccountTerm()
+
+        getAccounts {
+            if (it) {
+                accountViewModel.getAccountTerm()
+            }
+        }
         getTerms()
         reLogonResponse()
         binding.cardTerm.setOnClickListener {
             termDialog?.showDialog { term ->
+                selectedTerm = term
                 accountViewModel.hasData(term) {
                     pref.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM, term.id)
                     if (!it) {
@@ -74,17 +79,17 @@ class AccountsKt : Fragment() {
         }
 
         binding.btnViewDetails.setOnClickListener {
-            if(list.size > 0 && list[0].description!!.isNotBlank()){
+            if (list.size > 0 && list[0].description!!.isNotBlank()) {
                 val bundle = bundleOf("objectList" to list)
                 setFragmentResult("requestKey", bundle)
-                findNavController().navigate(R.id.action_accounts_to_accountDetails,bundle)
+                findNavController().navigate(R.id.action_accounts_to_accountDetails, bundle)
             }
 
         }
     }
 
 
-    fun getAccounts() {
+    fun getAccounts(isDone: (Boolean) -> Unit) {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 accountViewModel.fetchAccounts.collect {
@@ -111,14 +116,18 @@ class AccountsKt : Fragment() {
                                     tvTerm.text = "Select term"
                                 }
                             }
+                            isDone(true)
                         }
 
                         is Resource.Error -> {
-                            if (it.message!!.contains("session end", true))
-                                loginViewModel.reLogon()
-                            else {
-                                loadingDialog?.dismiss()
-                                SnackBarKt.snackBarLong(binding.root, it.message)
+                            isDone(true)
+                            it.message?.let {msg->
+                                if (msg.contains("session end", true))
+                                    loginViewModel.reLogon()
+                                else {
+                                    loadingDialog?.dismiss()
+                                    SnackBarKt.snackBarLong(binding.root, it.message)
+                                }
                             }
                         }
 
@@ -171,9 +180,11 @@ class AccountsKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            if (!it.message!!.contains("null")) {
-                                loadingDialog!!.dismiss()
-                                it.message.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
+                            it.message?.let{msg->
+                                if(msg.contains("null")){
+                                    loadingDialog?.dismiss()
+                                    SnackBarKt.snackBarLong(binding.root, msg)
+                                }
                             }
                         }
 

@@ -63,8 +63,12 @@ class EnrollHistoryKt : Fragment() {
 
         if (isLoaded)
             enrollHistoryViewModel.getEnrollHistory(pref.getIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM))
-        fetchEnrollHistory()
-        enrollHistoryViewModel.getEnrollHistoryTerm()
+        fetchEnrollHistory {
+            if (it) {
+                enrollHistoryViewModel.getEnrollHistoryTerm()
+            }
+        }
+
         getTerms()
         reLogonResponse()
         binding.cardTerm.setOnClickListener {
@@ -82,7 +86,7 @@ class EnrollHistoryKt : Fragment() {
         }
     }
 
-    private fun fetchEnrollHistory() {
+    private fun fetchEnrollHistory(isDone : (Boolean)-> Unit) {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 enrollHistoryViewModel.fetchEnrollHistory.collect {
@@ -105,14 +109,18 @@ class EnrollHistoryKt : Fragment() {
                                     tvTerm.text = "Select term"
                                 }
                             }
+                            isDone(true)
                         }
 
                         is Resource.Error -> {
-                            if (it.message!!.contains("session end", true))
-                                loginViewModel.reLogon()
-                            else{
-                                loadingDialog!!.dismiss()
-                                SnackBarKt.snackBarLong(binding.root,it.message)
+                            isDone(true)
+                            it.message?.let {msg->
+                                if (msg.contains("session end", true))
+                                    loginViewModel.reLogon()
+                                else {
+                                    loadingDialog?.dismiss()
+                                    SnackBarKt.snackBarLong(binding.root, it.message)
+                                }
                             }
                         }
 
@@ -165,8 +173,12 @@ class EnrollHistoryKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            loadingDialog!!.dismiss()
-                            it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
+                            it.message?.let{msg->
+                                if(msg.contains("null")){
+                                    loadingDialog?.dismiss()
+                                    SnackBarKt.snackBarLong(binding.root, msg)
+                                }
+                            }
                         }
 
                         else -> Unit

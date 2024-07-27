@@ -10,8 +10,8 @@ import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,11 +21,12 @@ class EnrollHistoryViewModel @Inject constructor(
     private val db:PortalDB,
     private val pref:AppPreference
 ):ViewModel() {
-    private val _fetchEnrollHistory = MutableSharedFlow<Resource<List<EnrollHistory>>>()
-    val fetchEnrollHistory = _fetchEnrollHistory.asSharedFlow()
 
-    private val _fetchTerms = MutableSharedFlow<Resource<List<Term>>>()
-    val fetchTerms = _fetchTerms.asSharedFlow()
+    private val _fetchEnrollHistory = MutableStateFlow<Resource<List<EnrollHistory>>?>(null)
+    val fetchEnrollHistory:StateFlow<Resource<List<EnrollHistory>>?> = _fetchEnrollHistory
+
+    private val _fetchTerms = MutableStateFlow<Resource<List<Term>>?>(null)
+    val fetchTerms:StateFlow<Resource<List<Term>>?> = _fetchTerms
 
     init {
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
@@ -40,13 +41,13 @@ class EnrollHistoryViewModel @Inject constructor(
             repository.fetchEnrollHistory(term).collect{
                 when(it){
                     is Resource.Loading->{
-                        _fetchEnrollHistory.emit(Resource.Loading())
+                        _fetchEnrollHistory.value = Resource.Loading()
                     }
                     is Resource.Success ->{
-                        _fetchEnrollHistory.emit(it)
+                        _fetchEnrollHistory.value = it
                     }
                     is Resource.Error->{
-                        _fetchEnrollHistory.emit(Resource.Error(it.message))
+                        _fetchEnrollHistory.value = Resource.Error(it.message)
                     }
                     else -> Unit
                 }
@@ -59,13 +60,13 @@ class EnrollHistoryViewModel @Inject constructor(
             repository.fetchEnrollHistory().collect{
                 when(it){
                     is Resource.Loading->{
-                        _fetchEnrollHistory.emit(Resource.Loading())
+                        _fetchEnrollHistory.value = Resource.Loading()
                     }
                     is Resource.Success ->{
-                        _fetchEnrollHistory.emit(it)
+                        _fetchEnrollHistory.value = it
                     }
                     is Resource.Error->{
-                        _fetchEnrollHistory.emit(Resource.Error(it.message))
+                        _fetchEnrollHistory.value = Resource.Error(it.message)
                     }
                     else -> Unit
                 }
@@ -79,13 +80,13 @@ class EnrollHistoryViewModel @Inject constructor(
                 .collect {
                     when(it){
                         is Resource.Loading->{
-                            _fetchEnrollHistory.emit(Resource.Loading())
+                            _fetchEnrollHistory.value = Resource.Loading()
                         }
                         is Resource.Success ->{
-                            _fetchEnrollHistory.emit(it)
+                            _fetchEnrollHistory.value = it
                         }
                         is Resource.Error->{
-                            _fetchEnrollHistory.emit(Resource.Error(it.message))
+                            _fetchEnrollHistory.value = Resource.Error(it.message)
                         }
                         else -> Unit
                     }
@@ -98,13 +99,13 @@ class EnrollHistoryViewModel @Inject constructor(
                 .collect {
                     when(it){
                         is Resource.Loading->{
-                            _fetchTerms.emit(Resource.Loading())
+                            _fetchTerms.value = Resource.Loading()
                         }
                         is Resource.Success ->{
-                            _fetchTerms.emit(it)
+                            _fetchTerms.value = it
                         }
                         is Resource.Error->{
-                            _fetchTerms.emit(Resource.Error(it.message))
+                            _fetchTerms.value = Resource.Error(it.message)
                         }
                         else -> Unit
                     }

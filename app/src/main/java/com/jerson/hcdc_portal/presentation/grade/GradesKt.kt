@@ -63,9 +63,11 @@ class GradesKt : Fragment() {
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED)
 
         if (isLoaded) gradesViewModel.getGrades(pref.getIntPreference(Constants.KEY_SELECT_GRADE_TERM))
-        fetchGrades()
+        fetchGrades {
+            if (it)
+                gradesViewModel.getGradeTerm()
+        }
         reLogonResponse()
-        gradesViewModel.getGradeTerm()
         getTerms()
 
         binding.cardTerm.setOnClickListener {
@@ -84,7 +86,7 @@ class GradesKt : Fragment() {
 
     }
 
-    private fun fetchGrades() {
+    private fun fetchGrades(isDone:(Boolean)->Unit) {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 gradesViewModel.fetchGrades.collect {
@@ -111,14 +113,18 @@ class GradesKt : Fragment() {
                                     tvGWA.text = "0.0"
                                 }
                             }
+                            isDone(true)
                         }
 
                         is Resource.Error -> {
-                            if (it.message!!.contains("session end", true))
-                                loginViewModel.reLogon()
-                            else {
-                                loadingDialog!!.dismiss()
-                                SnackBarKt.snackBarLong(binding.root, it.message)
+                            isDone(true)
+                            it.message?.let {msg->
+                                if (msg.contains("session end", true))
+                                    loginViewModel.reLogon()
+                                else {
+                                    loadingDialog?.dismiss()
+                                    SnackBarKt.snackBarLong(binding.root, it.message)
+                                }
                             }
                         }
 
@@ -143,9 +149,12 @@ class GradesKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            loadingDialog!!.dismiss()
-                            if (!it.message!!.contains("null"))
-                                SnackBarKt.snackBarLong(binding.root, it.message)
+                            it.message?.let{msg->
+                                if(msg.contains("null")){
+                                    loadingDialog?.dismiss()
+                                    SnackBarKt.snackBarLong(binding.root, msg)
+                                }
+                            }
                         }
 
                         else -> Unit

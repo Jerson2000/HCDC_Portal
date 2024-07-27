@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jerson.hcdc_portal.databinding.ItemContainerSubjectOfferedBinding
 import com.jerson.hcdc_portal.domain.model.SubjectOffered
 
-class SubjectOfferedAdapter constructor(private val list:List<SubjectOffered>):RecyclerView.Adapter<SubjectOfferedAdapter.ViewHolder>() {
+class SubjectOfferedAdapter(private val list:List<SubjectOffered>, private val itemCallback:(SubjectOffered)-> Unit):RecyclerView.Adapter<SubjectOfferedAdapter.ViewHolder>() {
     inner class ViewHolder(private val binding:ItemContainerSubjectOfferedBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(item:SubjectOffered){
             binding.apply{
@@ -35,5 +35,8 @@ class SubjectOfferedAdapter constructor(private val list:List<SubjectOffered>):R
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list[position]
         holder.bind(item)
+        holder.itemView.setOnClickListener{
+            itemCallback(item)
+        }
     }
 }

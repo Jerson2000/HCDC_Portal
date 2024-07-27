@@ -4,9 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.jerson.hcdc_portal.databinding.ActivitySplashBinding
 import com.jerson.hcdc_portal.presentation.login.LoginKt
+import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.presentation.main.MainKt
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_LOGIN
@@ -17,6 +19,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SplashKt:AppCompatActivity() {
     private lateinit var binding:ActivitySplashBinding
+    private val loginViewModel: LoginViewModel by viewModels()
 
     @Inject
     lateinit var pref: AppPreference
@@ -28,6 +31,7 @@ class SplashKt:AppCompatActivity() {
         Handler(Looper.getMainLooper())
             .postDelayed({
                 if(pref.getBooleanPreference(KEY_IS_LOGIN)){
+                    loginViewModel.checkSession()
                     startActivity(Intent(this, MainKt::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
                 }else{
                     startActivity(Intent(this, LoginKt::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))

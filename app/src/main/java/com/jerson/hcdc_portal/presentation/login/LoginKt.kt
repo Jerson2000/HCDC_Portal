@@ -1,8 +1,10 @@
 package com.jerson.hcdc_portal.presentation.login
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -45,6 +47,12 @@ class LoginKt : AppCompatActivity(R.layout.activity_login_kt) {
                 binding.emailET.text.toString().trim(),
                 binding.passET.text.toString().trim()
             )
+            binding.passET.clearFocus()
+            binding.emailET.clearFocus()
+            this.currentFocus?.let { view ->
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(view.windowToken, 0)
+            }
         }
 
         viewModel.checkSession()

@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface SubjectOfferedRepository {
     suspend fun fetchSubjectOffered(page:Int): Flow<Resource<List<SubjectOffered>>>
+    suspend fun fetchSubjectOffered(query:String?): Flow<Resource<List<SubjectOffered>>>
 }
