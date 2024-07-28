@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jerson.hcdc_portal.databinding.ItemContainerDashboardBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
 
-class SubjectAdapter(private val list:List<Schedule>):RecyclerView.Adapter<SubjectAdapter.ViewHolder>() {
+class SubjectAdapter(private val list:List<Schedule>,private val itemCallback:(Schedule)->Unit):RecyclerView.Adapter<SubjectAdapter.ViewHolder>() {
     inner class ViewHolder(private val binding:ItemContainerDashboardBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(item:Schedule){
             binding.apply {
@@ -36,5 +36,8 @@ class SubjectAdapter(private val list:List<Schedule>):RecyclerView.Adapter<Subje
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val subject = list[position]
         holder.bind(subject)
+        holder.itemView.setOnClickListener{
+            itemCallback(subject)
+        }
     }
 }

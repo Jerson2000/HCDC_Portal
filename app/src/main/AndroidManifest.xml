@@ -38,7 +38,8 @@
             android:exported="false"/>
         <activity android:name=".presentation.subjects_offered.SubjectOfferedKt"
             android:exported="false"/>
-
+        <activity android:name=".presentation.subjects.SubjectDetailsKt"
+            android:exported="false"/>
         <!--<activity
             android:name=".ui.activity.BuildingDetailsActivity"
             android:exported="false" />

@@ -7,6 +7,7 @@ import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.domain.repository.SchedulesRepository
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
+import com.jerson.hcdc_portal.util.Constants.KEY_USER_AVATAR
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.await
 import com.jerson.hcdc_portal.util.getRequest
@@ -44,6 +45,8 @@ class SchedulesRepositoryImpl @Inject constructor(
                         else {
                             db.scheduleDao().deleteAllSchedules()
                             db.scheduleDao().upsertSchedules(parseSchedule(html))
+                            val avatar = html.body().select(".app-sidebar__user-avatar").attr("src")
+                            preference.setStringPreference(KEY_USER_AVATAR, avatar)
                             send(Resource.Success(parseSchedule(html)))
                         }
                     } else {

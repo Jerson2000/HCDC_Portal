@@ -24,11 +24,9 @@ fun sessionParse(preference: AppPreference, doc: Document): Boolean {
     val token = doc.select("meta[name=csrf-token]").attr("content")
     val isLogin = doc.body().text().contains("CROSSIAN LOG-IN")
     val isNameEmpty = doc.body().select(".app-sidebar__user-name").hasText().not()
-    val avatar = doc.body().select(".app-sidebar__user-avatar").attr("src")
 
     preference.setStringPreference(Constants.KEY_CSRF_TOKEN, token)
-    preference.setBooleanPreference(Constants.KEY_IS_SESSION, isLogin)
-    preference.setStringPreference(KEY_USER_AVATAR, avatar)
+    preference.setBooleanPreference(Constants.KEY_IS_SESSION, isNameEmpty)
     Log.e("HUHU-PARSE", "sessionParse: $isLogin\t$isNameEmpty", )
     return isLogin or isNameEmpty
 }
@@ -82,7 +80,7 @@ fun userParse(doc: Document, pref: AppPreference) {
 
 @OptIn(ExperimentalEncodingApi::class)
 fun userAvatar(pref:AppPreference):Any{
-    val avatar = pref.getStringPreference(KEY_USER_AVATAR).substringAfter(",")
+    val avatar = pref.getStringPreference(KEY_USER_AVATAR).substringAfter("base64,")
     return  if(pref.getBooleanPreference(KEY_IS_CUSTOM_PROFILE)){
         pref.getIntPreference(KEY_CUSTOM_PROFILE_VALUE)
     }else{
@@ -103,5 +101,17 @@ inline fun <reified T : Parcelable> Bundle.getParcelableArrayListCompat(key: Str
         // Use the older, deprecated getParcelableArrayList() method
         @Suppress("DEPRECATION")
         getParcelableArrayList(key)
+    }
+}
+
+// Reusable function to get a Parcelable object
+inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? {
+    return if (Build.VERSION.SDK_INT >= 33) {
+        // Use the updated getParcelable() method with the Class object parameter
+        getParcelable(key, T::class.java)
+    } else {
+        // Use the older, deprecated getParcelable() method
+        @Suppress("DEPRECATION")
+        getParcelable(key)
     }
 }

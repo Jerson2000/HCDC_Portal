@@ -1,8 +1,12 @@
 package com.jerson.hcdc_portal.domain.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
+
 @Entity("schedules")
+@Parcelize
 data class Schedule(
     @PrimaryKey(true)
     val id:Int,
@@ -15,4 +19,4 @@ data class Schedule(
     val time:String?,
     val room:String?,
     val lecLab:String?,
-)
+):Parcelable

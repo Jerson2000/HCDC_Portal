@@ -1,16 +1,20 @@
 package com.jerson.hcdc_portal.presentation.subjects
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentSubjectsKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
@@ -40,7 +44,9 @@ class SubjectKt : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadingDialog = context?.let { cnt -> LoadingDialog(cnt) }
-        adapter = SubjectAdapter(list)
+        adapter = SubjectAdapter(list){
+            startActivity(Intent(context,SubjectDetailsKt::class.java).putExtra("subject",it))
+        }
         binding.apply {
             recyclerView.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -62,6 +68,7 @@ class SubjectKt : Fragment() {
                         is Resource.Success -> {
                             loadingDialog!!.dismiss()
                             it.data?.let { it1 ->
+                                list.clear()
                                 list.addAll(it1)
                                 list.distinctBy { x-> x.subjectCode }
                             }

@@ -7,6 +7,7 @@ import com.jerson.hcdc_portal.domain.model.SubjectOffered
 import com.jerson.hcdc_portal.domain.repository.SubjectOfferedRepository
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
+import com.jerson.hcdc_portal.util.Constants.KEY_IS_SESSION
 import com.jerson.hcdc_portal.util.Constants.baseUrl
 import com.jerson.hcdc_portal.util.Constants.subjectOffered
 import com.jerson.hcdc_portal.util.Constants.subjectOfferedSearch
@@ -35,7 +36,12 @@ class SubjectOfferedRepositoryImpl@Inject constructor(
             if(isConnected(App.appContext)) {
                 send(Resource.Loading())
                 val response = client.newCall(postRequest("$baseUrl$subjectOffered",formBody)).await()
+                println("${response.code}\t${response.isSuccessful}\t${response.message}\t${response.body.string()}\t${response.headers}")
                 if(response.isSuccessful){
+                    if(pref.getBooleanPreference(KEY_IS_SESSION)){
+                        send(Resource.Error("session end"))
+                    }
+
                     val jsonArray = JsonParser.parseString(response.body.string()).asJsonArray
                     val offeredList = mutableListOf<SubjectOffered>()
                     for (item in jsonArray) {
