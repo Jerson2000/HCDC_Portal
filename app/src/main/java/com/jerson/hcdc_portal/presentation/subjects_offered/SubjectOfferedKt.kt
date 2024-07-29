@@ -3,7 +3,6 @@ package com.jerson.hcdc_portal.presentation.subjects_offered
 import android.os.Bundle
 import android.view.Menu
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
@@ -21,6 +20,7 @@ import com.jerson.hcdc_portal.presentation.subjects_offered.viewmodel.SubjectOff
 import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt
+import com.jerson.hcdc_portal.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -168,6 +168,8 @@ class SubjectOfferedKt:AppCompatActivity() {
         searchView.queryHint = "Search subjects.."
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
+                searchView.clearFocus()
+                hideKeyboard()
                 subjectOfferedViewModel.searchSubjectOffered(query)
                 isSearch = true
                 return true

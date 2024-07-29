@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentAccountKtBinding
 import com.jerson.hcdc_portal.domain.model.Account
@@ -37,6 +38,7 @@ class AccountsKt : Fragment() {
     private var termDialog: TermSelectionDialog? = null
     private var selectedTerm: Term? = null
     private val list = mutableListOf<Account>()
+    private var currentTerm:Term?=null
 
     @Inject
     lateinit var pref: AppPreference
@@ -86,6 +88,25 @@ class AccountsKt : Fragment() {
             }
 
         }
+
+        binding.btnRefresh.setOnClickListener{
+            context?.let { cntxt ->
+                MaterialAlertDialogBuilder(cntxt)
+                    .setTitle("Refresh")
+                    .setMessage("Are you sure you want to refresh?")
+                    .setPositiveButton("Yes"){dialog,_->
+                        currentTerm?.let{
+                            accountViewModel.fetchAccounts(it)
+                            dialog.dismiss()
+                        }
+                    }
+                    .setNegativeButton("No"){dialog,_->
+                        dialog.dismiss()
+                    }.show()
+            }
+
+        }
+
     }
 
 
@@ -150,7 +171,12 @@ class AccountsKt : Fragment() {
 
                         is Resource.Success -> {
                             /*loadingDialog!!.dismiss()*/
-                            it.data?.let { it1 -> termDialog?.setTerms(it1) }
+                            it.data?.let { it1 ->
+                                termDialog?.setTerms(it1)
+                                currentTerm = it1.find { term->
+                                    term.id == pref.getIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM)
+                                }
+                            }
 
                         }
 
@@ -181,7 +207,7 @@ class AccountsKt : Fragment() {
 
                         is Resource.Error -> {
                             it.message?.let{msg->
-                                if(msg.contains("null")){
+                                if(!msg.contains("null")){
                                     loadingDialog?.dismiss()
                                     SnackBarKt.snackBarLong(binding.root, msg)
                                 }

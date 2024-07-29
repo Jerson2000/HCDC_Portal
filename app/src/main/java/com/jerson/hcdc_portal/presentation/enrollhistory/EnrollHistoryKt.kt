@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jerson.hcdc_portal.databinding.FragmentEnrollmentHistoryKtBinding
 import com.jerson.hcdc_portal.domain.model.EnrollHistory
 import com.jerson.hcdc_portal.domain.model.Term
@@ -36,6 +37,7 @@ class EnrollHistoryKt : Fragment() {
     private var termDialog: TermSelectionDialog? = null
     private var loadingDialog: LoadingDialog? = null
     private var selectedTerm: Term?=null
+    private var currentTerm:Term?=null
 
     @Inject
     lateinit var pref: AppPreference
@@ -82,6 +84,23 @@ class EnrollHistoryKt : Fragment() {
                         enrollHistoryViewModel.getEnrollHistory(term.id)
                     }
                 }
+            }
+        }
+        binding.btnRefresh.setOnClickListener{
+            context?.let { cntxt ->
+                MaterialAlertDialogBuilder(cntxt)
+                    .setTitle("Refresh")
+                    .setMessage("Are you sure you want to refresh?")
+                    .setPositiveButton("Yes"){dialog,_->
+                        currentTerm?.let {
+                            enrollHistoryViewModel.fetchEnrollHistory(it)
+                            dialog.dismiss()
+                        }
+                    }
+                    .setNegativeButton("No"){dialog,_->
+                        dialog.dismiss()
+                    }.show()
+
             }
         }
     }
@@ -138,17 +157,19 @@ class EnrollHistoryKt : Fragment() {
                 enrollHistoryViewModel.fetchTerms.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            /*loadingDialog!!.show()*/
                         }
 
                         is Resource.Success -> {
-                            /*loadingDialog!!.dismiss()*/
-                            it.data?.let { it1 -> termDialog?.setTerms(it1) }
+                            it.data?.let { it1 ->
+                                termDialog?.setTerms(it1)
+                                currentTerm = it1.find { term->
+                                    term.id == pref.getIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM)
+                                }
+                            }
 
                         }
 
                         is Resource.Error -> {
-                            /*loadingDialog!!.dismiss()*/
                             it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
                         }
 
@@ -174,7 +195,7 @@ class EnrollHistoryKt : Fragment() {
 
                         is Resource.Error -> {
                             it.message?.let{msg->
-                                if(msg.contains("null")){
+                                if(!msg.contains("null")){
                                     loadingDialog?.dismiss()
                                     SnackBarKt.snackBarLong(binding.root, msg)
                                 }

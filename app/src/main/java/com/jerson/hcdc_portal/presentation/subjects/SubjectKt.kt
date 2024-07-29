@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentSubjectsKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
@@ -54,6 +55,23 @@ class SubjectKt : Fragment() {
         }
         dashboardViewModel.getSchedules()
         listenerFetch()
+
+        binding.btnRefresh.setOnClickListener{
+            context?.let { cntxt ->
+                MaterialAlertDialogBuilder(cntxt)
+                    .setTitle("Refresh")
+                    .setMessage("Are you sure you want to refresh?")
+                    .setPositiveButton("Yes"){dialog,_->
+                        dashboardViewModel.fetchSchedules()
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("No"){dialog,_->
+                        dialog.dismiss()
+                    }.show()
+
+            }
+
+        }
     }
 
     private fun listenerFetch() {

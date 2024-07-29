@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jerson.hcdc_portal.databinding.FragmentGradesKtBinding
 import com.jerson.hcdc_portal.domain.model.Grade
 import com.jerson.hcdc_portal.domain.model.Term
@@ -37,6 +38,7 @@ class GradesKt : Fragment() {
     private var termDialog: TermSelectionDialog? = null
     private lateinit var adapter: GradeAdapter
     private var selectedTerm: Term? = null
+    private var currentTerm:Term?=null
 
     @Inject
     lateinit var pref: AppPreference
@@ -81,6 +83,23 @@ class GradesKt : Fragment() {
                         gradesViewModel.getGrades(term.id)
                     }
                 }
+            }
+        }
+        binding.btnRefresh.setOnClickListener{
+            context?.let { cntxt ->
+                MaterialAlertDialogBuilder(cntxt)
+                    .setTitle("Refresh")
+                    .setMessage("Are you sure you want to refresh?")
+                    .setPositiveButton("Yes"){dialog,_->
+                        currentTerm?.let {
+                            gradesViewModel.fetchGrades(it)
+                            dialog.dismiss()
+                        }
+                    }
+                    .setNegativeButton("No"){dialog,_->
+                        dialog.dismiss()
+                    }.show()
+
             }
         }
 
@@ -150,7 +169,7 @@ class GradesKt : Fragment() {
 
                         is Resource.Error -> {
                             it.message?.let{msg->
-                                if(msg.contains("null")){
+                                if(!msg.contains("null")){
                                     loadingDialog?.dismiss()
                                     SnackBarKt.snackBarLong(binding.root, msg)
                                 }
@@ -175,7 +194,12 @@ class GradesKt : Fragment() {
 
                         is Resource.Success -> {
                             /*loadingDialog!!.dismiss()*/
-                            it.data?.let { it1 -> termDialog?.setTerms(it1) }
+                            it.data?.let { it1 ->
+                                termDialog?.setTerms(it1)
+                                currentTerm = it1.find { term->
+                                    term.id == pref.getIntPreference(Constants.KEY_SELECT_GRADE_TERM)
+                                }
+                            }
 
                         }
 

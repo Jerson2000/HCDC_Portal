@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +22,7 @@ import com.jerson.hcdc_portal.util.Constants.KEY_PASSWORD
 import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt.snackBarLong
+import com.jerson.hcdc_portal.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,10 +51,7 @@ class LoginKt : AppCompatActivity(R.layout.activity_login_kt) {
             )
             binding.passET.clearFocus()
             binding.emailET.clearFocus()
-            this.currentFocus?.let { view ->
-                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-                imm?.hideSoftInputFromWindow(view.windowToken, 0)
-            }
+            hideKeyboard()
         }
 
         viewModel.checkSession()

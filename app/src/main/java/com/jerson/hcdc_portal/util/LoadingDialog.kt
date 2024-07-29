@@ -11,7 +11,7 @@ class LoadingDialog(context: Context) : AlertDialog(context, com.google.android.
     init {
         binding = DialogLoadingBinding.inflate(LayoutInflater.from(context))
         setView(binding.root)
-//        setCancelable(false)
+        setCancelable(false)
         setCanceledOnTouchOutside(false)
     }
     override fun show(){

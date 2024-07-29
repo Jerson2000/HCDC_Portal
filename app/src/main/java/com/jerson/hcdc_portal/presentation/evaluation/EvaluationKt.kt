@@ -104,7 +104,7 @@ class EvaluationKt:AppCompatActivity() {
 
                         is Resource.Error -> {
                             it.message?.let{msg->
-                                if(msg.contains("null")){
+                                if(!msg.contains("null")){
                                     loadingDialog.dismiss()
                                     SnackBarKt.snackBarLong(binding.root, msg)
                                 }
