@@ -38,7 +38,6 @@ class GradesKt : Fragment() {
     private var termDialog: TermSelectionDialog? = null
     private lateinit var adapter: GradeAdapter
     private var selectedTerm: Term? = null
-    private var currentTerm:Term?=null
 
     @Inject
     lateinit var pref: AppPreference
@@ -91,10 +90,8 @@ class GradesKt : Fragment() {
                     .setTitle("Refresh")
                     .setMessage("Are you sure you want to refresh?")
                     .setPositiveButton("Yes"){dialog,_->
-                        currentTerm?.let {
-                            gradesViewModel.fetchGrades(it)
-                            dialog.dismiss()
-                        }
+                        gradesViewModel.fetchGrades()
+                        dialog.dismiss()
                     }
                     .setNegativeButton("No"){dialog,_->
                         dialog.dismiss()
@@ -130,6 +127,8 @@ class GradesKt : Fragment() {
                                     tvTerm.text = "Select term"
                                     tvUnits.text = "0"
                                     tvGWA.text = "0.0"
+                                    list.clear()
+                                    adapter.notifyDataSetChanged()
                                 }
                             }
                             isDone(true)
@@ -196,9 +195,6 @@ class GradesKt : Fragment() {
                             /*loadingDialog!!.dismiss()*/
                             it.data?.let { it1 ->
                                 termDialog?.setTerms(it1)
-                                currentTerm = it1.find { term->
-                                    term.id == pref.getIntPreference(Constants.KEY_SELECT_GRADE_TERM)
-                                }
                             }
 
                         }

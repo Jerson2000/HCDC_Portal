@@ -59,7 +59,7 @@ class GradeViewModel @Inject constructor(
         }
     }
 
-    private fun fetchGrades() {
+     fun fetchGrades() {
         viewModelScope.launch {
             repository.fetchGrades().collect {
                 when (it) {

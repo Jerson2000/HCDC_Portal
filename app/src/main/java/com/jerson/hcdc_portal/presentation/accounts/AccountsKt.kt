@@ -38,7 +38,6 @@ class AccountsKt : Fragment() {
     private var termDialog: TermSelectionDialog? = null
     private var selectedTerm: Term? = null
     private val list = mutableListOf<Account>()
-    private var currentTerm:Term?=null
 
     @Inject
     lateinit var pref: AppPreference
@@ -95,10 +94,8 @@ class AccountsKt : Fragment() {
                     .setTitle("Refresh")
                     .setMessage("Are you sure you want to refresh?")
                     .setPositiveButton("Yes"){dialog,_->
-                        currentTerm?.let{
-                            accountViewModel.fetchAccounts(it)
-                            dialog.dismiss()
-                        }
+                        accountViewModel.fetchAccounts()
+                        dialog.dismiss()
                     }
                     .setNegativeButton("No"){dialog,_->
                         dialog.dismiss()
@@ -173,9 +170,6 @@ class AccountsKt : Fragment() {
                             /*loadingDialog!!.dismiss()*/
                             it.data?.let { it1 ->
                                 termDialog?.setTerms(it1)
-                                currentTerm = it1.find { term->
-                                    term.id == pref.getIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM)
-                                }
                             }
 
                         }

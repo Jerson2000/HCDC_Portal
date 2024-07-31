@@ -37,7 +37,6 @@ class EnrollHistoryKt : Fragment() {
     private var termDialog: TermSelectionDialog? = null
     private var loadingDialog: LoadingDialog? = null
     private var selectedTerm: Term?=null
-    private var currentTerm:Term?=null
 
     @Inject
     lateinit var pref: AppPreference
@@ -92,10 +91,8 @@ class EnrollHistoryKt : Fragment() {
                     .setTitle("Refresh")
                     .setMessage("Are you sure you want to refresh?")
                     .setPositiveButton("Yes"){dialog,_->
-                        currentTerm?.let {
-                            enrollHistoryViewModel.fetchEnrollHistory(it)
-                            dialog.dismiss()
-                        }
+                        enrollHistoryViewModel.fetchEnrollHistory()
+                        dialog.dismiss()
                     }
                     .setNegativeButton("No"){dialog,_->
                         dialog.dismiss()
@@ -126,6 +123,8 @@ class EnrollHistoryKt : Fragment() {
                             } else {
                                 binding.apply {
                                     tvTerm.text = "Select term"
+                                    list.clear()
+                                    adapter.notifyDataSetChanged()
                                 }
                             }
                             isDone(true)
@@ -162,9 +161,6 @@ class EnrollHistoryKt : Fragment() {
                         is Resource.Success -> {
                             it.data?.let { it1 ->
                                 termDialog?.setTerms(it1)
-                                currentTerm = it1.find { term->
-                                    term.id == pref.getIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM)
-                                }
                             }
 
                         }

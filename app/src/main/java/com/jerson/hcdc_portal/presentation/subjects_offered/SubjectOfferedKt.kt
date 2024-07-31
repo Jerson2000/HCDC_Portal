@@ -41,14 +41,7 @@ class SubjectOfferedKt:AppCompatActivity() {
         setContentView(binding.root)
         loadingDialog = LoadingDialog(this)
         adapter = SubjectOfferedAdapter(list){
-            val details =
-                "Offer No. : ${it.so_no}\nDescription: ${it.description}\nUnits: ${it.units}\nMaximum Students: ${it.maximum}\nEnrolled: ${it.enrolled}" +
-                        "\nRemaining Slot: ${it.remaining_slot}\nS.Y Semester: ${it.sysem}\nCourse: ${it.course}"
-
-            MaterialAlertDialogBuilder(this)
-                .setTitle(it.subject_code)
-                .setMessage(details).show()
-
+            showOfferDetail(it)
         }
 
 
@@ -158,6 +151,16 @@ class SubjectOfferedKt:AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showOfferDetail(it:SubjectOffered){
+        val details =
+            "Offer No. : ${it.so_no}\nDescription: ${it.description}\nUnits: ${it.units}\nMaximum Students: ${it.maximum}\nEnrolled: ${it.enrolled}" +
+                    "\nRemaining Slot: ${it.remaining_slot}\nS.Y Semester: ${it.sysem}\nCourse: ${it.course}"
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(it.subject_code)
+            .setMessage(details).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

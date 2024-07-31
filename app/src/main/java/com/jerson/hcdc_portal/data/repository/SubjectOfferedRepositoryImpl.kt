@@ -40,7 +40,6 @@ class SubjectOfferedRepositoryImpl@Inject constructor(
                     send(Resource.Loading())
                     val response = client.newCall(postRequest("$baseUrl$subjectOffered",formBody)).await()
                     val responseBody = response.body.string()
-                    println("HUHU ${response.code}\t${response.isSuccessful}\t $responseBody")
                     if(response.isSuccessful){
                         response.body.use{
                             val jsonArray = JsonParser.parseString(responseBody).asJsonArray

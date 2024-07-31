@@ -22,6 +22,7 @@ import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
 import com.jerson.hcdc_portal.presentation.evaluation.EvaluationKt
 import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
+import com.jerson.hcdc_portal.presentation.settings.Settings
 import com.jerson.hcdc_portal.presentation.subjects.SubjectDetailsKt
 import com.jerson.hcdc_portal.presentation.subjects.adapter.SubjectAdapter
 import com.jerson.hcdc_portal.presentation.subjects_offered.SubjectOfferedKt
@@ -113,6 +114,9 @@ class DashboardKt : Fragment() {
             }
             dialog.show(parentFragmentManager, "CustomProfileDialog")
             true
+        }
+        binding.btnSetting.setOnClickListener{
+            startActivity(Intent(context, Settings::class.java))
         }
     }
 
