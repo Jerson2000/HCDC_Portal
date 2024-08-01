@@ -38,4 +38,7 @@ class AppPreference(context: Context) {
     fun getBooleanPreference(key: String, def: Boolean = false): Boolean {
         return sharedPreferences.getBoolean(key, def)
     }
+    fun clearPreference(){
+        sharedPreferences.edit().clear().apply()
+    }
 }

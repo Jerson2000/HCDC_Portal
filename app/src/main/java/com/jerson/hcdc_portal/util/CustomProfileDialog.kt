@@ -2,12 +2,14 @@ package com.jerson.hcdc_portal.util
 
 import android.app.Dialog
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
 import coil.load
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jerson.hcdc_portal.R
@@ -21,7 +23,11 @@ class CustomProfileAdapter(private val list:List<Int>,private val callbackItem:(
     private var prevSelectedPos = -1
     inner class ViewHolder(private val binding:ItemCustomProfileBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(item:Int,pos:Int){
-            binding.imageView.load(item)
+            val imgLoader = ImageLoader.Builder(binding.root.context).allowHardware(false).build()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                binding.imageView.load(item, imgLoader)
+            } else
+                binding.imageView.load(item, imgLoader)
             binding.imageView.setOnClickListener{
                 itemSelectedIndicator(binding.layout,pos)
                 callbackItem(item)

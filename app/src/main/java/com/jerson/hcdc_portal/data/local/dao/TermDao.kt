@@ -16,6 +16,8 @@ interface TermDao{
      */
     @Query("delete from terms where isGrade = :isGrade")
     suspend fun deleteAllTerm(isGrade:Int)
+    @Query("delete from terms")
+    suspend fun deleteAllTerm()
 
     @Query("select * from terms where isGrade = :isGrade")
     fun getTerms(isGrade:Int): Flow<List<Term>>

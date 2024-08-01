@@ -3,6 +3,7 @@ package com.jerson.hcdc_portal.presentation.login.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jerson.hcdc_portal.data.local.PortalDB
 import com.jerson.hcdc_portal.domain.repository.LoginRepository
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants.KEY_EMAIL
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel@Inject constructor(
     private val loginRepository: LoginRepository,
-    private val pref:AppPreference
+    private val pref:AppPreference,
+    private val db:PortalDB
 ) :ViewModel(){
 
     private val _login = MutableStateFlow<Resource<String>?>(null)
@@ -86,6 +88,18 @@ class LoginViewModel@Inject constructor(
             }
         }
 
+    }
+
+    fun logout(isDone:(Boolean)-> Unit){
+        viewModelScope.launch {
+            db.gradeDao().deleteAllGrades()
+            db.termDao().deleteAllTerm()
+            db.enrollHistoryDao().deleteAllHistory()
+            db.accountDao().deleteAllAccounts()
+            db.scheduleDao().deleteAllSchedules()
+            pref.clearPreference()
+            isDone(true)
+        }
     }
 
 

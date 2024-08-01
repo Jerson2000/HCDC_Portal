@@ -28,6 +28,9 @@ class EvaluationViewModel @Inject constructor(
             fetchEvaluation()
             pref.setBooleanPreference(Constants.KEY_HTML_EVALUATION_LOADED,true)
         }
+        if(pref.getStringPreference(Constants.KEY_HTML_EVALUATION).isEmpty()){
+            fetchEvaluation()
+        }
     }
 
     fun fetchEvaluation(){

@@ -14,6 +14,9 @@ interface EnrollHistoryDao {
     @Query("delete from enroll_history where termId = :termId")
     suspend fun deleteAllHistory(termId:Int)
 
+    @Query("delete from enroll_history")
+    suspend fun deleteAllHistory()
+
     @Query("select * from enroll_history where termId = :termId")
     fun getHistory(termId:Int): Flow<List<EnrollHistory>>
 }

@@ -13,6 +13,8 @@ interface GradeDao {
 
     @Query("delete from grades where termId = :termId")
     suspend fun deleteAllGrades(termId:Int)
+    @Query("delete from grades")
+    suspend fun deleteAllGrades()
 
     @Query("select * from grades where termId = :termId")
     fun getGrades(termId:Int): Flow<List<Grade>>

@@ -86,8 +86,8 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.2.0")
 
     // Image Loading
-    implementation("io.coil-kt:coil:2.5.0")
-    implementation("io.coil-kt:coil-gif:2.5.0")
+    implementation("io.coil-kt:coil:2.7.0")
+    implementation("io.coil-kt:coil-gif:2.7.0")
 
     // to remove if done migrate
     implementation("com.github.bumptech.glide:glide:4.15.1")
@@ -118,10 +118,6 @@ dependencies {
 
 
     implementation("com.hendraanggrian.material:collapsingtoolbarlayout-subtitle:1.5.0")
-
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // Leak Canary
 //    debugImplementation("com.squareup.leakcanary:leakcanary-android:3.0-alpha-1")
