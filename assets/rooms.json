@@ -5,74 +5,41 @@
       "name": "St. John Paul & St. John XXIII",
       "history": "St. John Paul & St. John XXIII are named after the two Popes. These halls opened in 2014, the same year these two Popes were canonized.",
       "located": "Left wing of the new building",
-      "floor_desc": "1st Floor - 6th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/j/j.jpg",
+      "floor_desc": "2nd Floor - 6th Floor",
+      "img_path": "/images/building/j/j.jpg",
       "floors": [
-        {
-          "floor_no": 1,
-          "rooms": [
-            {
-              "room_no": "",
-              "desc": "",
-              "preview": [
-                {
-                  "desc": "",
-                  "img_url": ""
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "floor_no": 2,
-          "rooms": [
-            {
-              "room_no": "",
-              "desc": "",
-              "preview": [
-                {
-                  "desc": "",
-                  "img_url": ""
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "floor_no": 3,
-          "rooms": [
-            {
-              "room_no": "",
-              "desc": "",
-              "preview": [
-                {
-                  "desc": "",
-                  "img_url": ""
-                }
-              ]
-            }
-          ]
-        },
         {
           "floor_no": 4,
           "rooms": [
             {
+              "id":"itlab1",            
               "room_no": "406",
-              "desc": "IT Lab 1",
+              "desc": "IT Lab 1",            
               "preview": [
-                {
-                  "desc": "",
-                  "img_url": "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/images/itl-1-door.jpg"
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/itlab1/back.jpg"
+                },
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/itlab1/door.jpg"
+                },
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/itlab1/front.jpg"
                 }
               ]
             },
             {
+              "id":"itlab2",
               "room_no": "407",
               "desc": "IT Lab 2",
               "preview": [
-                {
-                  "desc": "",
-                  "img_url": "https://raw.githubusercontent.com/Jerson2000/jerson2000/portal_assets/images/itl-2-door.jpg"
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/itlab2/back.jpg"
+                },
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/itlab2/door.jpg"
+                },
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/itlab2/front.jpg"
                 }
               ]
             }
@@ -86,8 +53,62 @@
       "history": "Sta. Ana Hall is named after the location which Sta. Ana Avenue, Davao City where the school was erected.",
       "located": "Right wing of the new building",
       "floor_desc": "1st Floor - 6th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/sa/sa.jpg",
-      "floors": []
+      "img_path": "/images/building/sa/sa.jpg",
+      "floors": [
+        {
+          "floor_no": 4,
+          "rooms": [
+            {
+              "id":"sa401",            
+              "room_no": "401",
+              "desc": "Sta. Ana",
+              "preview": [
+                {                  
+                  "img_path": "/images/building/sa/floors/f4/rooms/sa401/back.jpg"
+                },
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/sa401/door.jpg"
+                },
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/sa401/front.jpg"
+                }
+              ]
+            },
+            {
+              "id":"sa402",            
+              "room_no": "402",
+              "desc": "Sta. Ana",
+              "preview": [
+                {                  
+                  "img_path": "/images/building/sa/floors/f4/rooms/sa402/back.jpg"
+                },
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/sa402/door.jpg"
+                },
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/sa402/front.jpg"
+                }
+              ]
+            },
+            {
+              "id":"sa405",            
+              "room_no": "405",
+              "desc": "Sta. Ana",
+              "preview": [
+                {                  
+                  "img_path": "/images/building/sa/floors/f4/rooms/sa405/back.jpg"
+                },
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/sa405/door.jpg"
+                },
+                {                  
+                  "img_path": "/images/building/j/floors/f4/rooms/sa405/front.jpg"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "mh",
@@ -95,7 +116,7 @@
       "history": "Mabutas Hall is named after Archbishop Antonio Ll. Mabutas, DD, JCD, the second Archbishop of the Archdiocese of Davao.",
       "located": "Right wing of the new building",
       "floor_desc": "1st Floor - 6th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/mh/mh.jpg",
+      "img_path": "/images/building/mh/mh.jpg",
       "floors": []
     },
     {
@@ -104,7 +125,7 @@
       "history": "Capalla Hall is named after Archbishop Fernando Robles Capalla, DD, the third Archbishop of the Archdiocese of Davao and was designated as the corporate president of HCDC on November 28,19996.",
       "located": "Back view of Palma Gill Hall; near Gym area",
       "floor_desc": "1st Floor - 4th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/ch/ch.jpg",
+      "img_path": "/images/building/ch/ch.jpg",
       "floors": []
     },
     {
@@ -113,7 +134,7 @@
       "history": "Palma Gil Hall is named after Emillio P. Palma Gil who was appointed as the school president on July 1, 1961. HCDC achieved remarkable changes and growth during this term.",
       "located": "Student Lounge Area",
       "floor_desc": "1st Floor - 4th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/ph/ph.jpg",
+      "img_path": "/images/building/ph/ph.jpg",
       "floors": []
     },
     {
@@ -122,7 +143,7 @@
       "history": "Gmeiner Hall is named after Prof. Hermann Gmeiner, founder of SOS kinderdorf International and one of HCDC's prime benefactors.",
       "located": "Gray building, Chapel and Main Library Area",
       "floor_desc": "1st Floor - 5th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/gh/gh.jpg",
+      "img_path": "/images/building/gh/gh.jpg",
       "floors": []
     },
     {
@@ -131,7 +152,7 @@
       "history": "Thibault Hall is named after Archbishop Clovis Joseph Thibault, PME, the first Apostolic Administrator and Bishop of Davao.",
       "located": "Center of the new building",
       "floor_desc": "1st Floor - 6th Floor",
-      "image_prev": "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/images/building/th/th.jpg",
+      "img_path": "/images/building/th/th.jpg",
       "floors": []
     }
   ]
