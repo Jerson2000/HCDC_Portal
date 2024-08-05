@@ -19,6 +19,7 @@ import coil.load
 import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
+import com.jerson.hcdc_portal.presentation.building.Building
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
 import com.jerson.hcdc_portal.presentation.evaluation.EvaluationKt
 import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
@@ -117,6 +118,9 @@ class DashboardKt : Fragment() {
         }
         binding.btnSetting.setOnClickListener{
             startActivity(Intent(context, Settings::class.java))
+        }
+        binding.buildings.setOnClickListener{
+            startActivity(Intent(context, Building::class.java))
         }
     }
 

@@ -46,4 +46,5 @@ object Constants {
 
 
     const val github = "https://github.com/Jerson2000/HCDC_Portal"
+    const val githubContent = "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets"
 }

@@ -5,6 +5,7 @@ import com.jerson.hcdc_portal.data.repository.EnrollHistoryRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.EvaluationRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.GradesRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.LoginRepositoryImpl
+import com.jerson.hcdc_portal.data.repository.RoomRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.SchedulesRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.SubjectOfferedRepositoryImpl
 import com.jerson.hcdc_portal.domain.repository.AccountsRepository
@@ -12,6 +13,7 @@ import com.jerson.hcdc_portal.domain.repository.EnrollHistoryRepository
 import com.jerson.hcdc_portal.domain.repository.EvaluationRepository
 import com.jerson.hcdc_portal.domain.repository.GradesRepository
 import com.jerson.hcdc_portal.domain.repository.LoginRepository
+import com.jerson.hcdc_portal.domain.repository.RoomRepository
 import com.jerson.hcdc_portal.domain.repository.SchedulesRepository
 import com.jerson.hcdc_portal.domain.repository.SubjectOfferedRepository
 import dagger.Binds
@@ -51,5 +53,9 @@ abstract class RepositoryModule {
     @Binds
     @ViewModelScoped
     abstract fun bindsSubjectOfferedRepository(subjectOfferedRepositoryImpl:SubjectOfferedRepositoryImpl):SubjectOfferedRepository
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindsRoomRepository(roomRepositoryImpl: RoomRepositoryImpl):RoomRepository
 
 }

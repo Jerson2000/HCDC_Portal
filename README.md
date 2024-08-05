@@ -22,5 +22,5 @@ I started working on this project in mid-December(2022) because I was feeling bo
 >PS: Some feature requires internet
 
 # Disclaimer:
-I only scrape what's available in the student portal, such as text, images, and other accessible content using any browser. This project is made possible thanks to the <a href="https://jsoup.org/">jsoup</a> library. It is important to note that this project is purely for fun and for my own learning experience in Android development. ( currently enrolled - 4th yr)
+I only scrape what's available in the student portal, such as text, images, and other accessible content using any browser. This project is made possible thanks to the <a href="https://jsoup.org/">jsoup</a> library. It is important to note that this project is purely for fun and for my own learning experience in Android development. ( alumni - batch 2024 )
  

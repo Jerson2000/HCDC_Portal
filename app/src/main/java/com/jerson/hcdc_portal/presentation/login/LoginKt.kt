@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import coil.load
 import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.ActivityLoginKtBinding
 import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
@@ -41,6 +42,7 @@ class LoginKt : AppCompatActivity(R.layout.activity_login_kt) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginKtBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.logo.load(R.drawable.logo)
         loadingDialog = LoadingDialog(this)
 
 

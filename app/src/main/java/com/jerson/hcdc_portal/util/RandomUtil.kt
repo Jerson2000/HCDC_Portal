@@ -20,3 +20,34 @@ fun Activity.hideKeyboard() {
         }
     }
 }
+
+fun extractBuilding(str:String):String{
+    val x = str.filter { it.isLetter() }
+    val xx = "Building:"
+    when(x.lowercase()){
+        "sa" ->{
+            return "$xx Sta. Ana Hall"
+        }
+        "ch" ->{
+            return "$xx Capalla Hall"
+        }
+        "gh" ->{
+            return "$xx Gmeiner Hall"
+        }
+        "th"->{
+            return "$xx Thibault Hall"
+        }
+        "ph"->{
+            return "$xx Palma Gil Hall"
+        }
+        "mh"->{
+            return "$xx Mabutas Hall"
+        }
+        "j"->{
+            return "$xx St. John Paul & St. John XXIII"
+        }
+        else ->{
+            return "Building"
+        }
+    }
+}

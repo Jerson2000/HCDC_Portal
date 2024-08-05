@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.jerson.hcdc_portal.databinding.ActivitySubjectDetailsKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
+import com.jerson.hcdc_portal.util.extractBuilding
 import com.jerson.hcdc_portal.util.getParcelableCompat
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,7 +44,15 @@ class SubjectDetailsKt:AppCompatActivity() {
             offerNo.text = subject.offeredNo
             schedule.text = "${subject.time} - ${subject.days}"
             room.text = if (subject.room.isNullOrEmpty()) "TBD" else subject.room
+            floor.text = if(!subject.room.isNullOrEmpty() && extractFirstNumber(subject.room)> 0) "Floor: ${extractFirstNumber(subject.room).toString()[0]}" else "Floor"
+            building.text = if (!subject.room.isNullOrEmpty()) extractBuilding(subject.room) else "Building"
         }
+    }
+
+    private fun extractFirstNumber(str: String): Int {
+        val regex = "\\d+".toRegex()
+        val matchResult = regex.find(str)
+        return matchResult?.value?.toInt() ?: 0
     }
 
 }
