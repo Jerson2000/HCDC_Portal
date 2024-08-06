@@ -5,7 +5,7 @@
       "name": "St. John Paul & St. John XXIII",
       "history": "St. John Paul & St. John XXIII are named after the two Popes. These halls opened in 2014, the same year these two Popes were canonized.",
       "located": "Left wing of the new building",
-      "floor_desc": "2nd Floor - 6th Floor",
+      "floor_desc": "1st Floor - 6th Floor",
       "img_path": "/images/building/j/j.jpg",
       "floors": [
         {
@@ -44,6 +44,14 @@
               ]
             }
           ]
+        },
+        {
+          "floor_no": 5,
+          "rooms": []
+        },
+        {
+          "floor_no": 6,
+          "rooms": []
         }
       ]
     },
@@ -107,6 +115,14 @@
               ]
             }
           ]
+        },
+        {
+          "floor_no": 5,
+          "rooms": []
+        },
+        {
+          "floor_no": 6,
+          "rooms": []
         }
       ]
     },
@@ -117,7 +133,24 @@
       "located": "Right wing of the new building",
       "floor_desc": "1st Floor - 6th Floor",
       "img_path": "/images/building/mh/mh.jpg",
-      "floors": []
+      "floors": [
+        {
+          "floor_no": 3,
+          "rooms": []
+        },
+        {
+          "floor_no": 4,
+          "rooms": []
+        },
+        {
+          "floor_no": 5,
+          "rooms": []
+        },
+        {
+          "floor_no": 6,
+          "rooms": []
+        }
+      ]
     },
     {
       "id": "ch",
