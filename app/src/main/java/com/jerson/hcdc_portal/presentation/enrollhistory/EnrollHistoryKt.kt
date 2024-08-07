@@ -37,6 +37,7 @@ class EnrollHistoryKt : Fragment() {
     private var termDialog: TermSelectionDialog? = null
     private var loadingDialog: LoadingDialog? = null
     private var selectedTerm: Term?=null
+    private var isRefresh = false
 
     @Inject
     lateinit var pref: AppPreference
@@ -91,6 +92,7 @@ class EnrollHistoryKt : Fragment() {
                     .setTitle("Refresh")
                     .setMessage("Are you sure you want to refresh?")
                     .setPositiveButton("Yes"){dialog,_->
+                        isRefresh = true
                         enrollHistoryViewModel.fetchEnrollHistory()
                         dialog.dismiss()
                     }
@@ -187,6 +189,9 @@ class EnrollHistoryKt : Fragment() {
 
                         is Resource.Success -> {
                             selectedTerm?.let { term -> enrollHistoryViewModel.fetchEnrollHistory(term) }
+                            if(isRefresh){
+                                enrollHistoryViewModel.fetchEnrollHistory()
+                            }
                         }
 
                         is Resource.Error -> {

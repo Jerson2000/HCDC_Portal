@@ -44,6 +44,8 @@
             android:exported="false"/>
         <activity android:name=".presentation.building.Building"
             android:exported="false"/>
+        <activity android:name=".presentation.building.BuildingDetails"
+            android:exported="false"/>
         <!--<activity
             android:name=".ui.activity.BuildingDetailsActivity"
             android:exported="false" />

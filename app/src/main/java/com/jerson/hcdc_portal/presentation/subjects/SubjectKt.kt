@@ -19,6 +19,7 @@ import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentSubjectsKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
+import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.presentation.subjects.adapter.SubjectAdapter
 import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 class SubjectKt : Fragment() {
     private lateinit var binding: FragmentSubjectsKtBinding
     private val dashboardViewModel: DashboardViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels()
     private lateinit var adapter: SubjectAdapter
     private val list = mutableListOf<Schedule>()
     private var loadingDialog: LoadingDialog? = null
@@ -55,6 +57,7 @@ class SubjectKt : Fragment() {
         }
         dashboardViewModel.getSchedules()
         listenerFetch()
+        reLogonResponse()
 
         binding.btnRefresh.setOnClickListener{
             context?.let { cntxt ->
@@ -94,8 +97,43 @@ class SubjectKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            loadingDialog!!.dismiss()
-                            it.message?.let { it1 -> SnackBarKt.snackBarLong(binding.root, it1) }
+                            it.message?.let {msg->
+                                if (msg.contains("session end", true))
+                                    loginViewModel.reLogon()
+                                else {
+                                    loadingDialog?.dismiss()
+                                    SnackBarKt.snackBarLong(binding.root, it.message)
+                                }
+                            }
+                        }
+
+                        else -> Unit
+                    }
+                }
+            }
+        }
+    }
+
+    private fun reLogonResponse() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                loginViewModel.login.collect {
+                    when (it) {
+                        is Resource.Loading -> {
+                            loadingDialog!!.show()
+                        }
+
+                        is Resource.Success -> {
+                            dashboardViewModel.fetchSchedules()
+                        }
+
+                        is Resource.Error -> {
+                            it.message?.let{msg->
+                                if(!msg.contains("null")){
+                                    loadingDialog?.dismiss()
+                                    SnackBarKt.snackBarLong(binding.root, msg)
+                                }
+                            }
                         }
 
                         else -> Unit

@@ -31,4 +31,12 @@
     <string name="deducted">Deducted</string>
     <string name="added">Added</string>
     <string name="welcome">Welcome!</string>
+    <string name="vm_core_values">The Holy Cross of Davao College envisions a fully vibrant community of believers and Christ-centered evangelizers, educated in the faith, animated by the passion for truth, and engaged in building a more humane world.<br>
+    </br>
+    As members of this Filipino archdiocesan educational institution, we commit ourselves to cultivate high quality Catholic education for all, attentive to the needs of the less fortunate; nurture a culture of excellence and holiness; and provide a human and Christian learning environment for the integral liberating formation of persons who will become effective agents of social transformation.<br> </br>
+        From faith to truth, we uphold the values of servant leadership, dialogue, justice, peace, and integrity of creation, with wisdom as the underlying principle.
+    </string>
+    <string name="lacking_credential">Lacking Credential</string>
+    <string name="chatgpt">ChatGPT</string>
+    <string name="vision_mission">Vision-Mission</string>
 </resources>

@@ -32,7 +32,6 @@ class EnrollHistoryViewModel @Inject constructor(
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
         if(!isLoaded){
             fetchEnrollHistory()
-            pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED,true)
         }
 
     }
@@ -45,6 +44,7 @@ class EnrollHistoryViewModel @Inject constructor(
                     }
                     is Resource.Success ->{
                         _fetchEnrollHistory.value = it
+                        pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED,true)
                     }
                     is Resource.Error->{
                         _fetchEnrollHistory.value = Resource.Error(it.message)

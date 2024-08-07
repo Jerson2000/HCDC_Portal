@@ -8,12 +8,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <FrameLayout
             android:id="@+id/profLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="5dp"
             app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMore"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="5dp"
+                app:icon="@drawable/ic_more_horiz"
+                app:iconGravity="textStart"
+                app:iconSize="30dp"
+                android:layout_gravity="start"
+                app:iconTint="?colorSecondary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSetting"
@@ -25,12 +38,11 @@
                 app:icon="@drawable/ic_settings"
                 app:iconGravity="textStart"
                 app:iconSize="30dp"
-                app:iconTint="?colorSecondary"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_gravity="end"
+                app:iconTint="?colorSecondary" />
 
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/enrolledLayout"

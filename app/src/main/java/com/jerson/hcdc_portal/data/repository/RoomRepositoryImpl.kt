@@ -30,15 +30,6 @@ class RoomRepositoryImpl @Inject constructor(
                 val inputStream = FileInputStream(filePath)
                 val inputStreamReader = InputStreamReader(inputStream)
                 val room = Gson().fromJson(inputStreamReader, Room::class.java)
-                val building: List<Building> = room.building
-                val floor:List<Floor> = building[0].floors
-                val rooms:List<Rooms> = floor[0].rooms
-                println("ASD : ${rooms[0].id}")
-                
-
-
-
-
 
                 inputStreamReader.close()
                 send(Resource.Success(room))

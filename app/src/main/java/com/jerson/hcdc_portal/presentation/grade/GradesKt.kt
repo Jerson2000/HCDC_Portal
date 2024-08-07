@@ -38,6 +38,7 @@ class GradesKt : Fragment() {
     private var termDialog: TermSelectionDialog? = null
     private lateinit var adapter: GradeAdapter
     private var selectedTerm: Term? = null
+    private var isRefresh = false
 
     @Inject
     lateinit var pref: AppPreference
@@ -90,6 +91,7 @@ class GradesKt : Fragment() {
                     .setTitle("Refresh")
                     .setMessage("Are you sure you want to refresh?")
                     .setPositiveButton("Yes"){dialog,_->
+                        isRefresh = true
                         gradesViewModel.fetchGrades()
                         dialog.dismiss()
                     }
@@ -164,6 +166,9 @@ class GradesKt : Fragment() {
 
                         is Resource.Success -> {
                             selectedTerm?.let { term -> gradesViewModel.fetchGrades(term) }
+                            if(isRefresh){
+                                gradesViewModel.fetchGrades()
+                            }
                         }
 
                         is Resource.Error -> {

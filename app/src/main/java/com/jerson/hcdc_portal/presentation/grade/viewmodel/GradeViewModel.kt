@@ -32,7 +32,6 @@ class GradeViewModel @Inject constructor(
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_GRADE_LOADED)
         if (!isLoaded) {
             fetchGrades()
-            pref.setBooleanPreference(Constants.KEY_IS_GRADE_LOADED, true)
         }
 
     }
@@ -47,6 +46,7 @@ class GradeViewModel @Inject constructor(
 
                     is Resource.Success -> {
                         _fetchGrades.value = it
+                        pref.setBooleanPreference(Constants.KEY_IS_GRADE_LOADED, true)
                     }
 
                     is Resource.Error -> {

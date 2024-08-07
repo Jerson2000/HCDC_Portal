@@ -3,17 +3,21 @@ package com.jerson.hcdc_portal.presentation.building.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
 import coil.load
 import com.jerson.hcdc_portal.databinding.ItemContainerBuildingBinding
 import com.jerson.hcdc_portal.domain.model.Building
 import com.jerson.hcdc_portal.util.Constants
 
-class BuildingAdapter(private val list:List<Building>):RecyclerView.Adapter<BuildingAdapter.ViewHolder>(){
+class BuildingAdapter(private val list:List<Building>,private val itemCallback:(Building)->Unit):RecyclerView.Adapter<BuildingAdapter.ViewHolder>(){
     inner class ViewHolder(private val binding: ItemContainerBuildingBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(item:Building){
             binding.buildingName.text = item.name
-            binding.buildingImage.load("${Constants.githubContent}${item.img_path}")
-            println("HUHU ${Constants.githubContent}${item.img_path}")
+            val imgLoader = ImageLoader.Builder(binding.root.context).allowHardware(false).build()
+            binding.buildingImage.load("${Constants.githubContent}${item.img_path}",imgLoader)
+            binding.buildingImage.setOnClickListener{
+                itemCallback(item)
+            }
         }
     }
 
