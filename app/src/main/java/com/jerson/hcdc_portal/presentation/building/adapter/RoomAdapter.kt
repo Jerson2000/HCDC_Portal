@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
-import com.jerson.hcdc_portal.databinding.ItemContainerRoomBinding
 import com.jerson.hcdc_portal.databinding.ItemRoomsBinding
 import com.jerson.hcdc_portal.domain.model.Rooms
 import com.jerson.hcdc_portal.util.Constants

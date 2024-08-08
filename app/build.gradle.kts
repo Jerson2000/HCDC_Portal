@@ -89,10 +89,6 @@ dependencies {
     implementation("io.coil-kt:coil:2.7.0")
     implementation("io.coil-kt:coil-gif:2.7.0")
 
-    // to remove if done migrate
-    implementation("com.github.bumptech.glide:glide:4.15.1")
-    kapt("com.github.bumptech.glide:compiler:4.15.0")
-
     // Image View
     implementation("com.github.KotatsuApp:subsampling-scale-image-view:169806d928")
 

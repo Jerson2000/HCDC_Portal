@@ -29,7 +29,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     android:textStyle="bold" />
 
-                <com.jerson.hcdc_portal.ui.view.SettingOptionView
+                <com.jerson.hcdc_portal.view.SettingOptionView
                     android:id="@+id/theme_option"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                     android:layout_marginTop="15dp"
                     android:orientation="vertical">
 
-                    <com.jerson.hcdc_portal.ui.view.SettingOptionView
+                    <com.jerson.hcdc_portal.view.SettingOptionView
                         android:id="@+id/github"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
                         app:settingSubtitle="Developer info. and app release."
                         app:settingTitle="Github" />
 
-                    <com.jerson.hcdc_portal.ui.view.SettingOptionView
+                    <com.jerson.hcdc_portal.view.SettingOptionView
                         android:id="@+id/btnLogout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

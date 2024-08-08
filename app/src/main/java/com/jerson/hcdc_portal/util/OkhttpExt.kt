@@ -3,7 +3,6 @@ package com.jerson.hcdc_portal.util
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.jerson.hcdc_portal.PortalApp
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
