@@ -46,6 +46,10 @@
             android:exported="false"/>
         <activity android:name=".presentation.building.BuildingDetails"
             android:exported="false"/>
+        <activity android:name=".presentation.chat.ChatGPT"
+            android:exported="false"/>
+        <activity android:name=".presentation.lacking.Lacking"
+            android:exported="false"/>
         <!--<activity
             android:name=".ui.activity.BuildingDetailsActivity"
             android:exported="false" />

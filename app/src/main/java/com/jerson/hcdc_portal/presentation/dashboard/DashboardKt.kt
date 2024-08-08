@@ -5,24 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.load
-import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.presentation.building.Building
 import com.jerson.hcdc_portal.presentation.dashboard.viewmodel.DashboardViewModel
 import com.jerson.hcdc_portal.presentation.evaluation.EvaluationKt
-import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.presentation.settings.Settings
 import com.jerson.hcdc_portal.presentation.subjects.SubjectDetailsKt
 import com.jerson.hcdc_portal.presentation.subjects.adapter.SubjectAdapter
@@ -36,6 +31,7 @@ import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_ID
 import com.jerson.hcdc_portal.util.Constants.KEY_STUDENT_NAME
 import com.jerson.hcdc_portal.util.CustomProfileDialog
 import com.jerson.hcdc_portal.util.LoadingDialog
+import com.jerson.hcdc_portal.util.MoreDialog
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt
 import com.jerson.hcdc_portal.util.userAvatar
@@ -46,7 +42,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 
 @AndroidEntryPoint
@@ -54,7 +49,6 @@ class DashboardKt : Fragment() {
     private lateinit var binding: FragmentDashboardKtBinding
     private val dashboardViewModel: DashboardViewModel by viewModels()
     private var loadingDialog: LoadingDialog? = null
-    private val loginViewModel: LoginViewModel by viewModels()
     private lateinit var adapter: SubjectAdapter
     private val list = mutableListOf<Schedule>()
     private lateinit var imageLoader: ImageLoader
@@ -84,8 +78,7 @@ class DashboardKt : Fragment() {
         adapter = SubjectAdapter(list){
             startActivity(Intent(context,SubjectDetailsKt::class.java).putExtra("subject",it))
         }
-        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED)
-
+        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_SCHEDULE_LOADED)
         if (isLoaded) dashboardViewModel.getSchedules()
         listenerFetch{
             if(it)loadProfileView()
@@ -121,6 +114,10 @@ class DashboardKt : Fragment() {
         }
         binding.buildings.setOnClickListener{
             startActivity(Intent(context, Building::class.java))
+        }
+        binding.btnMore.setOnClickListener{
+            val dialog = MoreDialog()
+            dialog.show(parentFragmentManager,"MoreDialog")
         }
     }
 

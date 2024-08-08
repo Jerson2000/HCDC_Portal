@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnVMCoreVal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="?colorOnSurfaceVariant"
+            android:text="@string/vision_mission" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="?colorOnSurfaceVariant"
+            android:text="@string/lacking_credential" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChatGPT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="?colorOnSurfaceVariant"
+            android:text="@string/chatgpt" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

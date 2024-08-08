@@ -84,8 +84,8 @@ public class LackingActivity extends BaseActivity<ActivityLackingBinding> {
     }
 
     void compliedLack(String data) {
-        getBinding().errLayout.emoji.setText(PortalApp.HAPPY_EMOJIS[new Random().nextInt(6)]);
-        getBinding().errLayout.response.setText(data);
+       /* getBinding().errLayout.emoji.setText(PortalApp.HAPPY_EMOJIS[new Random().nextInt(6)]);
+        getBinding().errLayout.response.setText(data);*/
     }
 
     void displayError() {
@@ -112,10 +112,11 @@ public class LackingActivity extends BaseActivity<ActivityLackingBinding> {
             } else {
                 splitLack(s);
             }
-        } else {
+        }
+        /*else {
             getBinding().errLayout.emoji.setText(PortalApp.SAD_EMOJIS[new Random().nextInt(6)]);
             getBinding().errLayout.response.setText(err.getMessage());
-        }
+        }*/
     }
 
     @Override

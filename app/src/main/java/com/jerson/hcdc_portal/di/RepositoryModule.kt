@@ -1,6 +1,7 @@
 package com.jerson.hcdc_portal.di
 
 import com.jerson.hcdc_portal.data.repository.AccountsRepositoryImpl
+import com.jerson.hcdc_portal.data.repository.ChatGTPRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.EnrollHistoryRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.EvaluationRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.GradesRepositoryImpl
@@ -9,6 +10,7 @@ import com.jerson.hcdc_portal.data.repository.RoomRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.SchedulesRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.SubjectOfferedRepositoryImpl
 import com.jerson.hcdc_portal.domain.repository.AccountsRepository
+import com.jerson.hcdc_portal.domain.repository.ChatGPTRepository
 import com.jerson.hcdc_portal.domain.repository.EnrollHistoryRepository
 import com.jerson.hcdc_portal.domain.repository.EvaluationRepository
 import com.jerson.hcdc_portal.domain.repository.GradesRepository
@@ -57,5 +59,9 @@ abstract class RepositoryModule {
     @Binds
     @ViewModelScoped
     abstract fun bindsRoomRepository(roomRepositoryImpl: RoomRepositoryImpl):RoomRepository
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindsChatGPTRepository(gtpRepositoryImpl: ChatGTPRepositoryImpl):ChatGPTRepository
 
 }
