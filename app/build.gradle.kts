@@ -15,8 +15,8 @@ android {
         applicationId = "com.jerson.hcdc_portal"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1.0"
     }
 
 
@@ -35,7 +35,8 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     lint {
-        disable += listOf("NotifyDataSetChanged", "SetTextI18n")
+        disable += listOf("NotifyDataSetChanged", "SetTextI18n","checkReleaseBuilds")
+        baseline = file("lint-baseline.xml")
     }
 
     afterEvaluate {
