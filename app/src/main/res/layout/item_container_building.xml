@@ -22,7 +22,7 @@
 
         <ImageView
             android:id="@+id/buildingImage"
-            android:layout_width="match_parent"
+            android:layout_width="150dp"
             android:layout_height="150dp"
             android:scaleType="centerCrop"
             android:layout_gravity="end" />

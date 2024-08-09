@@ -3,30 +3,30 @@
 
     <item
         android:id="@+id/dashboard"
-        android:title="Dashboard"
+        android:title="@string/dashboard"
         android:icon="@drawable/selector_dashboard"
         />
 
     <item
         android:id="@+id/subjects"
-        android:title="Subjects"
+        android:title="@string/subjects"
         android:icon="@drawable/selector_subject"
         />
 
     <item
         android:id="@+id/grades"
-        android:title="Grades"
+        android:title="@string/grades"
         android:icon="@drawable/selector_grades"
         />
     <item
         android:id="@+id/enrollHistory"
-        android:title="Enrollment History"
+        android:title="@string/enroll_history"
         android:icon="@drawable/selector_evaluation"
         />
 
     <item
         android:id="@+id/accounts"
-        android:title="Accounts"
+        android:title="@string/accounts"
         android:icon="@drawable/selector_account"
         />
 

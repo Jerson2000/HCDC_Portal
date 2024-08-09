@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.activity.SettingsActivity">
+    android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -30,7 +29,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     android:textStyle="bold" />
 
-                <com.jerson.hcdc_portal.ui.view.SettingOptionView
+                <com.jerson.hcdc_portal.view.SettingOptionView
                     android:id="@+id/theme_option"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -38,44 +37,42 @@
                     app:settingSubtitle="Change app theme."
                     app:settingTitle="Select default theme" />
 
-                <LinearLayout
+                <com.google.android.material.chip.ChipGroup
                     android:id="@+id/theme_mode_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:layout_marginTop="16dp"
+                    app:chipSpacingHorizontal="5dp"
+                    app:chipSpacingVertical="5dp"
+                    android:visibility="gone"
+                    app:singleSelection="true">
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/auto_chip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
                         android:text="Auto"
+                        android:checkable="true"
                         app:chipIcon="@drawable/ic_brightness_auto" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/night_chip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
                         android:text="Dark"
+                        android:checkable="true"
                         app:chipIcon="@drawable/ic_brightness" />
-
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/light_chip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
                         android:text="Light"
+                        android:checkable="true"
                         app:chipIcon="@drawable/ic_brightness_low" />
 
-
-                </LinearLayout>
+                </com.google.android.material.chip.ChipGroup>
 
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
@@ -88,7 +85,7 @@
                     android:layout_marginTop="15dp"
                     android:orientation="vertical">
 
-                    <com.jerson.hcdc_portal.ui.view.SettingOptionView
+                    <com.jerson.hcdc_portal.view.SettingOptionView
                         android:id="@+id/github"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -96,7 +93,7 @@
                         app:settingSubtitle="Developer info. and app release."
                         app:settingTitle="Github" />
 
-                    <com.jerson.hcdc_portal.ui.view.SettingOptionView
+                    <com.jerson.hcdc_portal.view.SettingOptionView
                         android:id="@+id/btnLogout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

@@ -3,4 +3,37 @@
     <string name="app_subtitle">Holy Cross of Davao College Student Portal</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="subjects">Subjects</string>
+    <string name="grades">Grades</string>
+    <string name="enroll_history">Enroll History</string>
+    <string name="accounts">Accounts</string>
+    <string name="total_earned_units">Total Earned Units:</string>
+    <string name="general_weighted_average_gwa">General Weighted Average (GWA)</string>
+    <string name="_00">0.0</string>
+    <string name="_2023_2024_2nd_semester">2023-2024 2nd Semester</string>
+    <string name="midterm">Midterm</string>
+    <string name="_final">Final</string>
+    <string name="units">Units</string>
+    <string name="no_of_enrolled_units">No. of enrolled units.</string>
+    <string name="no_of_enrolled_subjects">No. of enrolled subjects.</string>
+    <string name="view_evaluation">View Evaluation</string>
+    <string name="view_subject_offered">View Subject Offered</string>
+    <string name="view_buildings_wip">View Buildings</string>
+    <string name="today_s_subject_s">Today\'s subject/s.</string>
+    <string name="view_details">View Details</string>
+    <string name="offer_no">Offer No.</string>
+    <string name="loading">Loading...</string>
+    <string name="date">Date</string>
+    <string name="reference">Reference</string>
+    <string name="description">Description</string>
+    <string name="running_balance">Running Balance</string>
+    <string name="deducted">Deducted</string>
+    <string name="added">Added</string>
+    <string name="welcome">Welcome!</string>
+    <string name="vm_core_values">The Holy Cross of Davao College envisions a fully vibrant community of believers and Christ-centered evangelizers, educated in the faith, animated by the passion for truth, and engaged in building a more humane world.\n\nAs members of this Filipino archdiocesan educational institution, we commit ourselves to cultivate high quality Catholic education for all, attentive to the needs of the less fortunate; nurture a culture of excellence and holiness; and provide a human and Christian learning environment for the integral liberating formation of persons who will become effective agents of social transformation.\n\n From faith to truth, we uphold the values of servant leadership, dialogue, justice, peace, and integrity of creation, with wisdom as the underlying principle.
+    </string>
+    <string name="lacking_credential">Lacking Credential</string>
+    <string name="chatgpt">ChatGPT</string>
+    <string name="vision_mission">Vision-Mission</string>
 </resources>

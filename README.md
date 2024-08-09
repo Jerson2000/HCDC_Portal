@@ -1,4 +1,4 @@
-# Unofficial HCDC Student Portal exclusively for Android.
+# Unofficial HCDC Student Portal exclusively for Android. 
 ### Why I came up with this idea
 
 * For my convenience haha
@@ -15,11 +15,18 @@ I started working on this project in mid-December(2022) because I was feeling bo
 * Able to view evaluation (✔)
 * Able to view enrollment history (✔)
 * Able to view subject offered 
-* Able to view lacking credentials (✔)
-* Able to chat ai (have 6 sources)
-* Building,floors and rooms ( WIP - Still busy with capstone project)
->PS: Some feature requires internet
+* Able to view lacking credentials
+* Able to chat ai
+* Building,floors and rooms
+* Dark & Light mode
+
+## UI
+| <img src="https://github.com/user-attachments/assets/4fc14d7c-57b9-4517-85cb-81cc1625cfbf" width="200" height="400"/> |  <img src="https://github.com/user-attachments/assets/681d0c19-143b-498c-87fb-282fbc031f61" width="200" height="400"/>  |  <img src="https://github.com/user-attachments/assets/5212725c-e4ff-47b9-99fa-4a07a9d23803" width="200" height="400"/> |
+| ------------- | ------------- | -------------
+| <img src="https://github.com/user-attachments/assets/58ea4a4b-66c7-46ff-a385-0d83f0b9080b" width="200" height="400"/> | <img src="https://github.com/user-attachments/assets/9acd8cdf-c75f-40ec-94fd-bb6bc14f92d0" width="200" height="400"/> | <img src="https://github.com/user-attachments/assets/0cc4d452-ac1e-455d-9013-908034485194" width="200" height="400"/> |
+| <img src="https://github.com/user-attachments/assets/9c90ba54-272c-4451-bcfd-e446761cfea1" width="200" height="400"/> | <img src="https://github.com/user-attachments/assets/4c33ac9e-a9d7-44ae-992f-daec2c05a900" width="200" height="400"/> | |
+
 
 # Disclaimer:
-I only scrape what's available in the student portal, such as text, images, and other accessible content using any browser. This project is made possible thanks to the <a href="https://jsoup.org/">jsoup</a> library. It is important to note that this project is purely for fun and for my own learning experience in Android development. ( currently enrolled - 4th yr)
+I only scrape what's available in the student portal, such as text, images, and other accessible content using any browser. This project is made possible thanks to the <a href="https://jsoup.org/">jsoup</a> library. It is important to note that this project is purely for fun and for my own learning experience in Android development. ( alumni - batch 2024 )
  

@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.activity.LackingActivity">
+    android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -13,6 +12,7 @@
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <LinearLayout
+            android:id="@+id/layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -29,12 +29,5 @@
     <include
         android:id="@+id/header"
         layout="@layout/view_header_expandable" />
-    <include
-        android:id="@+id/errLayout"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        layout="@layout/error_layout"
-        android:visibility="visible"
-        android:layout_height="wrap_content"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

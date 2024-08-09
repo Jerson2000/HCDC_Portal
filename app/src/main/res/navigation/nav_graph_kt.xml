@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_kt"
+    app:startDestination="@id/dashboard">
+    <fragment
+        android:id="@+id/dashboard"
+        android:name="com.jerson.hcdc_portal.presentation.dashboard.DashboardKt"
+        android:label="DashboardKt"
+        tools:layout="@layout/fragment_dashboard_kt"/>
+    <fragment
+        android:id="@+id/accounts"
+        android:name="com.jerson.hcdc_portal.presentation.accounts.AccountsKt"
+        android:label="AccountsKt"
+        tools:layout="@layout/fragment_account_kt">
+        <action
+            android:id="@+id/action_accounts_to_accountDetails"
+            app:destination="@id/accountDetails" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/grades"
+        android:name="com.jerson.hcdc_portal.presentation.grade.GradesKt"
+        android:label="GradesKt"
+        tools:layout="@layout/fragment_grades_kt"/>
+    <fragment
+        android:id="@+id/enrollHistory"
+        android:name="com.jerson.hcdc_portal.presentation.enrollhistory.EnrollHistoryKt"
+        android:label="EnrollHistoryKt"
+        tools:layout="@layout/fragment_enrollment_history_kt"/>
+    <fragment
+        android:id="@+id/accountDetails"
+        android:name="com.jerson.hcdc_portal.presentation.accounts.AccountDetails"
+        android:label="AccountDetails"
+        tools:layout="@layout/fragment_account_detail">
+        <action
+            android:id="@+id/action_accountDetails_to_accounts"
+            app:destination="@id/accounts" />
+    </fragment>
+    <fragment
+        android:id="@+id/subjects"
+        android:name="com.jerson.hcdc_portal.presentation.subjects.SubjectKt"
+        android:label="SubjectKt"
+        tools:layout="@layout/fragment_subjects_kt"/>
+</navigation>

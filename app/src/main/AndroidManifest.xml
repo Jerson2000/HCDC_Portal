@@ -5,9 +5,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
 
     <application
-        android:name=".PortalApp"
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -18,20 +19,9 @@
         android:theme="@style/Theme.HCDC_Portal"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
-            android:name=".ui.activity.BuildingDetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.BuildingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.ChatAIActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.LackingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.SplashActivity"
+            android:name=".presentation.splash.SplashKt"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,57 +29,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.activity.SubjectOfferedActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.CrashActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.TestActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.EvaluationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.RoomPreviewActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activity.SubjectDetailActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".ui.activity.SettingsActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".ui.activity.LoginActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".ui.activity.MainActivity"
-            android:exported="false">
+        <activity android:name=".presentation.main.MainKt"
+            android:exported="false"/>
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
+        <activity android:name=".presentation.login.LoginKt"
+            android:exported="false"/>
+        <activity android:name=".presentation.evaluation.EvaluationKt"
+            android:exported="false"/>
+        <activity android:name=".presentation.subjects_offered.SubjectOfferedKt"
+            android:exported="false"/>
+        <activity android:name=".presentation.subjects.SubjectDetailsKt"
+            android:exported="false"/>
+        <activity android:name=".presentation.settings.Settings"
+            android:exported="false"/>
+        <activity android:name=".presentation.building.Building"
+            android:exported="false"/>
+        <activity android:name=".presentation.building.BuildingDetails"
+            android:exported="false"/>
+        <activity android:name=".presentation.chat.ChatGPT"
+            android:exported="false"/>
+        <activity android:name=".presentation.lacking.Lacking"
+            android:exported="false"/>
 
 
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
     </application>
 
 </manifest>
