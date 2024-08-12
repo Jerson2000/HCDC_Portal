@@ -27,6 +27,7 @@ object Constants {
     const val KEY_HTML_EVALUATION_LOADED = "evalLoaded"
     const val KEY_IS_CUSTOM_PROFILE = "isCustomProfile"
     const val KEY_CUSTOM_PROFILE_VALUE = "customProfile"
+    const val KEY_IS_SHOW_UPDATE_DIALOG = "updateDialog"
 
 
     // App
@@ -47,4 +48,5 @@ object Constants {
 
     const val github = "https://github.com/Jerson2000/HCDC_Portal"
     const val githubContent = "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets"
+    const val githubReleases = "https://api.github.com/repos/jerson2000/HCDC_Portal/releases/latest"
 }

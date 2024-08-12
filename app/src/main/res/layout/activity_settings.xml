@@ -94,6 +94,14 @@
                         app:settingTitle="Github" />
 
                     <com.jerson.hcdc_portal.view.SettingOptionView
+                        android:id="@+id/checkUpdate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:settingIcon="@drawable/ic_update"
+                        app:settingSubtitle="Check if there is available updates."
+                        app:settingTitle="Check for updates" />
+
+                    <com.jerson.hcdc_portal.view.SettingOptionView
                         android:id="@+id/btnLogout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
