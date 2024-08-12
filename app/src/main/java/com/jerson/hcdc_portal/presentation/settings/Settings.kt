@@ -7,15 +7,21 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.ActivitySettingsBinding
 import com.jerson.hcdc_portal.presentation.login.LoginKt
 import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
+import com.jerson.hcdc_portal.presentation.main.viewmodel.AppViewModel
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.LoadingDialog
+import com.jerson.hcdc_portal.util.Resource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -23,6 +29,9 @@ class Settings:AppCompatActivity() {
     private lateinit var binding:ActivitySettingsBinding
     private val loginViewModel:LoginViewModel by viewModels()
     private lateinit var loadingDialog: LoadingDialog
+    private val appViewModel:AppViewModel by viewModels()
+    private var title = ""
+    private var msg = ""
 
     @Inject
     lateinit var pref:AppPreference
@@ -91,8 +100,10 @@ class Settings:AppCompatActivity() {
                 .show()
 
         }
-
-
+        binding.checkUpdate.setOnClickListener{
+            appViewModel.checkForUpdate()
+        }
+        checkForUpdate()
     }
 
     private fun setAppTheme(theme:Int){
@@ -109,6 +120,53 @@ class Settings:AppCompatActivity() {
             0,AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> binding.autoChip.isChecked = true
             AppCompatDelegate.MODE_NIGHT_NO -> binding.lightChip.isChecked = true
             AppCompatDelegate.MODE_NIGHT_YES -> binding.nightChip.isChecked = true
+        }
+    }
+
+    private fun checkForUpdate(){
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                appViewModel.appUpdate.collect{
+                    when (it) {
+                        is Resource.Success -> {
+                            val dialogX = MaterialAlertDialogBuilder(this@Settings)
+                            if (it.data.isNullOrEmpty()) {
+                                title = "App is up to date. No updates available."
+                                msg =
+                                    "Your current version is the latest, and you're running with the most recent security patches and features."
+                                dialogX
+                                    .setPositiveButton("Ok") { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                            } else {
+                                title = "New update available"
+                                msg =
+                                    "Download and install to get the latest features, security patches, and performance improvements."
+                                dialogX
+                                    .setPositiveButton("Install") { dialog, _ ->
+                                        startActivity(
+                                            Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse(it.data)
+                                            )
+                                        )
+                                        dialog.dismiss()
+                                    }
+                                    .setNegativeButton("Cancel") { dialog, _ ->
+                                        dialog.dismiss()
+                                    }
+                            }
+                            dialogX
+                                .setTitle(title)
+                                .setMessage(msg)
+                                .show()
+
+                        }
+
+                        else -> Unit
+                    }
+                }
+            }
         }
     }
 

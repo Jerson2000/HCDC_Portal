@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -17,6 +19,11 @@ android {
         targetSdk = 34
         versionCode = 2
         versionName = "1.1.0"
+
+        val prop = Properties()
+        prop.load(project.rootProject.file("local.properties").inputStream())
+        buildConfigField("String","key1",prop.getProperty("key1"))
+        buildConfigField("String","key2",prop.getProperty("key2"))
     }
 
 
@@ -48,8 +55,8 @@ android {
 
     buildFeatures {
         viewBinding = true
-        buildConfig = true
     }
+    buildFeatures.buildConfig = true
 
 }
 

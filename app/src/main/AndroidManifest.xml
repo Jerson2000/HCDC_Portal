@@ -50,6 +50,8 @@
             android:exported="false"/>
         <activity android:name=".presentation.lacking.Lacking"
             android:exported="false"/>
+        <activity android:name=".presentation.main.Crash"
+            android:exported="false"/>
 
 
 
