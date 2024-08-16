@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -20,6 +21,7 @@ import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
+import com.jerson.hcdc_portal.util.downloadApk
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -143,13 +145,15 @@ class Settings:AppCompatActivity() {
                                 msg =
                                     "Download and install to get the latest features, security patches, and performance improvements."
                                 dialogX
-                                    .setPositiveButton("Install") { dialog, _ ->
-                                        startActivity(
+                                    .setPositiveButton("Update") { dialog, _ ->
+                                        /*startActivity(
                                             Intent(
                                                 Intent.ACTION_VIEW,
                                                 Uri.parse(it.data)
                                             )
-                                        )
+                                        )*/
+                                        downloadApk(it.data)
+                                        Toast.makeText(this@Settings,"Downloading...",Toast.LENGTH_LONG).show()
                                         dialog.dismiss()
                                     }
                                     .setNegativeButton("Cancel") { dialog, _ ->

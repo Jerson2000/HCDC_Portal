@@ -3,6 +3,7 @@ package com.jerson.hcdc_portal
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.LifecycleObserver
@@ -39,6 +40,7 @@ class App : Application(), Configuration.Provider,LifecycleObserver {
             val pw = PrintWriter(sw)
             e.printStackTrace(pw)
             val err = sw.toString()
+            Log.e(this.toString(), "uncaughtException: ", e);
             startActivity(Intent(this,Crash::class.java).putExtra("err",err).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION))
             exitProcess(1);
 

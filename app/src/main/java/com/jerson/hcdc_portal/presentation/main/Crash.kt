@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 class Crash : AppCompatActivity() {
     private lateinit var binding: ActivityCrashBinding
     private val appViewModel: AppViewModel by viewModels()
+    private var isReportSuccess = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,13 +30,21 @@ class Crash : AppCompatActivity() {
         val err = intent.extras?.getString("err")
         err?.let {
             binding.crash.text = err
-            val report = "${getDevice()}\nError:-> ${err.take(650)}"
+            val report = "${getDevice()}\nError:-> ${err.substringAfter("Caused by").take(650)}"
             appViewModel.postReport(report)
         }
 
         report {
-            restartApp()
+            if (it)
+                restartApp()
         }
+
+        binding.btnRestart.setOnClickListener{
+            if(!isReportSuccess){
+                restartApp()
+            }
+        }
+
 
 
     }
@@ -72,11 +81,12 @@ class Crash : AppCompatActivity() {
                 appViewModel.postReport.collect {
                     when (it) {
                         is Resource.Success -> {
+                            isReportSuccess = true
                             delay(15000)
                             isDone(true)
                         }
 
-                        else -> isDone(false)
+                        else -> Unit
                     }
                 }
             }

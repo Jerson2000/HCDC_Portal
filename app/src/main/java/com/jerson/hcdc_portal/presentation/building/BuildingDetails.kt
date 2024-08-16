@@ -1,10 +1,15 @@
 package com.jerson.hcdc_portal.presentation.building
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import coil.ImageLoader
 import coil.load
+import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.ActivityBuildingDetailsBinding
 import com.jerson.hcdc_portal.domain.model.Building
 import com.jerson.hcdc_portal.domain.model.Rooms
@@ -55,8 +60,12 @@ class BuildingDetails: AppCompatActivity() {
             else binding.roomsLayout.visibility = View.GONE
 
         }
-        roomsAdapter = RoomAdapter(rooms){
+        roomsAdapter = RoomAdapter(rooms) {
+            val imageList = arrayListOf<String>()
+            for (z in it.preview)
+                imageList.add(z.img_path)
 
+            startActivity(Intent(this, ImageViewer::class.java).putExtra("imgList", imageList).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION))
         }
         binding.roomsRecyclerView.adapter = roomsAdapter
 
@@ -67,6 +76,12 @@ class BuildingDetails: AppCompatActivity() {
             bLocated.text =x.located
             bFloorUpTo.text = x.floor_desc
             bImage.load("${Constants.githubContent}${x.img_path}",imgLoader)
+        }
+
+        binding.bImage.setOnClickListener{
+            val imageList = arrayListOf<String>()
+            imageList.add(x.img_path)
+            startActivity(Intent(this, ImageViewer::class.java).putExtra("imgList", imageList).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION))
         }
     }
 

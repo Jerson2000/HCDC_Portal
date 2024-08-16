@@ -16,6 +16,10 @@ class RoomAdapter(private val list:List<Rooms>,private val itemCallback:(Rooms)-
             if(item.preview.isNotEmpty()){
                 binding.roomIV.load("${Constants.githubContent}${item.preview[0].img_path}",imgLoader)
                 binding.roomDesc.text = item.id
+
+                binding.roomIV.setOnClickListener{
+                    itemCallback(item)
+                }
             }
 
         }

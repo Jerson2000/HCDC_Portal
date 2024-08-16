@@ -27,6 +27,11 @@ I started working on this project in mid-December(2022) because I was feeling bo
 | <img src="https://github.com/user-attachments/assets/9c90ba54-272c-4451-bcfd-e446761cfea1" width="200" height="400"/> | <img src="https://github.com/user-attachments/assets/4c33ac9e-a9d7-44ae-992f-daec2c05a900" width="200" height="400"/> | |
 
 
+## Contributing
+1. Fork the repository
+2. Create a new branch for your feature or something
+3. Then create a new pull request
+
 # Disclaimer:
 I only scrape what's available in the student portal, such as text, images, and other accessible content using any browser. This project is made possible thanks to the <a href="https://jsoup.org/">jsoup</a> library. It is important to note that this project is purely for fun and for my own learning experience in Android development. ( alumni - batch 2024 )
  

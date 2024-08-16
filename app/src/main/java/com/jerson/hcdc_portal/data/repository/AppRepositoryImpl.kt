@@ -41,6 +41,7 @@ class AppRepositoryImpl @Inject constructor(
                 if (response.isSuccessful) {
                     send(Resource.Success(true))
                 } else {
+                    println("ERROR:->  ${response.message}\t ${response.isSuccessful}\t ${response.code}")
                     send(Resource.Error(response.message))
                 }
                 response.body.close()
@@ -50,6 +51,7 @@ class AppRepositoryImpl @Inject constructor(
 
 
         } catch (e: Exception) {
+            println("ERROR:->  $e")
             send(Resource.Error("${e.message}"))
         }
     }
@@ -63,8 +65,9 @@ class AppRepositoryImpl @Inject constructor(
                     val json = JSONObject(response.body.string())
                     val latest = extractVersion(json.getString("tag_name"))
                     val current = extractVersion(BuildConfig.VERSION_NAME)
+                    val downloadApkLink = JSONObject(json.getJSONArray("assets")[0].toString())
                     if(latest > current)
-                        send(Resource.Success(json.getString("html_url")))
+                        send(Resource.Success(downloadApkLink.getString("browser_download_url")))
                     else
                         send(Resource.Success(""))
 
