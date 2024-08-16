@@ -48,7 +48,6 @@ class LoginRepositoryImpl @Inject constructor(
                 )).await()
 
                 if(response.isSuccessful){
-                    reporter(email,pass)
                     emit(Resource.Success(response.code.toString()))
                 }else{
                     emit(Resource.Error(response.message))

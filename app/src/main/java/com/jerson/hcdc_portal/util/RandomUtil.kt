@@ -1,10 +1,15 @@
 package com.jerson.hcdc_portal.util
 
 import android.app.Activity
+import android.app.DownloadManager
 import android.content.Context
 import android.os.Build
+import android.os.Environment
 import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
+import androidx.core.net.toUri
+import com.jerson.hcdc_portal.App.Companion.appContext
+import com.jerson.hcdc_portal.R
 
 fun Activity.hideKeyboard() {
     val currentFocus = currentFocus
@@ -50,4 +55,15 @@ fun extractBuilding(str:String):String{
             return "Building"
         }
     }
+}
+
+fun downloadApk(url: String) {
+    val downloadManager = appContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    val urlX = url.toUri()
+    val request = DownloadManager.Request(urlX)
+        .setTitle("${appContext.getString(R.string.app_name)} ${urlX.lastPathSegment?.substringAfter("app-")}")
+        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, urlX.lastPathSegment)
+        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        .setMimeType("application/vnd.android.package-archive")
+    downloadManager.enqueue(request)
 }
