@@ -38,11 +38,7 @@
                 {                  
                   "img_desc":"door",
                   "img_path": "/images/building/j/floors/f4/rooms/itlab2/door.jpg"
-                },
-                {             
-                  "img_desc":"back",     
-                  "img_path": "/images/building/j/floors/f4/rooms/itlab2/back.jpg"
-                },
+                },              
                 {           
                   "img_desc":"front",       
                   "img_path": "/images/building/j/floors/f4/rooms/itlab2/front.jpg"
@@ -83,11 +79,11 @@
                 },
                 {              
                   "img_desc":"back",    
-                  "img_path": "/images/building/j/floors/f4/rooms/sa401/back.jpg"
+                  "img_path": "/images/building/sa/floors/f4/rooms/sa401/back.jpg"
                 },
                 {                  
                   "img_desc":"front",
-                  "img_path": "/images/building/j/floors/f4/rooms/sa401/front.jpg"
+                  "img_path": "/images/building/sa/floors/f4/rooms/sa401/front.jpg"
                 }
               ]
             },
@@ -102,11 +98,11 @@
                 },
                 {    
                   "img_desc":"back",              
-                  "img_path": "/images/building/j/floors/f4/rooms/sa402/back.jpg"
+                  "img_path": "/images/building/sa/floors/f4/rooms/sa402/back.jpg"
                 },
                 {        
                   "img_desc":"front",          
-                  "img_path": "/images/building/j/floors/f4/rooms/sa402/front.jpg"
+                  "img_path": "/images/building/sa/floors/f4/rooms/sa402/front.jpg"
                 }
               ]
             },
@@ -121,11 +117,11 @@
                 },
                 {         
                   "img_desc":"back",         
-                  "img_path": "/images/building/j/floors/f4/rooms/sa405/back.jpg"
+                  "img_path": "/images/building/sa/floors/f4/rooms/sa405/back.jpg"
                 },
                 {         
                   "img_desc":"front",         
-                  "img_path": "/images/building/j/floors/f4/rooms/sa405/front.jpg"
+                  "img_path": "/images/building/sa/floors/f4/rooms/sa405/front.jpg"
                 }
               ]
             }
