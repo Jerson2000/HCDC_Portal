@@ -1,5 +1,7 @@
 package com.jerson.hcdc_portal.presentation.main
 
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -17,6 +19,10 @@ import com.jerson.hcdc_portal.presentation.main.viewmodel.AppViewModel
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Resource
+import com.jerson.hcdc_portal.util.SnackBarKt.snackBarLong
+import com.jerson.hcdc_portal.util.WRITE_EXTERNAL_STORAGE_REQUEST_CODE
+import com.jerson.hcdc_portal.util.checkAndRequestPermissions
+import com.jerson.hcdc_portal.util.checkPermission
 import com.jerson.hcdc_portal.util.downloadApk
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -31,6 +37,7 @@ class MainKt : AppCompatActivity() {
     private var title = ""
     private var msg = ""
     private var dialog:AlertDialog?=null
+    private var apkLink =""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,9 +56,20 @@ class MainKt : AppCompatActivity() {
                         .setTitle(title)
                         .setMessage(msg)
                         .setPositiveButton("Update") { dialog, _ ->
-//                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
-                            downloadApk(it)
-                            Toast.makeText(this@MainKt,"Downloading...", Toast.LENGTH_LONG).show()
+                            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
+                                if (checkPermission()){
+                                    downloadApk(it)
+                                    Toast.makeText(this@MainKt,"Downloading...", Toast.LENGTH_LONG).show()
+                                }
+                                else{
+                                    apkLink = it
+                                    checkAndRequestPermissions()
+                                }
+                            }else{
+                                downloadApk(it)
+                            }
+
+
                             dialog.dismiss()
                         }
                         .setNegativeButton("Cancel") { dialog, _ ->
@@ -98,6 +116,18 @@ class MainKt : AppCompatActivity() {
                         else -> Unit
                     }
                 }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST_CODE) {
+            if (!(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                snackBarLong(binding.root,"Permission has been denied you cannot download the latest version of the app.")
+            }else{
+                downloadApk(apkLink)
+                Toast.makeText(this@MainKt,"Downloading...", Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -30,7 +30,10 @@ import com.jerson.hcdc_portal.util.Constants.KEY_IS_LOGIN
 import com.jerson.hcdc_portal.util.Constants.KEY_PASSWORD
 import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
+import com.jerson.hcdc_portal.util.SnackBarKt
 import com.jerson.hcdc_portal.util.SnackBarKt.snackBarLong
+import com.jerson.hcdc_portal.util.WRITE_EXTERNAL_STORAGE_REQUEST_CODE
+import com.jerson.hcdc_portal.util.checkAndRequestPermissions
 import com.jerson.hcdc_portal.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -59,6 +62,7 @@ class LoginKt : AppCompatActivity(R.layout.activity_login_kt) {
                 binding.emailET.text.toString().trim(),
                 binding.passET.text.toString().trim()
             )
+            loadToken+=2
             binding.passET.clearFocus()
             binding.emailET.clearFocus()
             hideKeyboard()
@@ -113,7 +117,6 @@ class LoginKt : AppCompatActivity(R.layout.activity_login_kt) {
                         }
 
                         is Resource.Success -> {
-                            loadToken++
                             if (loadToken > 1) {
                                 if (it.data!!) {
                                     snackBarLong(binding.root, "Incorrect Credentials")
@@ -154,51 +157,11 @@ class LoginKt : AppCompatActivity(R.layout.activity_login_kt) {
             }
         }
     }
-
-    private fun checkAndRequestPermissions() {
-        val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-        val permissionsToRequest = mutableListOf<String>()
-
-        if (writePermission != PackageManager.PERMISSION_GRANTED) {
-            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
-
-        if (permissionsToRequest.isNotEmpty()) {
-            ActivityCompat.requestPermissions(
-                this,
-                permissionsToRequest.toTypedArray(),
-                12
-            )
-        }
-
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (!Environment.isExternalStorageManager()) {
-                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                val uri = Uri.fromParts("package", packageName, null)
-                intent.data = uri
-                startActivity(intent)
-            }
-        }*/
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 12) {
-            var allPermissionsGranted = true
-
-            for (result in grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    allPermissionsGranted = false
-                    break
-                }
-            }
-            if (!allPermissionsGranted) {
-             checkAndRequestPermissions()
+        if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST_CODE) {
+            if (!(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                snackBarLong(binding.root,"Some features might not be able to work.")
             }
         }
     }
