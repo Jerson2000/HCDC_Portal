@@ -17,8 +17,8 @@ android {
         applicationId = "com.jerson.hcdc_portal"
         minSdk = 24
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.1.1"
+        versionCode = 4
+        versionName = "1.1.2"
 
         val prop = Properties()
         prop.load(project.rootProject.file("local.properties").inputStream())
