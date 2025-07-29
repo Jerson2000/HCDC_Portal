@@ -10,7 +10,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentEnrollmentHistoryKtBinding
 import com.jerson.hcdc_portal.domain.model.EnrollHistory
 import com.jerson.hcdc_portal.domain.model.Term
@@ -54,6 +56,11 @@ class EnrollHistoryKt : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.bgImage.load(R.drawable.reunite){
+            size(300,300)
+        }
+
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
 
         adapter = EnrollHistoryAdapter(list)

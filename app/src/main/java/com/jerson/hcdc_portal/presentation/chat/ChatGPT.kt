@@ -20,16 +20,14 @@ import com.jerson.hcdc_portal.util.SnackBarKt
 import com.jerson.hcdc_portal.util.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import okhttp3.FormBody
 
 @AndroidEntryPoint
-class ChatGPT:AppCompatActivity() {
-    private lateinit var binding:ActivityChatgptBinding
-    private val chatGPTViewModel:ChatGPTViewModel by viewModels()
+class ChatGPT : AppCompatActivity() {
+    private lateinit var binding: ActivityChatgptBinding
+    private val chatGPTViewModel: ChatGPTViewModel by viewModels()
     private lateinit var loadingDialog: LoadingDialog
-    private var formBodyBuilder:FormBody.Builder?=null
     private val chatList = mutableListOf<Chat>()
-    private lateinit var adapter:ChatGPTAdapter
+    private lateinit var adapter: ChatGPTAdapter
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -40,7 +38,7 @@ class ChatGPT:AppCompatActivity() {
         loadingDialog = LoadingDialog(this)
 
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.apply{
+        supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
         }
@@ -50,23 +48,19 @@ class ChatGPT:AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
 
-        getChatValue()
         chat()
 
-        binding.btnSend.setOnClickListener{
-            if(binding.msgET.text.toString().isNotEmpty()){
-                formBodyBuilder?.let {
-                    val msg = binding.msgET.text.toString()
-                    val formBody = it.add("message",msg).build()
-                    chatList.add(Chat(Role.USER.value, msg))
-                    chatList.add(Chat(Role.AI.value, "Generating..."))
-                    binding.btnSend.isEnabled = false
-                    adapter.notifyDataSetChanged()
-                    binding.msgET.text = null
-                    binding.recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
-                    this.hideKeyboard()
-                    chatGPTViewModel.chat(formBody)
-                }
+        binding.btnSend.setOnClickListener {
+            if (binding.msgET.text.toString().isNotEmpty()) {
+                val msg = binding.msgET.text.toString()
+                chatList.add(Chat(Role.USER, msg))
+                chatGPTViewModel.chat(chatList)
+                binding.btnSend.isEnabled = false
+                adapter.notifyDataSetChanged()
+                binding.msgET.text = null
+                binding.recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
+
+                this.hideKeyboard()
             }
         }
         binding.msgET.setOnTouchListener { _, motionEvent ->
@@ -83,47 +77,22 @@ class ChatGPT:AppCompatActivity() {
         }
     }
 
-    private fun getChatValue(){
+    private fun chat() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                chatGPTViewModel.fetchChatDataValue.collect{
-                    when(it){
-                        is Resource.Loading->{
-                            loadingDialog.show()
-                        }
-                        is  Resource.Success->{
-                            loadingDialog.dismiss()
-                            formBodyBuilder = it.data
-                            chatList.add(Chat(Role.AI.value, "Hello!👋 I'm your helpful assistant."))
-                            adapter.notifyDataSetChanged()
-                        }
-                        is Resource.Error->{
-                            it.message?.let { it1 -> SnackBarKt.snackBarLong(binding.root, it1) }
-                        }
-                        else -> Unit
-                    }
-                }
-            }
-        }
-    }
-
-    private fun chat(){
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                chatGPTViewModel.fetchChatGPT.collect{
-                    when(it){
-                        is  Resource.Success->{
-                            chatList.removeAt(chatList.size - 1)
-                            chatList.add(Chat(Role.AI.value,it.data?.data))
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                chatGPTViewModel.fetchChatGPT.collect {
+                    when (it) {
+                        is Resource.Success -> {
+                            chatList.add(Chat(Role.ASSISTANT, it.data!!))
                             binding.btnSend.isEnabled = true
                             binding.recyclerView.smoothScrollToPosition(adapter.itemCount - 1)
                             adapter.notifyDataSetChanged()
                         }
-                        is Resource.Error->{
-                            chatList.removeAt(chatList.size - 1)
-                            chatList.add(Chat(Role.AI.value,it.message))
+
+                        is Resource.Error -> {
                             it.message?.let { it1 -> SnackBarKt.snackBarLong(binding.root, it1) }
                         }
+
                         else -> Unit
                     }
                 }

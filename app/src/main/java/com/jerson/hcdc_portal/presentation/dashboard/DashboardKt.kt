@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.load
+import coil.size.Scale
 import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.presentation.building.Building
@@ -171,7 +172,9 @@ class DashboardKt : Fragment() {
     private fun loadProfileView(){
         binding.apply {
             unitsTV.text = pref.getStringPreference(KEY_STUDENTS_UNITS)
-            profileIV.load(userAvatar(pref), imageLoader)
+            profileIV.load(userAvatar(pref), imageLoader){
+                size(200,200)
+            }
             nameTV.text = pref.getStringPreference(KEY_STUDENT_NAME)
             couseTV.text = pref.getStringPreference(KEY_STUDENT_COURSE) + " ${
                 pref.getStringPreference(KEY_STUDENT_ID)

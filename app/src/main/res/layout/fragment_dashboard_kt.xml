@@ -100,6 +100,7 @@
                     android:focusable="true"
                     android:scaleType="fitXY"
                     android:clickable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
                     app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
                     app:srcCompat="@drawable/logo"/>
 

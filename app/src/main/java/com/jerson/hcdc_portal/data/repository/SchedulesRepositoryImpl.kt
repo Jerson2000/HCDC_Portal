@@ -1,7 +1,5 @@
 package com.jerson.hcdc_portal.data.repository
 
-import android.util.Log
-import com.jerson.hcdc_portal.App.Companion.appContext
 import com.jerson.hcdc_portal.data.local.PortalDB
 import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.domain.repository.SchedulesRepository
@@ -11,7 +9,6 @@ import com.jerson.hcdc_portal.util.Constants.KEY_USER_AVATAR
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.await
 import com.jerson.hcdc_portal.util.getRequest
-import com.jerson.hcdc_portal.util.isConnected
 import com.jerson.hcdc_portal.util.sessionParse
 import com.jerson.hcdc_portal.util.userParse
 import kotlinx.coroutines.Dispatchers
@@ -31,17 +28,17 @@ class SchedulesRepositoryImpl @Inject constructor(
 ) : SchedulesRepository {
     override suspend fun fetchSchedules(): Flow<Resource<List<Schedule>>> = channelFlow {
         try {
-            if (isConnected(appContext)) {
-                withContext(Dispatchers.IO) {
-                    send(Resource.Loading())
-                    val response = client.newCall(getRequest(Constants.baseUrl)).await()
-                    if (response.isSuccessful) {
-                        val bod = response.body.string()
+            withContext(Dispatchers.IO) {
+                send(Resource.Loading())
+                val response = client.newCall(getRequest(Constants.baseUrl)).await()
+                response.use {
+                    if (it.isSuccessful) {
+                        val bod = it.body.string()
                         val html = Jsoup.parse(bod)
                         if (html.body().text().lowercase().contains("something went wrong"))
-                            send(Resource.Error("${response.code} - ${response.message}"))
+                            send(Resource.Error("${it.code} - ${it.message}"))
                         else if (sessionParse(preference, html))
-                            send(Resource.Error("session end - ${response.code}"))
+                            send(Resource.Error("session end - ${it.code}"))
                         else {
                             db.scheduleDao().deleteAllSchedules()
                             db.scheduleDao().upsertSchedules(parseSchedule(html))
@@ -50,13 +47,12 @@ class SchedulesRepositoryImpl @Inject constructor(
                             send(Resource.Success(parseSchedule(html)))
                         }
                     } else {
-                        send(Resource.Error(response.message))
+                        send(Resource.Error(it.message))
                     }
                 }
-            } else {
-                send(Resource.Error("No internet connection!"))
             }
-        }catch (e:Exception){
+
+        } catch (e: Exception) {
             send(Resource.Error(e.message))
         }
     }

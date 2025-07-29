@@ -27,7 +27,7 @@ fun sessionParse(preference: AppPreference, doc: Document): Boolean {
 
     preference.setStringPreference(Constants.KEY_CSRF_TOKEN, token)
     preference.setBooleanPreference(Constants.KEY_IS_SESSION, isNameEmpty)
-    Log.e("HUHU-PARSE", "sessionParse: $isLogin\t$isNameEmpty", )
+    Log.e("HUHU-PARSE", "sessionParse: isLoginPage:$isLogin\tisNameEmpty:$isNameEmpty", )
     return isLogin or isNameEmpty
 }
 

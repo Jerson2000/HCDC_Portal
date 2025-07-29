@@ -8,10 +8,12 @@ import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.domain.repository.EnrollHistoryRepository
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
+import com.jerson.hcdc_portal.util.NetworkMonitor
 import com.jerson.hcdc_portal.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,7 +21,8 @@ import javax.inject.Inject
 class EnrollHistoryViewModel @Inject constructor(
     private val repository: EnrollHistoryRepository,
     private val db:PortalDB,
-    private val pref:AppPreference
+    private val pref:AppPreference,
+    networkMonitor: NetworkMonitor
 ):ViewModel() {
 
     private val _fetchEnrollHistory = MutableStateFlow<Resource<List<EnrollHistory>>?>(null)
@@ -27,6 +30,8 @@ class EnrollHistoryViewModel @Inject constructor(
 
     private val _fetchTerms = MutableStateFlow<Resource<List<Term>>?>(null)
     val fetchTerms:StateFlow<Resource<List<Term>>?> = _fetchTerms
+
+    private val isConnected = networkMonitor.isConnected
 
     init {
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
@@ -37,18 +42,20 @@ class EnrollHistoryViewModel @Inject constructor(
     }
     fun fetchEnrollHistory(term:Term){
         viewModelScope.launch {
+            _fetchEnrollHistory.value = Resource.Loading()
+
+            if(!isConnected.first()){
+                _fetchEnrollHistory.value = Resource.Error("No internet connection.")
+                return@launch
+            }
+
             repository.fetchEnrollHistory(term).collect{
                 when(it){
-                    is Resource.Loading->{
-                        _fetchEnrollHistory.value = Resource.Loading()
-                    }
                     is Resource.Success ->{
                         _fetchEnrollHistory.value = it
                         pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED,true)
                     }
-                    is Resource.Error->{
-                        _fetchEnrollHistory.value = Resource.Error(it.message)
-                    }
+                    is Resource.Error->_fetchEnrollHistory.value = Resource.Error(it.message)
                     else -> Unit
                 }
             }
@@ -57,17 +64,16 @@ class EnrollHistoryViewModel @Inject constructor(
 
     fun fetchEnrollHistory(){
         viewModelScope.launch {
+            _fetchEnrollHistory.value = Resource.Loading()
+
+            if(!isConnected.first()){
+                _fetchEnrollHistory.value = Resource.Error("No internet connection.")
+                return@launch
+            }
             repository.fetchEnrollHistory().collect{
                 when(it){
-                    is Resource.Loading->{
-                        _fetchEnrollHistory.value = Resource.Loading()
-                    }
-                    is Resource.Success ->{
-                        _fetchEnrollHistory.value = it
-                    }
-                    is Resource.Error->{
-                        _fetchEnrollHistory.value = Resource.Error(it.message)
-                    }
+                    is Resource.Success ->_fetchEnrollHistory.value = it
+                    is Resource.Error->_fetchEnrollHistory.value = Resource.Error(it.message)
                     else -> Unit
                 }
             }

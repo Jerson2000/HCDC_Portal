@@ -35,7 +35,6 @@ class SubjectOfferedRepositoryImpl@Inject constructor(
             .build()
 
         try{
-            if(isConnected(App.appContext)) {
                 withContext(Dispatchers.IO){
                     send(Resource.Loading())
                     val response = client.newCall(postRequest("$baseUrl$subjectOffered",formBody)).await()
@@ -57,9 +56,6 @@ class SubjectOfferedRepositoryImpl@Inject constructor(
                         send(Resource.Error("${response.message}-${response.code}"))
                     }
                 }
-            }else{
-                send(Resource.Error("No internet connection!"))
-            }
         }catch (ex:Exception){
             println("ERROR: ${ex.stackTraceToString()}")
             send(Resource.Error(ex.message))

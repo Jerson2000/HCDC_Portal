@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TermDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertTerm(grades: List<Term>)
+    suspend fun upsertTerm(terms: List<Term>)
 
     /**
      * @param isGrade is either 1 or 0 or 2 - it indicates that Grades ( 1  ) or Enroll History ( 0 ) or Accounts (2)

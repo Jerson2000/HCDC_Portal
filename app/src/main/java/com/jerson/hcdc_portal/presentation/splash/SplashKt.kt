@@ -2,47 +2,38 @@ package com.jerson.hcdc_portal.presentation.splash
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.jerson.hcdc_portal.App.Companion.appContext
-import com.jerson.hcdc_portal.databinding.ActivitySplashBinding
 import com.jerson.hcdc_portal.presentation.login.LoginKt
-import com.jerson.hcdc_portal.presentation.login.viewmodel.LoginViewModel
 import com.jerson.hcdc_portal.presentation.main.MainKt
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_LOGIN
 import com.jerson.hcdc_portal.util.DownloadWorkerKt
 import com.jerson.hcdc_portal.util.isConnected
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class SplashKt:AppCompatActivity() {
-    private lateinit var binding:ActivitySplashBinding
-    private val loginViewModel: LoginViewModel by viewModels()
-
+class SplashKt : AppCompatActivity() {
     @Inject
     lateinit var pref: AppPreference
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySplashBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
 
-        Handler(Looper.getMainLooper())
-            .postDelayed({
-                if(pref.getBooleanPreference(KEY_IS_LOGIN)){
-                    loginViewModel.checkSession()
-                    startActivity(Intent(this, MainKt::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
-                }else{
-                    startActivity(Intent(this, LoginKt::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
-                }
-            }, 1500)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        val splash = installSplashScreen()
+        super.onCreate(savedInstanceState)
+
+        var keepSplash = true
+        splash.setKeepOnScreenCondition { keepSplash }
 
         val map = hashMapOf<String,Any>()
         map["url"] = "https://raw.githubusercontent.com/Jerson2000/HCDC_Portal/assets/assets/rooms.json"
@@ -55,9 +46,18 @@ class SplashKt:AppCompatActivity() {
             WorkManager.getInstance(this).enqueue(eye)
         }
 
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                delay(500L)
+                keepSplash = false
+                val destination = if (pref.getBooleanPreference(KEY_IS_LOGIN))
+                    MainKt::class.java else LoginKt::class.java
+                startActivity(
+                    Intent(this@SplashKt, destination)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
 
-
+            }
+        }
     }
-
-
 }

@@ -2,7 +2,7 @@ package com.jerson.hcdc_portal.di
 
 import com.jerson.hcdc_portal.data.repository.AccountsRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.AppRepositoryImpl
-import com.jerson.hcdc_portal.data.repository.ChatGTPRepositoryImpl
+import com.jerson.hcdc_portal.data.repository.ChatGPTRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.EnrollHistoryRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.EvaluationRepositoryImpl
 import com.jerson.hcdc_portal.data.repository.GradesRepositoryImpl
@@ -64,7 +64,7 @@ abstract class RepositoryModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun bindsChatGPTRepository(gtpRepositoryImpl: ChatGTPRepositoryImpl):ChatGPTRepository
+    abstract fun bindsChatGPTRepository(gtpRepositoryImpl: ChatGPTRepositoryImpl):ChatGPTRepository
 
     @Binds
     @ViewModelScoped

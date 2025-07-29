@@ -1,22 +1,26 @@
 package com.jerson.hcdc_portal.domain.model
 
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
+import java.lang.reflect.Type
+
 data class Chat(
-    val role:Int,
-    val message:String?
-)
-data class ChatGPT(
-    val status:String?,
-    val msg:String?,
-    val data:String?
-)
+    val role: Role,
+    val content: String
+){
+    override fun toString(): String {
+        return """{"role":"${role.name.lowercase()}","content":"$content"}"""
+    }
+}
+enum class Role {
+    ASSISTANT,
+    USER
+}
 
-enum class Role(val value: Int) {
-    AI(1),
-    USER(0);
-
-    companion object {
-        fun fromValue(value: Int): Role? {
-            return entries.find { it.value == value }
-        }
+class RoleSerializer : JsonSerializer<Role> {
+    override fun serialize(src: Role?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
+        return JsonPrimitive(src?.name?.lowercase())
     }
 }

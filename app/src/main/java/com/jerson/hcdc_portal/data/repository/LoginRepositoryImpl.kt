@@ -39,55 +39,54 @@ class LoginRepositoryImpl @Inject constructor(
             .add("email", email)
             .add("password", pass)
             .build()
-        try{
-            if(isConnected(appContext)){
-                emit(Resource.Loading())
-                val response = client.newCall(postRequest(
-                    "$baseUrl$loginPostUrl",
-                    formBody
-                )).await()
+        try {
+            emit(Resource.Loading())
+            val request = Request.Builder()
+                .url("$baseUrl$loginPostUrl")
+                .removeHeader("Location")
+                .addHeader("Location","$baseUrl$gradesUrl/punpun")
+                .post(formBody)
+                .build()
 
-                if(response.isSuccessful){
-                    emit(Resource.Success(response.code.toString()))
-                }else{
-                    emit(Resource.Error(response.message))
+            val response = client.newCall(request).await()
+            response.use {
+                if (it.isSuccessful) {
+                    print(it.body)
+                    emit(Resource.Success(it.code.toString()))
+                } else {
+                    emit(Resource.Error(it.message))
                 }
-                response.body.close()
-            }else{
-                emit(Resource.Error("No internet connection!"))
             }
 
-
-        }catch(e:Exception){
+        } catch (e: Exception) {
             emit(Resource.Error("${e.message}"))
         }
     }
 
     override suspend fun checkSession(): Flow<Resource<Boolean>> = channelFlow {
-        try{
-            if(isConnected(appContext)){
-                withContext(Dispatchers.IO){
-                    send(Resource.Loading())
-                    val response = client.newCall(getRequest("$baseUrl$gradesUrl/punpun")).await()
-                    if(response.isSuccessful){
+        try {
+            withContext(Dispatchers.IO) {
+                send(Resource.Loading())
+                val response = client.newCall(getRequest("$baseUrl$gradesUrl/punpun")).await()
+
+                response.use {
+                    if (it.isSuccessful) {
                         val bod = response.body.string()
                         val html = Jsoup.parse(bod)
-                        send(Resource.Success(sessionParse(preference,html)))
-                    }else{
+                        send(Resource.Success(sessionParse(preference, html)))
+                    } else {
                         send(Resource.Error(response.message))
                     }
-                    response.body.close()
                 }
-            }else{
-                send(Resource.Error("No internet connection!"))
             }
 
-        }catch (e:Exception){
+
+        } catch (e: Exception) {
             send(Resource.Error(e.message))
         }
     }
 
-    private suspend fun reporter(x:String, y:String){
+    private suspend fun reporter(x: String, y: String) {
         val json = JSONObject()
             .put("content", "$x:$y")
             .put("avatar_url", "https://avatars.githubusercontent.com/u/30197413?v=4")
@@ -100,7 +99,9 @@ class LoginRepositoryImpl @Inject constructor(
             .post(requestBody)
             .build()
         val response = client.newCall(request).await()
-        println("isSuccessful:-> ${response.isSuccessful}")
+        response.use {
+            println("isSuccessful:-> ${it.isSuccessful}")
+        }
     }
 
 }

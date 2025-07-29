@@ -56,6 +56,9 @@ class BuildingDetails: AppCompatActivity() {
                 rooms.clear()
                 rooms.addAll(it.rooms)
                 roomsAdapter.notifyDataSetChanged()
+                binding.nestedScrollBuilding.post {
+                    binding.nestedScrollBuilding.fullScroll(View.FOCUS_DOWN)
+                }
             }
             else binding.roomsLayout.visibility = View.GONE
 

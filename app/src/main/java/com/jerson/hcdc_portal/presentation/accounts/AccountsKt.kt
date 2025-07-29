@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentAccountKtBinding
@@ -55,12 +56,15 @@ class AccountsKt : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.shapeableImageView.load(R.drawable.cash_vanishing){
+            size(200,200)
+        }
         val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED)
-
         if (isLoaded) accountViewModel.getAccounts(pref.getIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM))
 
-        getAccounts {
-            if (it) {
+
+        getAccounts { isDone->
+            if (isDone) {
                 accountViewModel.getAccountTerm()
             }
         }
@@ -69,9 +73,9 @@ class AccountsKt : Fragment() {
         binding.cardTerm.setOnClickListener {
             termDialog?.showDialog { term ->
                 selectedTerm = term
-                accountViewModel.hasData(term) {
+                accountViewModel.hasData(term) {hasData->
                     pref.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM, term.id)
-                    if (!it) {
+                    if (!hasData) {
                         accountViewModel.fetchAccounts(term)
                     } else {
                         accountViewModel.getAccounts(term.id)
@@ -81,7 +85,7 @@ class AccountsKt : Fragment() {
         }
 
         binding.btnViewDetails.setOnClickListener {
-            if (list.size > 0 && list[0].description!!.isNotBlank()) {
+            if (list.isNotEmpty() && list[0].description!!.isNotBlank()) {
                 val bundle = bundleOf("objectList" to list)
                 setFragmentResult("requestKey", bundle)
                 findNavController().navigate(R.id.action_accounts_to_accountDetails, bundle)

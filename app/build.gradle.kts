@@ -20,10 +20,27 @@ android {
         versionCode = 4
         versionName = "1.1.2"
 
-        val prop = Properties()
-        prop.load(project.rootProject.file("local.properties").inputStream())
-        buildConfigField("String","key1",prop.getProperty("key1"))
-        buildConfigField("String","key2",prop.getProperty("key2"))
+        val propFile = project.rootProject.file("local.properties")
+        val (key1Value, key2Value, aiEndPoint) = if (propFile.exists()) {
+            Properties().apply { load(propFile.inputStream()) }.let { prop ->
+                Triple(
+                    prop.getProperty("key1") ?: "",
+                    prop.getProperty("key2") ?: "",
+                    prop.getProperty("ai_endpoint") ?: ""
+                )
+            }
+        } else {
+            Triple(
+                System.getenv("KEY1") ?: "",
+                System.getenv("KEY2") ?: "",
+                System.getenv("AI_ENDPOINT") ?: ""
+            )
+        }
+
+        buildConfigField("String", "key1", key1Value)
+        buildConfigField("String", "key2", key2Value)
+        buildConfigField("String", "ai_endpoint", aiEndPoint)
+
     }
 
 
@@ -71,6 +88,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.webkit:webkit:1.11.0")
+    implementation("androidx.core:core-splashscreen:1.1.0-rc01")
 
 
     // Web Scraping Library

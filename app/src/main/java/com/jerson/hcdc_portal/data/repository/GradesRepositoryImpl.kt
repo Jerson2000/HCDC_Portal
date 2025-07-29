@@ -1,6 +1,5 @@
 package com.jerson.hcdc_portal.data.repository
 
-import com.jerson.hcdc_portal.App
 import com.jerson.hcdc_portal.data.local.PortalDB
 import com.jerson.hcdc_portal.domain.model.Grade
 import com.jerson.hcdc_portal.domain.model.Term
@@ -10,7 +9,6 @@ import com.jerson.hcdc_portal.util.Constants
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.await
 import com.jerson.hcdc_portal.util.getRequest
-import com.jerson.hcdc_portal.util.isConnected
 import com.jerson.hcdc_portal.util.sessionParse
 import com.jerson.hcdc_portal.util.termLinksParse
 import kotlinx.coroutines.Dispatchers
@@ -28,41 +26,55 @@ class GradesRepositoryImpl @Inject constructor(
     private val db: PortalDB,
     private val preference: AppPreference
 ) : GradesRepository {
-    override suspend fun fetchGrades(): Flow<Resource<List<Grade>>> = channelFlow{
+    override suspend fun fetchGrades(): Flow<Resource<List<Grade>>> = channelFlow {
         try {
-            if (isConnected(App.appContext)) {
-                withContext(Dispatchers.IO) {
-                    send(Resource.Loading())
-                    val response =
-                        client.newCall(getRequest(Constants.baseUrl + Constants.gradesUrl)).await()
-                    if (response.isSuccessful) {
-                        val bod = response.body.string()
+            withContext(Dispatchers.IO) {
+                send(Resource.Loading())
+                val response =
+                    client.newCall(getRequest(Constants.baseUrl + Constants.gradesUrl)).await()
+                response.use {
+                    if (it.isSuccessful) {
+                        val bod = it.body.string()
                         val html = Jsoup.parse(bod)
                         if (sessionParse(preference, html))
-                            send(Resource.Error("session end - ${response.code}"))
+                            send(Resource.Error("session end - ${it.code}"))
                         else {
                             db.termDao().deleteAllTerm(1)
-                            db.termDao().upsertTerm(termLinksParse(html,1))
+                            db.termDao().upsertTerm(termLinksParse(html, 1))
                             if (parseGrades(html, 0).isNotEmpty()) {
-                                db.termDao().getTerms(1).collect {
-                                    for (x in it) {
-                                        if (x.term == parseGrades(html, 0)[0].term) {
-                                            db.gradeDao().deleteAllGrades(x.id)
-                                            db.gradeDao().upsertGrade(parseGrades(html, x.id))
-                                            preference.setIntPreference(Constants.KEY_SELECT_GRADE_TERM,x.id)
-                                            send(Resource.Success(parseGrades(html,x.id)))
-                                        }
+                                db.termDao().getTerms(1).collect { terms ->
+                                    terms.firstOrNull { term ->
+                                        term.term == parseGrades(
+                                            html,
+                                            0
+                                        )[0].term
                                     }
+                                        ?.let { matchedTerm ->
+                                            db.gradeDao().deleteAllGrades(matchedTerm.id)
+                                            db.gradeDao()
+                                                .upsertGrade(parseGrades(html, matchedTerm.id))
+                                            preference.setIntPreference(
+                                                Constants.KEY_SELECT_GRADE_TERM,
+                                                matchedTerm.id
+                                            )
+                                            send(
+                                                Resource.Success(
+                                                    parseGrades(
+                                                        html,
+                                                        matchedTerm.id
+                                                    )
+                                                )
+                                            )
+                                        }
                                 }
                             }
-                            send(Resource.Success(parseGrades(html,0)))
+                            send(Resource.Success(parseGrades(html, 0)))
                         }
                     } else {
-                        send(Resource.Error(response.message))
+                        send(Resource.Error(it.message))
                     }
                 }
-            } else {
-                send(Resource.Error("No internet connection!"))
+
             }
         } catch (e: Exception) {
             send(Resource.Error(e.message))
@@ -72,82 +84,81 @@ class GradesRepositoryImpl @Inject constructor(
 
     override suspend fun fetchGrades(term: Term): Flow<Resource<List<Grade>>> = channelFlow {
         try {
-            if (isConnected(App.appContext)) {
-                withContext(Dispatchers.IO) {
-                    send(Resource.Loading())
-                    val response =
-                        client.newCall(getRequest(Constants.baseUrl +term.urlPath)).await()
-                    if (response.isSuccessful) {
-                        val bod = response.body.string()
+
+            withContext(Dispatchers.IO) {
+                send(Resource.Loading())
+                val response =
+                    client.newCall(getRequest(Constants.baseUrl + term.urlPath)).await()
+                response.use {
+                    if (it.isSuccessful) {
+                        val bod = it.body.string()
                         val html = Jsoup.parse(bod)
                         if (sessionParse(preference, html))
-                            send(Resource.Error("session end - ${response.code}"))
+                            send(Resource.Error("session end - ${it.code}"))
                         else {
                             db.gradeDao().deleteAllGrades(term.id)
-                            db.gradeDao().upsertGrade(parseGrades(html,term.id))
-                            preference.setIntPreference(Constants.KEY_SELECT_GRADE_TERM,term.id)
-                            send(Resource.Success(parseGrades(html,term.id)))
+                            db.gradeDao().upsertGrade(parseGrades(html, term.id))
+                            preference.setIntPreference(Constants.KEY_SELECT_GRADE_TERM, term.id)
+                            send(Resource.Success(parseGrades(html, term.id)))
                         }
                     } else {
-                        send(Resource.Error(response.message))
+                        send(Resource.Error(it.message))
                     }
                 }
-            } else {
-                send(Resource.Error("No internet connection!"))
+
             }
         } catch (e: Exception) {
             send(Resource.Error(e.message))
         }
     }
 
-    override suspend fun fetchGradesTerm(): Flow<Resource<List<Term>>> = channelFlow{
+    override suspend fun fetchGradesTerm(): Flow<Resource<List<Term>>> = channelFlow {
         try {
-            if (isConnected(App.appContext)) {
-                withContext(Dispatchers.IO) {
-                    send(Resource.Loading())
-                    val response =
-                        client.newCall(getRequest(Constants.baseUrl + Constants.gradesUrl)).await()
-                    if (response.isSuccessful) {
-                        val bod = response.body.string()
+
+            withContext(Dispatchers.IO) {
+                send(Resource.Loading())
+                val response =
+                    client.newCall(getRequest(Constants.baseUrl + Constants.gradesUrl)).await()
+                response.use {
+                    if (it.isSuccessful) {
+                        val bod = it.body.string()
                         val html = Jsoup.parse(bod)
                         if (sessionParse(preference, html))
-                            send(Resource.Error("session end - ${response.code}"))
+                            send(Resource.Error("session end - ${it.code}"))
                         else {
                             db.termDao().deleteAllTerm(1)
-                            db.termDao().upsertTerm(termLinksParse(html,1))
-                            send(Resource.Success(termLinksParse(html,1)))
+                            db.termDao().upsertTerm(termLinksParse(html, 1))
+                            send(Resource.Success(termLinksParse(html, 1)))
                         }
                     } else {
-                        send(Resource.Error(response.message))
+                        send(Resource.Error(it.message))
                     }
-                    response.body.close()
                 }
-            } else {
-                send(Resource.Error("No internet connection!"))
             }
+
         } catch (e: Exception) {
             send(Resource.Error(e.message))
         }
     }
 
-    override suspend fun getGrades(termId: Int): Flow<Resource<List<Grade>>> = channelFlow{
+    override suspend fun getGrades(termId: Int): Flow<Resource<List<Grade>>> = channelFlow {
         send(Resource.Loading())
         db.gradeDao().getGrades(termId)
             .catch {
                 send(Resource.Error(it.message))
             }
-            .collect{
+            .collect {
                 send(Resource.Success(it))
             }
     }
 
-    override suspend fun getGradeTerms(): Flow<Resource<List<Term>>> = channelFlow{
+    override suspend fun getGradeTerms(): Flow<Resource<List<Term>>> = channelFlow {
         send(Resource.Loading())
         db.termDao().getTerms(1)
             .catch {
                 send(Resource.Error(it.message))
             }
-            .collect{
+            .collect {
                 send(Resource.Success(it))
             }
     }
@@ -156,12 +167,12 @@ class GradesRepositoryImpl @Inject constructor(
         db.gradeDao().getGrades(term.id)
             .catch {
                 hasData(false)
-            }.collect{
+            }.collect {
                 hasData(it.isNotEmpty())
             }
     }
 
-    private fun parseGrades(doc:Document,termId:Int):List<Grade>{
+    private fun parseGrades(doc: Document, termId: Int): List<Grade> {
         val list = mutableListOf<Grade>()
 
         val table = doc.select("div.col-md-9 tbody")
@@ -171,7 +182,7 @@ class GradesRepositoryImpl @Inject constructor(
 
         val rows = table.select("tr")
         val excludedRows = rows.subList(0, rows.size - 3)
-        for (x in excludedRows){
+        for (x in excludedRows) {
 
             val offeredNo = x.select("td:eq(0)").text()
             val subjectCode = x.select("td:eq(1)").text()

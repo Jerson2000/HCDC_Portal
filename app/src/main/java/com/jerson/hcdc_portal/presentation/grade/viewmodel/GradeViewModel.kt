@@ -8,10 +8,12 @@ import com.jerson.hcdc_portal.domain.model.Term
 import com.jerson.hcdc_portal.domain.repository.GradesRepository
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.Constants
+import com.jerson.hcdc_portal.util.NetworkMonitor
 import com.jerson.hcdc_portal.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,7 +21,8 @@ import javax.inject.Inject
 class GradeViewModel @Inject constructor(
     private val repository: GradesRepository,
     private val db: PortalDB,
-    private val pref: AppPreference
+    private val pref: AppPreference,
+    networkMonitor: NetworkMonitor
 ) : ViewModel() {
 
     private val _fetchGrades = MutableStateFlow<Resource<List<Grade>>?>(null)
@@ -28,31 +31,24 @@ class GradeViewModel @Inject constructor(
     private val _fetchTerms = MutableStateFlow<Resource<List<Term>>?>(null)
     val fetchTerms: StateFlow<Resource<List<Term>>?> = _fetchTerms
 
-    init {
-        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_GRADE_LOADED)
-        if (!isLoaded) {
-            fetchGrades()
-        }
-
-    }
-
+    private val isConnected = networkMonitor.isConnected
     fun fetchGrades(term:Term) {
+
         viewModelScope.launch {
+            _fetchGrades.value = Resource.Loading()
+
+            if(!isConnected.first()){
+                _fetchGrades.value = Resource.Error("No internet connection.")
+                return@launch
+            }
+
             repository.fetchGrades(term).collect {
                 when (it) {
-                    is Resource.Loading -> {
-                        _fetchGrades.value = Resource.Loading()
-                    }
-
                     is Resource.Success -> {
                         _fetchGrades.value = it
                         pref.setBooleanPreference(Constants.KEY_IS_GRADE_LOADED, true)
                     }
-
-                    is Resource.Error -> {
-                        _fetchGrades.value = Resource.Error(it.message)
-                    }
-
+                    is Resource.Error -> _fetchGrades.value = Resource.Error(it.message)
                     else -> Unit
                 }
             }
@@ -61,19 +57,16 @@ class GradeViewModel @Inject constructor(
 
      fun fetchGrades() {
         viewModelScope.launch {
+            _fetchGrades.value = Resource.Loading()
+
+            if(!isConnected.first()){
+                _fetchGrades.value = Resource.Error("No internet connection.")
+                return@launch
+            }
             repository.fetchGrades().collect {
                 when (it) {
-                    is Resource.Loading -> {
-                        _fetchGrades.value = Resource.Loading()
-                    }
-
-                    is Resource.Success -> {
-                        _fetchGrades.value = it
-                    }
-
-                    is Resource.Error -> {
-                        _fetchGrades.value = Resource.Error(it.message)
-                    }
+                    is Resource.Success -> _fetchGrades.value = it
+                    is Resource.Error -> _fetchGrades.value = Resource.Error(it.message)
 
                     else -> Unit
                 }

@@ -11,7 +11,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentGradesKtBinding
 import com.jerson.hcdc_portal.domain.model.Grade
 import com.jerson.hcdc_portal.domain.model.Term
@@ -57,6 +59,9 @@ class GradesKt : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         adapter = GradeAdapter(list)
         binding.apply {
+            binding.backgroundIV.load(R.drawable.studying){
+                size(300,300)
+            }
             recyclcerView.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             recyclcerView.adapter = adapter

@@ -16,7 +16,7 @@ class ChatGPTAdapter(private val list:List<Chat>): RecyclerView.Adapter<Recycler
 
     inner class UserViewHolder(private val binding: ItemContainerChatUserBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(chat: Chat){
-            binding.textMessage.text = chat.message
+            binding.textMessage.text = chat.content
         }
     }
 
@@ -32,7 +32,7 @@ class ChatGPTAdapter(private val list:List<Chat>): RecyclerView.Adapter<Recycler
 
     inner class AIViewHolder(private val binding: ItemContainerChatAiBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(chat: Chat){
-            binding.textMessage.text = chat.message
+            binding.textMessage.text = chat.content
             binding.textMessage.setOnLongClickListener{
                 copyToClipboard(binding.textMessage.text.toString(),binding.root.context)
                 true
@@ -52,8 +52,8 @@ class ChatGPTAdapter(private val list:List<Chat>): RecyclerView.Adapter<Recycler
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            Role.USER.value -> createUserViewHolder(parent)
-            Role.AI.value -> createAIViewHolder(parent)
+            Role.USER.ordinal -> createUserViewHolder(parent)
+            Role.ASSISTANT.ordinal -> createAIViewHolder(parent)
             else -> throw IllegalArgumentException("Invalid view type")
         }
 
@@ -62,8 +62,7 @@ class ChatGPTAdapter(private val list:List<Chat>): RecyclerView.Adapter<Recycler
 
 
     override fun getItemViewType(position: Int): Int {
-        val item = list[position]
-        return item.role
+        return list[position].role.ordinal
     }
 
 
@@ -72,10 +71,10 @@ class ChatGPTAdapter(private val list:List<Chat>): RecyclerView.Adapter<Recycler
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (getItemViewType(position) == 0) {
-            (holder as UserViewHolder).bind(list[position])
-        } else {
-            (holder as AIViewHolder).bind(list[position])
+        when(holder.itemViewType) {
+            Role.USER.ordinal -> (holder as UserViewHolder).bind(list[position])
+            Role.ASSISTANT.ordinal -> (holder as AIViewHolder).bind(list[position])
+            else -> throw IllegalArgumentException("Invalid view type")
         }
     }
 
