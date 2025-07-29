@@ -37,9 +37,9 @@ android {
             )
         }
 
-        buildConfigField("String", "key1", key1Value)
-        buildConfigField("String", "key2", key2Value)
-        buildConfigField("String", "ai_endpoint", aiEndPoint)
+        buildConfigField("String", "key1", "\"$key1Value\"")
+        buildConfigField("String", "key2", "\"$key2Value\"")
+        buildConfigField("String", "ai_endpoint", "\"$aiEndPoint\"")
 
     }
 
