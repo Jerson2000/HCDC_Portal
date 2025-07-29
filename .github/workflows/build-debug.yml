@@ -26,11 +26,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Check if this branch can merge into main
+      - name: Check if this branch can merge into master
         id: merge_check
         run: |
-          git fetch origin main
-          git checkout -b test-merge origin/main
+          git fetch origin master
+          git checkout -b test-merge origin/master
 
           if ! git merge --no-commit --no-ff "$GITHUB_REF_NAME"; then
             echo "conflict=true" >> "$GITHUB_OUTPUT"
@@ -49,7 +49,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `❌ This branch cannot be cleanly merged into \`main\`. Please resolve conflicts before merging.`
+              body: `❌ This branch cannot be cleanly merged into \`master\`. Please resolve conflicts before merging.`
             })
 
       - name: Grant Gradle permission
