@@ -26,13 +26,20 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Fetch all branches
+        run: |
+          git fetch --all
+
       - name: Check if this branch can merge into master
         id: merge_check
         run: |
-          git fetch origin master
-          git checkout -b test-merge origin/master
+          # Ensure we're working with the latest `master`
+          git checkout master
+          git pull origin master
 
-          if ! git merge --no-commit --no-ff "$GITHUB_REF_NAME"; then
+          # Attempt to merge the current branch (feature branch) into master
+          git fetch origin ${{ github.head_ref }}
+          if ! git merge --no-commit --no-ff ${{ github.head_ref }}; then
             echo "conflict=true" >> "$GITHUB_OUTPUT"
             exit 1
           else
