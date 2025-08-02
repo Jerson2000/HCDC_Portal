@@ -7,9 +7,9 @@ import com.jerson.hcdc_portal.databinding.DialogLoadingBinding
 
 
 class LoadingDialog(context: Context) : AlertDialog(context, com.google.android.material.R.style.ThemeOverlay_Material3_Dialog) {
-    private var binding:DialogLoadingBinding
+    private var binding:DialogLoadingBinding = DialogLoadingBinding.inflate(LayoutInflater.from(context))
+
     init {
-        binding = DialogLoadingBinding.inflate(LayoutInflater.from(context))
         setView(binding.root)
         /*setCancelable(false)*/
         setCanceledOnTouchOutside(false)

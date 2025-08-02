@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentSubjectsKtBinding
@@ -54,6 +55,9 @@ class SubjectKt : Fragment() {
             recyclerView.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             recyclerView.adapter = adapter
+            bgImage.load(R.drawable.books_piled_up){
+                size(300,300)
+            }
         }
         dashboardViewModel.getSchedules()
         listenerFetch()

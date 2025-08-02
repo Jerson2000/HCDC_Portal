@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.ImageLoader
 import coil.load
 import coil.size.Scale
+import com.jerson.hcdc_portal.R
 import com.jerson.hcdc_portal.databinding.FragmentDashboardKtBinding
 import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.presentation.building.Building
@@ -93,6 +94,10 @@ class DashboardKt : Fragment() {
             evaluation.setOnClickListener {
                 startActivity(Intent(context, EvaluationKt::class.java))
             }
+
+            noSubjectsImage.load(R.drawable.thumbs_up){
+                size(100,100)
+            }
         }
         val announcement = pref.getStringPreference(Constants.KEY_ENROLL_ANNOUNCE)
         if (announcement.isNotEmpty() || announcement.isNotBlank()) {
@@ -132,18 +137,24 @@ class DashboardKt : Fragment() {
                         }
 
                         is Resource.Success -> {
-                            loadingDialog!!.dismiss()
+                            loadingDialog?.dismiss()
+
+                            val data = it.data.orEmpty() // avoids NPE
+                            val uniqueSubjects = data.distinctBy { item -> item.subjectCode }
+                            val today = getToday()
+
+                            val filtered = data.filter { item ->
+                                item.days?.contains(today) == true
+                            }
+
+                            val finalList = filtered.ifEmpty { data }
+
                             binding.apply {
-                                var listSize = it.data!!.size
-                                if (it.data.isNotEmpty())
-                                    listSize = it.data.distinctBy { x -> x.subjectCode }.size
-                                totalSubTV.text = listSize.toString()
+                                totalSubTV.text = uniqueSubjects.size.toString()
                                 list.clear()
-                                val filtered = it.data.filter { x ->
-                                    x.days?.contains(getToday()) == true
-                                }
-                                list.addAll(filtered)
+                                list.addAll(finalList)
                                 adapter.notifyDataSetChanged()
+                                if(list.isNotEmpty()) noSubjectsImage.visibility = View.GONE
                                 isDone(true)
                             }
                         }

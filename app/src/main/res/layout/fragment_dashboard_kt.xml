@@ -409,6 +409,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/linearLayout1" />
 
+        <ImageView
+            android:id="@+id/noSubjectsImage"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:scaleType="fitXY"
+            app:layout_constraintTop_toBottomOf="@id/todayTV"/>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
