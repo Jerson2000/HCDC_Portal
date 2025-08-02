@@ -51,16 +51,3 @@ jobs:
           else
             echo "conflict=false" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Comment on PR if merge conflict exists
-        if: steps.merge.outputs.conflict == 'true'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: "❌ **Merge conflict found** detected. This branch can't be merged into `master` due to conflicts. Please resolve the conflicts by syncing your branch with `master` (via merge or rebase), thanks 😁"
-            })
