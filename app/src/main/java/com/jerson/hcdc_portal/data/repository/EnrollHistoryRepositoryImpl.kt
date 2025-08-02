@@ -11,6 +11,7 @@ import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.await
 import com.jerson.hcdc_portal.util.getRequest
 import com.jerson.hcdc_portal.util.isConnected
+import com.jerson.hcdc_portal.util.parseTerm
 import com.jerson.hcdc_portal.util.sessionParse
 import com.jerson.hcdc_portal.util.termLinksParse
 import kotlinx.coroutines.Dispatchers
@@ -142,8 +143,13 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
             .catch {
                 send(Resource.Error(it.message))
             }
-            .collect {
-                send(Resource.Success(it))
+            .collect {list->
+                val sortedList = list.sortedWith(compareByDescending<Term> {
+                    parseTerm(it.term!!).second  // Sort by year descending
+                }.thenBy {
+                    parseTerm(it.term!!).first   // Then by semester ascending
+                })
+                send(Resource.Success(sortedList))
             }
     }
 

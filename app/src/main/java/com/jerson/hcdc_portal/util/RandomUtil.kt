@@ -12,6 +12,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.jerson.hcdc_portal.App.Companion.appContext
 import com.jerson.hcdc_portal.R
 
@@ -60,6 +62,35 @@ fun extractBuilding(str:String):String{
         }
     }
 }
+
+
+// Check if the recyclerView is at Bottom
+val RecyclerView.isAtBottom: Boolean
+    get() {
+        val layoutManager = layoutManager as? LinearLayoutManager
+        return layoutManager?.let {
+            val lastVisible = it.findLastCompletelyVisibleItemPosition()
+            val total = adapter?.itemCount ?: 0
+            lastVisible >= total - 1
+        } ?: false
+    }
+
+//
+fun parseTerm(term: String): Pair<Int, Int> {
+    val semester = when {
+        term.startsWith("1st", ignoreCase = true) -> 1
+        term.startsWith("2nd", ignoreCase = true) -> 2
+        term.startsWith("Summer", ignoreCase = true) -> 3
+        else -> Int.MAX_VALUE // Unknown/lowest priority
+    }
+
+    // Extract academic year (e.g., "2023" from "2023-2024")
+    val yearStart = term.substringAfterLast(" ").substringBefore("-").toIntOrNull() ?: 0
+
+    return semester to yearStart
+}
+
+
 
 fun downloadApk(url: String) {
     val downloadManager = appContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager

@@ -51,17 +51,15 @@ class EvaluationViewModel @Inject constructor(
     // In this case I just reuse the stateFlow as for the lacking because they're the same response data
     fun fetchLacking(){
         viewModelScope.launch {
+            _fetchEvaluation.value = Resource.Loading()
+            if(!isConnected.first()){
+                _fetchEvaluation.value = Resource.Error("No internet connection.")
+                return@launch
+            }
             repo.fetchLacking().collect{
                 when(it){
-                    is Resource.Loading->{
-                        _fetchEvaluation.value = Resource.Loading()
-                    }
-                    is Resource.Success->{
-                        _fetchEvaluation.value = it
-                    }
-                    is Resource.Error ->{
-                        _fetchEvaluation.value = Resource.Error(it.message)
-                    }
+                    is Resource.Success->_fetchEvaluation.value = it
+                    is Resource.Error -> _fetchEvaluation.value = Resource.Error(it.message)
                     else -> Unit
                 }
             }

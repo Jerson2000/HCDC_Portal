@@ -62,7 +62,7 @@ android {
         jvmTarget = "17"
     }
     lint {
-        disable += listOf("NotifyDataSetChanged", "SetTextI18n","checkReleaseBuilds")
+        disable += listOf("NotifyDataSetChanged", "SetTextI18n","checkReleaseBuilds","ClickableViewAccessibility")
         baseline = file("lint-baseline.xml")
     }
 
@@ -142,6 +142,10 @@ dependencies {
 
 
     implementation("com.hendraanggrian.material:collapsingtoolbarlayout-subtitle:1.5.0")
+
+    implementation("io.noties.markwon:core:4.6.2")
+    implementation("io.noties.markwon:ext-latex:4.6.2")
+
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

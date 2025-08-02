@@ -20,99 +20,92 @@ import com.jerson.hcdc_portal.util.Constants.KEY_CUSTOM_PROFILE_VALUE
 import com.jerson.hcdc_portal.util.Constants.KEY_IS_CUSTOM_PROFILE
 import javax.inject.Inject
 
-class CustomProfileAdapter(private val list:List<Int>,private val callbackItem:(Int)-> Unit):RecyclerView.Adapter<CustomProfileAdapter.ViewHolder>(){
-    private var prevSelectedPos = -1
-    inner class ViewHolder(private val binding:ItemCustomProfileBinding):RecyclerView.ViewHolder(binding.root){
+class CustomProfileAdapter(
+    private val list: List<Int>,
+    private val onItemSelected: (Int) -> Unit
+) : RecyclerView.Adapter<CustomProfileAdapter.ViewHolder>() {
+
+    private var selectedPosition = RecyclerView.NO_POSITION
+
+    init {
+        setHasStableIds(true)
+    }
+
+    inner class ViewHolder(private val binding: ItemCustomProfileBinding) : RecyclerView.ViewHolder(binding.root) {
         private val imgLoader by lazy {
-            ImageLoader.Builder(binding.root.context)
-                .allowHardware(false)
-                .build()
+            ImageLoader.Builder(binding.root.context).allowHardware(false).build()
         }
 
-        fun bind(item: Int, pos: Int) {
-            binding.imageView.apply {
-                load(item, imgLoader) {
-                    size(200, 200)
-                }
+        fun bind(item: Int, isSelected: Boolean) {
+            binding.imageView.load(item, imgLoader) {
+                size(200, 200)
+            }
 
-                setOnClickListener {
-                    itemSelectedIndicator(binding.layout, pos)
-                    callbackItem(item)
-                }
+            binding.layout.setBackgroundColor(
+                if (isSelected) Color.GREEN else Color.TRANSPARENT
+            )
+
+            binding.root.setOnClickListener {
+                val previousPosition = selectedPosition
+                selectedPosition = adapterPosition
+                notifyItemChanged(previousPosition)
+                notifyItemChanged(selectedPosition)
+                onItemSelected(item)
             }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            ItemCustomProfileBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
+        ItemCustomProfileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    )
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        holder.bind(item,position)
-        holder.itemView.setBackgroundColor(
-            if (position == prevSelectedPos) Color.GREEN else Color.TRANSPARENT
-        )
-    }
-    private fun itemSelectedIndicator(view: View, curPos: Int) {
-        if (prevSelectedPos != RecyclerView.NO_POSITION) {
-            notifyItemChanged(prevSelectedPos)
-        }
-        prevSelectedPos = curPos
-        notifyItemChanged(curPos)
-        view.setBackgroundColor(Color.GREEN)
+        holder.bind(list[position], position == selectedPosition)
     }
 
+    override fun getItemId(position: Int): Long = list[position].toLong()
 }
 
-class CustomProfileDialog(private val pref:AppPreference,private val callbackItem: (Any) -> Unit) : DialogFragment() {
-    private lateinit var adapter: CustomProfileAdapter
+class CustomProfileDialog(
+    private val pref: AppPreference,
+    private val callbackItem: (Any) -> Unit
+) : DialogFragment() {
+
     private lateinit var binding: DialogCustomProfileBinding
-    private val list = mutableListOf<Int>()
-    private var selected:Int?=null
+    private var selected: Int? = null
+    private val list = listOf(
+        R.drawable.profile_male_1,
+        R.drawable.profile_male_2,
+        R.drawable.profile_male_3,
+        R.drawable.profile_female_1,
+        R.drawable.profile_female_2,
+        R.drawable.profile_female_3
+    )
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = DialogCustomProfileBinding.inflate(layoutInflater)
 
-        adapter = CustomProfileAdapter(list) {
+        val adapter = CustomProfileAdapter(list) {
             selected = it
         }
         binding.recyclerView.adapter = adapter
-
-        list.add(R.drawable.profile_male_1)
-        list.add(R.drawable.profile_male_2)
-        list.add(R.drawable.profile_male_3)
-        list.add(R.drawable.profile_female_1)
-        list.add(R.drawable.profile_female_2)
-        list.add(R.drawable.profile_female_3)
-        adapter.notifyDataSetChanged()
 
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle("Select Profile Picture")
             .setView(binding.root)
             .setPositiveButton("OK") { dialog, _ ->
-                selected?.let { callbackItem(it) }
-                if(selected!=null){
-                    pref.setBooleanPreference(KEY_IS_CUSTOM_PROFILE,true)
-                    pref.setIntPreference(KEY_CUSTOM_PROFILE_VALUE, selected!!)
+                selected?.let {
+                    callbackItem(it)
+                    pref.setBooleanPreference(KEY_IS_CUSTOM_PROFILE, true)
+                    pref.setIntPreference(KEY_CUSTOM_PROFILE_VALUE, it)
                 }
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.cancel()
-            }
-            .setNeutralButton("Reset"){dialog,_->
-                pref.setBooleanPreference(KEY_IS_CUSTOM_PROFILE,false)
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+            .setNeutralButton("Reset") { dialog, _ ->
+                pref.setBooleanPreference(KEY_IS_CUSTOM_PROFILE, false)
                 callbackItem(userAvatar(pref))
                 dialog.dismiss()
             }

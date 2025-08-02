@@ -6,86 +6,103 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
+    <!-- Top App Bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="ChatGPT" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ImageView
+        android:id="@+id/bgImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="fitXY"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintBottom_toTopOf="@id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        android:alpha=".6"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- RecyclerView for Messages -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        android:paddingBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
-        app:layout_constraintTop_toBottomOf="@id/appbarlayout"
-        app:stackFromEnd="true" />
+        android:paddingBottom="72dp"
+        app:stackFromEnd="true"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintBottom_toTopOf="@id/messageInputLayout" />
 
+    <!-- Divider -->
     <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="1dp"
         android:backgroundTint="?colorPrimary"
-        app:layout_constraintBottom_toTopOf="@id/relativeLayout"/>
+        app:layout_constraintBottom_toTopOf="@id/messageInputLayout" />
 
+    <!-- Bottom Input Layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/relativeLayout"
+        android:id="@+id/messageInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="8dp"
         android:background="?colorSurfaceBright"
         app:layout_constraintBottom_toBottomOf="parent">
 
+        <!-- Message Input -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/messageCardView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginEnd="8dp"
             app:cardCornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnSend"
+            app:cardElevation="2dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintEnd_toStartOf="@id/btnSend"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <EditText
                 android:id="@+id/msgET"
-                style="@style/Widget.Material3.TextInputEditText.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints=""
-                android:inputType="text"
-                android:maxLines="8"
-                android:hint="Enter your query" />
-
+                android:hint="Ask anything.."
+                android:inputType="textMultiLine"
+                android:maxLines="6"
+                android:padding="10dp"
+                android:minHeight="48dp"
+                android:background="@android:color/transparent"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="16sp" />
         </androidx.cardview.widget.CardView>
 
+        <!-- Send Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSend"
-            style="@style/Widget.Material3.Button.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:backgroundTint="?colorOnSurface"
-            android:textColor="?colorOnPrimary"
+            android:layout_marginEnd="4dp"
             app:icon="@drawable/ic_send"
-            app:iconGravity="start"
+            app:iconGravity="textStart"
             app:iconTint="?colorOnPrimary"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/app_name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbarlayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:background="?colorSurfaceBright"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:title="ChatGPT" />
-    </com.google.android.material.appbar.AppBarLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
