@@ -62,5 +62,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: "❌ **Merge conflict** detected. Please sync or rebase your branch before the PR can be merged."
+              body: "❌ **Merge conflict found** detected. This branch can't be merged into `master` due to conflicts. Please resolve the conflicts by syncing your branch with `master` (via merge or rebase), thanks 😁"
             })
