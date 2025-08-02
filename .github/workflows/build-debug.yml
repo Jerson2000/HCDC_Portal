@@ -37,8 +37,10 @@ jobs:
           git checkout master
           git pull origin master
 
-          # Attempt to merge the current branch (feature branch) into master
-          git fetch origin ${{ github.head_ref }}
+          # Fetch the pull request source branch using the correct reference
+          git fetch origin ${{ github.head_ref }}:${{ github.head_ref }}
+
+          # Attempt to merge the feature branch into master
           if ! git merge --no-commit --no-ff ${{ github.head_ref }}; then
             echo "conflict=true" >> "$GITHUB_OUTPUT"
             exit 1
