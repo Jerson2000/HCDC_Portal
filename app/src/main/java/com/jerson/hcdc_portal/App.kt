@@ -42,7 +42,7 @@ class App : Application(), Configuration.Provider,LifecycleObserver {
             val err = sw.toString()
             Log.e(this.toString(), "uncaughtException: ", e);
             startActivity(Intent(this,Crash::class.java).putExtra("err",err).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION))
-            exitProcess(1);
+            exitProcess(1)
 
         }
 
