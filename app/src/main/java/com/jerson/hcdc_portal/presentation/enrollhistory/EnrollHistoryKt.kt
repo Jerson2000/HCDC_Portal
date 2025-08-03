@@ -84,10 +84,10 @@ class EnrollHistoryKt : Fragment() {
             termDialog?.showDialog { term ->
                 selectedTerm = term
                 enrollHistoryViewModel.hasData(term) {
-                    pref.setIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM,term.id)
                     if (!it) {
                         enrollHistoryViewModel.fetchEnrollHistory(term)
                     }else{
+                        pref.setIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM,term.id)
                         enrollHistoryViewModel.getEnrollHistory(term.id)
                     }
                 }

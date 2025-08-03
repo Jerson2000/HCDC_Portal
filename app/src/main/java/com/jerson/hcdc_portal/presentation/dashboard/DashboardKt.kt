@@ -94,10 +94,6 @@ class DashboardKt : Fragment() {
             evaluation.setOnClickListener {
                 startActivity(Intent(context, EvaluationKt::class.java))
             }
-
-            noSubjectsImage.load(R.drawable.thumbs_up){
-                size(100,100)
-            }
         }
         val announcement = pref.getStringPreference(Constants.KEY_ENROLL_ANNOUNCE)
         if (announcement.isNotEmpty() || announcement.isNotBlank()) {
@@ -139,22 +135,19 @@ class DashboardKt : Fragment() {
                         is Resource.Success -> {
                             loadingDialog?.dismiss()
 
-                            val data = it.data.orEmpty() // avoids NPE
-                            val uniqueSubjects = data.distinctBy { item -> item.subjectCode }
-                            val today = getToday()
+                            var listSize = it.data!!.size
+                            if (it.data.isNotEmpty())
+                                listSize = it.data.distinctBy { x -> x.subjectCode }.size
 
-                            val filtered = data.filter { item ->
-                                item.days?.contains(today) == true
+                            val filtered = it.data.filter { x ->
+                                x.days?.contains(getToday()) == true
                             }
 
-                            val finalList = filtered.ifEmpty { data }
-
                             binding.apply {
-                                totalSubTV.text = uniqueSubjects.size.toString()
+                                totalSubTV.text = listSize.toString()
                                 list.clear()
-                                list.addAll(finalList)
+                                list.addAll(filtered)
                                 adapter.notifyDataSetChanged()
-                                if(list.isNotEmpty()) noSubjectsImage.visibility = View.GONE
                                 isDone(true)
                             }
                         }

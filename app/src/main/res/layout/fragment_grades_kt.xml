@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?textAppearanceBody2"
-            android:text="@string/_2023_2024_2nd_semester" />
+            android:text="Select term" />
 
 
     </androidx.cardview.widget.CardView>

@@ -20,7 +20,6 @@ import javax.inject.Inject
 @HiltViewModel
 class EnrollHistoryViewModel @Inject constructor(
     private val repository: EnrollHistoryRepository,
-    private val db:PortalDB,
     private val pref:AppPreference,
     networkMonitor: NetworkMonitor
 ):ViewModel() {
@@ -72,7 +71,10 @@ class EnrollHistoryViewModel @Inject constructor(
             }
             repository.fetchEnrollHistory().collect{
                 when(it){
-                    is Resource.Success ->_fetchEnrollHistory.value = it
+                    is Resource.Success ->{
+                        _fetchEnrollHistory.value = it
+                        pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED,true)
+                    }
                     is Resource.Error->_fetchEnrollHistory.value = Resource.Error(it.message)
                     else -> Unit
                 }

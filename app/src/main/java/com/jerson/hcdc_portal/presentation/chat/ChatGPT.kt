@@ -58,7 +58,7 @@ class ChatGPT : AppCompatActivity() {
         }
 
         binding.bgImage.load(R.drawable.thinking){
-            size(200,200)
+            size(300,300)
         }
 
         binding.btnSend.setOnClickListener {

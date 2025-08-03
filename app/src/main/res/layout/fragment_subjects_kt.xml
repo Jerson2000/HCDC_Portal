@@ -42,11 +42,10 @@
 
     </LinearLayout>
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/bgImage"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="fitXY"
         android:contentDescription="@string/app_name"
         app:layout_constraintTop_toBottomOf="@id/linearLayout3"
         app:layout_constraintBottom_toBottomOf="parent"

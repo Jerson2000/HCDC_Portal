@@ -55,7 +55,7 @@ class SubjectKt : Fragment() {
             recyclerView.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             recyclerView.adapter = adapter
-            bgImage.load(R.drawable.books_piled_up){
+            bgImage.load(R.drawable.studying_2){
                 size(300,300)
             }
         }

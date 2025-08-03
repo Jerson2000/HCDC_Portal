@@ -42,7 +42,7 @@
             android:id="@+id/tvTerm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/_2023_2024_2nd_semester"
+            android:text="Select term"
             android:textAppearance="?textAppearanceBody2" />
 
     </androidx.cardview.widget.CardView>

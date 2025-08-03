@@ -32,6 +32,14 @@ class GradeViewModel @Inject constructor(
     val fetchTerms: StateFlow<Resource<List<Term>>?> = _fetchTerms
 
     private val isConnected = networkMonitor.isConnected
+
+    init {
+        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_GRADE_LOADED)
+        if(!isLoaded){
+            fetchGrades()
+        }
+
+    }
     fun fetchGrades(term:Term) {
 
         viewModelScope.launch {
@@ -65,7 +73,10 @@ class GradeViewModel @Inject constructor(
             }
             repository.fetchGrades().collect {
                 when (it) {
-                    is Resource.Success -> _fetchGrades.value = it
+                    is Resource.Success -> {
+                        _fetchGrades.value = it
+                        pref.setBooleanPreference(Constants.KEY_IS_GRADE_LOADED, true)
+                    }
                     is Resource.Error -> _fetchGrades.value = Resource.Error(it.message)
 
                     else -> Unit
