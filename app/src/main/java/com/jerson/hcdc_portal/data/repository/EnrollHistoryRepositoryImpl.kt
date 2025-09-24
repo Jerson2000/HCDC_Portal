@@ -143,13 +143,8 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
             .catch {
                 send(Resource.Error(it.message))
             }
-            .collect {list->
-                val sortedList = list.sortedWith(compareByDescending<Term> {
-                    parseTerm(it.term!!).second  // Sort by year descending
-                }.thenBy {
-                    parseTerm(it.term!!).first   // Then by semester ascending
-                })
-                send(Resource.Success(sortedList))
+            .collect {
+                send(Resource.Success(it))
             }
     }
 
@@ -164,8 +159,8 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
 
     private fun parseEnrollHistory(doc: Document, termId: Int): List<EnrollHistory> {
         val list = mutableListOf<EnrollHistory>()
-        val tableBody = doc.select("div.col-md-9 table > tbody")
-        val term = doc.select("li.nav-item a.nav-link.active").text()
+        val tableBody = doc.select("div.tiles table > tbody")
+        val term = doc.select("select.select2-multiple.form-control option[selected]").first()?.text() ?: ""
 
         for (row in tableBody.select("tr")) {
 

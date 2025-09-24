@@ -163,8 +163,8 @@ class AccountsRepositoryImpl @Inject constructor(
 
     private fun parseAccount(response: Document, termId: Int): List<Account> {
         val list = mutableListOf<Account>()
-        val table = response.select("div.col-md-9 section.invoice table > tbody")
-        val term = response.select("li.nav-item a.nav-link.active").text()
+        val table = response.select("div.col-md-12 section.invoice table > tbody")
+        val term = response.select("select.select2-multiple.form-control option[selected]").first()?.text() ?: ""
         val dueText = response.select("tbody tr:nth-last-child(2) > td:eq(0)").text()
         val dueAmount = response.select("tbody tr:nth-last-child(2) > td:eq(1)").text()
 

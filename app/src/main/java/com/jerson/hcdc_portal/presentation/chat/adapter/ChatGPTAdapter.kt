@@ -4,6 +4,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -17,7 +18,7 @@ import io.noties.markwon.Markwon
 class ChatGPTAdapter(private val list: List<Chat>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     // Track which messages have already been animated
-    private val animatedMessages = mutableSetOf<Int>()
+    private val animatedMessages = mutableSetOf<Chat>()
 
     inner class UserViewHolder(private val binding: ItemContainerChatUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -36,13 +37,12 @@ class ChatGPTAdapter(private val list: List<Chat>) : RecyclerView.Adapter<Recycl
             currentRunnable?.let { handler.removeCallbacks(it) }
             binding.textMessage.text = ""
 
+            if (animatedMessages.contains(chat)) return
+
             val content = chat.content
             val markWon = Markwon.create(binding.root.context)
 
-            if (animatedMessages.contains(position)) {
-//                binding.textMessage.text = content
-                markWon.setMarkdown(binding.textMessage,content)
-            } else {
+
                 var index = 0
                 val typeWriter = object : Runnable {
                     override fun run() {
@@ -51,13 +51,12 @@ class ChatGPTAdapter(private val list: List<Chat>) : RecyclerView.Adapter<Recycl
                             index++
                             handler.postDelayed(this, 30L)
                         } else {
-                            animatedMessages.add(position) // Mark as animated
+                            animatedMessages.add(chat)
                         }
                     }
                 }
                 currentRunnable = typeWriter
                 handler.post(typeWriter)
-            }
 
             binding.textMessage.setOnLongClickListener {
                 copyToClipboard(content, binding.root.context)

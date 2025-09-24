@@ -35,7 +35,7 @@ class EvaluationRepositoryImpl @Inject constructor(
                         if (sessionParse(pref, html))
                             send(Resource.Error("session end - ${it.code}"))
                         else {
-                            val evalHtml = html.body().select("div.col-md-12 > div.tile").toString()
+                            val evalHtml = html.body().select("div.tiles > section.invoice").toString()
                             pref.setStringPreference(Constants.KEY_HTML_EVALUATION, evalHtml)
                             send(Resource.Success(evalHtml))
                         }

@@ -175,10 +175,10 @@ class GradesRepositoryImpl @Inject constructor(
     private fun parseGrades(doc: Document, termId: Int): List<Grade> {
         val list = mutableListOf<Grade>()
 
-        val table = doc.select("div.col-md-9 tbody")
+        val table = doc.select("div.col-md-12 tbody")
         val weightedAve = table.select("tbody tr:nth-last-child(2) > td:eq(3)").text()
         val earnedUnits = table.select("tbody tr:nth-last-child(2) > td:eq(1)").text()
-        val term = doc.select("li.nav-item a.nav-link.active").text()
+        val term = doc.select("select.select2-multiple.form-control option[selected]").first()?.text() ?: ""
 
         val rows = table.select("tr")
         val excludedRows = rows.subList(0, rows.size - 3)

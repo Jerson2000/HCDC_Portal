@@ -108,11 +108,13 @@ class ChatGPT : AppCompatActivity() {
                     when (resource) {
                         is Resource.Success -> {
                             resource.data?.let {
-                                chatList.add(Chat(Role.ASSISTANT, it))
-                                binding.btnSend.icon = ContextCompat.getDrawable(this@ChatGPT, R.drawable.ic_send)
-                                binding.btnSend.isEnabled = true
-                                adapter.notifyItemInserted(chatList.lastIndex)
-                                scrollToBottom()
+                                if(!chatList.contains(Chat(Role.ASSISTANT, it))){
+                                    chatList.add(Chat(Role.ASSISTANT, it))
+                                    binding.btnSend.icon = ContextCompat.getDrawable(this@ChatGPT, R.drawable.ic_send)
+                                    binding.btnSend.isEnabled = true
+                                    adapter.notifyItemInserted(chatList.lastIndex)
+                                    scrollToBottom()
+                                }
                             }
                         }
 
