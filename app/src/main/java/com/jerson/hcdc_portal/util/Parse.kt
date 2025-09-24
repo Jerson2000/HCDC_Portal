@@ -37,13 +37,13 @@ fun sessionParse(preference: AppPreference, doc: Document): Boolean {
  */
 fun termLinksParse(doc: Document, isGrade: Int): List<Term> {
     val list = mutableListOf<Term>()
-    val items = doc.select("main.app-content ul li.nav-item")
+    val items = doc.select("main.app-content select.select2-multiple.form-control option")
 
-    for (i in 1 until items.size) {
+    for (i in 0 until items.size) {
 
         val item = items[i]
-        val term = item.select("a.nav-link").text()
-        val link = item.select("a.nav-link").attr("href")
+        val term = item.text()
+        val link = item.attr("value")
 
         list.add(
             Term(
