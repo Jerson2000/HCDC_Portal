@@ -25,6 +25,7 @@ import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt
 import com.jerson.hcdc_portal.util.TermSelectionDialog
+import com.jerson.hcdc_portal.util.convertToReadableTerm
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -124,7 +125,7 @@ class EnrollHistoryKt : Fragment() {
                             loadingDialog!!.dismiss()
                             if (it.data!!.isNotEmpty()) {
                                 binding.apply {
-                                    tvTerm.text = it.data[0].term
+                                    tvTerm.text = convertToReadableTerm(it.data[0].term)
                                 }
                                 list.clear()
                                 list.addAll(it.data)

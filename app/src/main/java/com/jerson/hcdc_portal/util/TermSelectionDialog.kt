@@ -19,7 +19,7 @@ class TermSelectionDialog(private val context: Context) : MaterialAlertDialogBui
 
     fun showDialog(item: (Term) -> Unit) {
             setTitle("Select term")
-            setItems(items.map { it.term }.toTypedArray()) { _, which ->
+            setItems(items.map { convertToReadableTerm(it.term) }.toTypedArray()) { _, which ->
                 item(items[which])
             }
             setNegativeButton("OK") { _, _ ->

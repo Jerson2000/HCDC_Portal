@@ -12,6 +12,7 @@ import com.jerson.hcdc_portal.databinding.FragmentAccountDetailBinding
 import com.jerson.hcdc_portal.domain.model.Account
 import com.jerson.hcdc_portal.presentation.accounts.adapter.AccountAdapter
 import com.jerson.hcdc_portal.util.LoadingDialog
+import com.jerson.hcdc_portal.util.convertToReadableTerm
 import com.jerson.hcdc_portal.util.getParcelableArrayListCompat
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,7 +53,7 @@ class AccountDetails : Fragment() {
                 list.clear()
                 list.addAll(objectList)
                 adapter.notifyDataSetChanged()
-                binding.header.collapsingToolbar.subtitle = list[0].term
+                binding.header.collapsingToolbar.subtitle = convertToReadableTerm(list[0].term)
             }
         }
         savedInstanceState?.getParcelableArrayListCompat<Account>("accountList")?.let {

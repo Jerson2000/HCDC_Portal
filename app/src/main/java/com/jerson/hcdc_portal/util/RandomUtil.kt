@@ -90,6 +90,29 @@ fun parseTerm(term: String): Pair<Int, Int> {
     return semester to yearStart
 }
 
+fun convertToReadableTerm(term: String?): String {
+
+    if (term.isNullOrEmpty()) {
+        return "Unknown Term"
+    }
+
+    val semesterNumber = term.substringAfter("_", "").toIntOrNull()
+    if (semesterNumber == null || term.length < 8) {
+        return "Unknown Term"
+    }
+
+    val yearRange = term.substring(0, 8)
+    val yearStart = yearRange.substring(0, 4)  // Extract start year, e.g., "2025"
+    val yearEnd = yearRange.substring(4, 8)    // Extract end year, e.g., "2026"
+
+    return when (semesterNumber) {
+        1 -> "1st Semester $yearStart-$yearEnd"
+        2 -> "2nd Semester $yearStart-$yearEnd"
+        3 -> "Summer $yearStart-$yearEnd"
+        else -> "Unknown Term"
+    }
+}
+
 
 
 fun downloadApk(url: String) {

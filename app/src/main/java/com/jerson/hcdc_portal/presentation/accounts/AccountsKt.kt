@@ -26,6 +26,7 @@ import com.jerson.hcdc_portal.util.LoadingDialog
 import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt
 import com.jerson.hcdc_portal.util.TermSelectionDialog
+import com.jerson.hcdc_portal.util.convertToReadableTerm
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -128,7 +129,7 @@ class AccountsKt : Fragment() {
                                 binding.apply {
                                     tvDue.text = it.data[0].dueAmount
                                     tvDueText.text = it.data[0].dueTextPeriod
-                                    tvTerm.text = it.data[0].term
+                                    tvTerm.text = convertToReadableTerm(it.data[0].term)
 
                                     list.clear()
                                     list.addAll(it.data)
