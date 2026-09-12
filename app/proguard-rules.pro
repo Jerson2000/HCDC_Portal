@@ -27,3 +27,26 @@
 -dontwarn org.openjsse.**
 # Animal Sniffer compileOnly dependency to ensure APIs are compatible with older versions of Java.
 -dontwarn org.codehaus.mojo.animal_sniffer.*
+
+# Retain domain models and serializable classes
+-keep class com.jerson.hcdc_portal.domain.model.** { *; }
+-keepclassmembers class com.jerson.hcdc_portal.domain.model.** { *; }
+
+# Room SQLite entities and DAOs
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-keepclassmembers @androidx.room.Entity class * { *; }
+-keep @androidx.room.Dao interface * { *; }
+
+# Gson serialization preservation
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# Preserve Keep annotation
+-keep @androidx.annotation.Keep class * { *; }
+-keepclassmembers class * {
+    @androidx.annotation.Keep *;
+}

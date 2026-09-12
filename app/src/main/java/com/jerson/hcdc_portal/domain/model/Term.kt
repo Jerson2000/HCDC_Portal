@@ -10,8 +10,8 @@ import androidx.room.PrimaryKey
     indices = [Index(value = ["isGrade"])]
 )
 data class Term(
-    @PrimaryKey(true)
-    val id:Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val urlPath:String?,
     val term:String?,
     val isGrade:Int

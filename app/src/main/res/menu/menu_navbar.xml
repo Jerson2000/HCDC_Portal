@@ -3,38 +3,27 @@
 
     <item
         android:id="@+id/dashboard"
-        android:title="@string/dashboard"
-        android:icon="@drawable/selector_dashboard"
-        />
+        android:title="@string/nav_home"
+        android:icon="@drawable/selector_nav_home" />
 
     <item
-        android:id="@+id/subjects"
-        android:title="@string/subjects"
-        android:icon="@drawable/selector_subject"
-        />
+        android:id="@+id/academics"
+        android:title="@string/nav_academics"
+        android:icon="@drawable/selector_nav_academics" />
 
     <item
-        android:id="@+id/grades"
-        android:title="@string/grades"
-        android:icon="@drawable/selector_grades"
-        />
-    <item
-        android:id="@+id/enrollHistory"
-        android:title="@string/enroll_history"
-        android:icon="@drawable/selector_evaluation"
-        />
+        android:id="@+id/finance"
+        android:title="@string/nav_finance"
+        android:icon="@drawable/selector_nav_finance" />
 
     <item
-        android:id="@+id/accounts"
-        android:title="@string/accounts"
-        android:icon="@drawable/selector_account"
-        />
+        android:id="@+id/campus"
+        android:title="@string/nav_campus"
+        android:icon="@drawable/selector_nav_campus" />
 
-    <!--<item
+    <item
         android:id="@+id/more"
-        android:title="More"
-        android:icon="@drawable/ic_more_horiz"
-        />-->
-
+        android:title="@string/nav_more"
+        android:icon="@drawable/selector_nav_more" />
 
 </menu>

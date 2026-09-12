@@ -59,4 +59,8 @@ class AppViewModel @Inject constructor(
         }
     }
 
+    fun resetUpdateState() {
+        _appUpdate.value = null
+    }
+
 }

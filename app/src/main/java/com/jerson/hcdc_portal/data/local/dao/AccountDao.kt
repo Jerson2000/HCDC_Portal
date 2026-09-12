@@ -18,6 +18,12 @@ interface AccountDao {
     @Query("delete from accounts where termId = :termId")
     suspend fun deleteAccount(termId:Int)
 
+    @androidx.room.Transaction
+    suspend fun replaceAccounts(termId: Int, accounts: List<Account>) {
+        deleteAccount(termId)
+        upsertAccount(accounts)
+    }
+
     @Query("select * from accounts")
     fun getAccounts(): Flow<List<Account>>
 

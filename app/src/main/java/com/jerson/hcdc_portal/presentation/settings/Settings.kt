@@ -1,6 +1,7 @@
 package com.jerson.hcdc_portal.presentation.settings
 
 import android.content.Intent
+import coil.load
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -42,6 +43,8 @@ class Settings:AppCompatActivity() {
     private var msg = ""
     private var apkLink = ""
 
+    private var isManualCheck = false
+
     @Inject
     lateinit var pref:AppPreference
 
@@ -57,6 +60,15 @@ class Settings:AppCompatActivity() {
             setDisplayShowHomeEnabled(true)
             binding.header.collapsingToolbar.title = "Settings"
         }
+        val studentName = pref.getStringPreference(Constants.KEY_STUDENT_NAME)
+        val studentId = pref.getStringPreference(Constants.KEY_STUDENT_ID)
+        val studentCourse = pref.getStringPreference(Constants.KEY_STUDENT_COURSE)
+        if (studentName.isNotEmpty()) {
+            binding.settingsNameTV.text = studentName
+            binding.settingsCourseTV.text = "$studentCourse • $studentId"
+        }
+        binding.settingsProfileIV.load(com.jerson.hcdc_portal.util.userAvatar(pref))
+
         checkChipTheme()
 
         binding.themeOption.setOnClickListener{
@@ -110,6 +122,7 @@ class Settings:AppCompatActivity() {
 
         }
         binding.checkUpdate.setOnClickListener{
+            isManualCheck = true
             appViewModel.checkForUpdate()
         }
         checkForUpdate()
@@ -138,6 +151,10 @@ class Settings:AppCompatActivity() {
                 appViewModel.appUpdate.collect{
                     when (it) {
                         is Resource.Success -> {
+                            if (!isManualCheck && it.data.isNullOrEmpty()) {
+                                return@collect
+                            }
+                            isManualCheck = false
                             val dialogX = MaterialAlertDialogBuilder(this@Settings)
                             if (it.data.isNullOrEmpty()) {
                                 title = "App is up to date. No updates available."
@@ -155,14 +172,13 @@ class Settings:AppCompatActivity() {
                                     .setPositiveButton("Update") { dialog, _ ->
                                         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
                                             if(checkPermission()){
-                                                downloadApk(it.data)
-                                                Toast.makeText(this@Settings,"Downloading...",Toast.LENGTH_LONG).show()
+                                                downloadApk(it.data, this@Settings)
                                             }else{
                                                 apkLink = it.data
                                                 checkAndRequestPermissions()
                                             }
                                         }else{
-                                            downloadApk(it.data)
+                                            downloadApk(it.data, this@Settings)
                                         }
 
 
@@ -191,8 +207,7 @@ class Settings:AppCompatActivity() {
             if (!(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 snackBarLong(binding.root,"Permission has been denied you cannot download the latest version of the app.")
             }else{
-                downloadApk(apkLink)
-                Toast.makeText(this@Settings,"Downloading...", Toast.LENGTH_LONG).show()
+                downloadApk(apkLink, this@Settings)
             }
         }
     }

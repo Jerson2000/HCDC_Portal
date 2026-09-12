@@ -30,52 +30,25 @@ class DashboardViewModel @Inject constructor(
     private val isConnected = networkMonitor.isConnected
 
     init {
-        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_SCHEDULE_LOADED)
-        if (!isLoaded) {
-            fetchSchedules()
-        }
+        fetchSchedules()
     }
 
     fun fetchSchedules() {
         viewModelScope.launch {
-            _fetchSchedules.value = Resource.Loading()
-            if (!isConnected.first()) {
-                _fetchSchedules.value = Resource.Error("No internet connection.")
-                return@launch
-            }
             schedulesRepository.fetchSchedules().collect {
-                when (it) {
-                    is Resource.Success -> {
-                        _fetchSchedules.value = it
-                        pref.setBooleanPreference(Constants.KEY_IS_SCHEDULE_LOADED, true)
-                    }
-
-                    is Resource.Error -> _fetchSchedules.value = Resource.Error(it.message)
-                    else -> Unit
+                _fetchSchedules.value = it
+                if (it is Resource.Success && !it.data.isNullOrEmpty()) {
+                    pref.setBooleanPreference(Constants.KEY_IS_SCHEDULE_LOADED, true)
                 }
             }
         }
     }
 
-    // Get from database
+    // Get directly from database
     fun getSchedules() {
         viewModelScope.launch {
             schedulesRepository.getSchedules().collect {
-                when (it) {
-                    is Resource.Loading -> {
-                        _fetchSchedules.value = Resource.Loading()
-                    }
-
-                    is Resource.Success -> {
-                        _fetchSchedules.value = it
-                    }
-
-                    is Resource.Error -> {
-                        _fetchSchedules.value = Resource.Error(it.message)
-                    }
-
-                    else -> Unit
-                }
+                _fetchSchedules.value = it
             }
         }
     }

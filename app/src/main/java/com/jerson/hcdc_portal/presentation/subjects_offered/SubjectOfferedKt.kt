@@ -35,6 +35,8 @@ class SubjectOfferedKt:AppCompatActivity() {
     private var subjectOfferedPage = 1
     private var totalPages = 148
     private var isSearch = false
+    private var isLoadingPagination = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySubjectOfferedKtBinding.inflate(layoutInflater)
@@ -66,18 +68,15 @@ class SubjectOfferedKt:AppCompatActivity() {
         binding.recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val visibleItemCount: Int
-                val totalItemCount: Int
-                val firstVisibleItemPosition: Int
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager?
-                checkNotNull(layoutManager)
-                visibleItemCount = layoutManager.childCount
-                totalItemCount = layoutManager.itemCount
-                firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                val layoutManager = recyclerView.layoutManager as? LinearLayoutManager ?: return
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
                 if (!recyclerView.canScrollVertically(1)) {
                     if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
-                        if (subjectOfferedPage <= totalPages && !isSearch) {
+                        if (subjectOfferedPage <= totalPages && !isSearch && !isLoadingPagination) {
+                            isLoadingPagination = true
                             subjectOfferedPage++
                             subjectOfferedViewModel.fetchSubjectOffered(subjectOfferedPage)
                         }
@@ -100,6 +99,7 @@ class SubjectOfferedKt:AppCompatActivity() {
                             loadingDialog.show()
                         }
                         is Resource.Success ->{
+                            isLoadingPagination = false
                             loadingDialog.dismiss()
                             it.data?.let {x->
                                 if(isSearch) list.clear()
@@ -108,12 +108,13 @@ class SubjectOfferedKt:AppCompatActivity() {
                             adapter.notifyDataSetChanged()
                         }
                         is Resource.Error ->{
+                            isLoadingPagination = false
+                            loadingDialog.dismiss()
                             it.message?.let {msg->
                                 if (msg.contains("session end", true))
                                     loginViewModel.reLogon()
                                 else {
-                                    loadingDialog.dismiss()
-                                    SnackBarKt.snackBarLong(binding.root, it.message)
+                                    SnackBarKt.snackBarLong(binding.root, msg)
                                 }
                             }
                         }
@@ -139,7 +140,7 @@ class SubjectOfferedKt:AppCompatActivity() {
 
                         is Resource.Error -> {
                             it.message?.let{msg->
-                                if(msg.contains("null")){
+                                if(!msg.contains("null")){
                                     loadingDialog.dismiss()
                                     SnackBarKt.snackBarLong(binding.root, msg)
                                 }
@@ -151,6 +152,11 @@ class SubjectOfferedKt:AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        loadingDialog.dismiss()
     }
 
     private fun showOfferDetail(it:SubjectOffered){

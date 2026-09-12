@@ -5,11 +5,14 @@ import androidx.room.RoomDatabase
 import com.jerson.hcdc_portal.data.local.dao.AccountDao
 import com.jerson.hcdc_portal.data.local.dao.EnrollHistoryDao
 import com.jerson.hcdc_portal.data.local.dao.GradeDao
+import com.jerson.hcdc_portal.data.local.dao.ProspectusDao
 import com.jerson.hcdc_portal.data.local.dao.ScheduleDao
 import com.jerson.hcdc_portal.data.local.dao.TermDao
 import com.jerson.hcdc_portal.domain.model.Account
 import com.jerson.hcdc_portal.domain.model.EnrollHistory
 import com.jerson.hcdc_portal.domain.model.Grade
+import com.jerson.hcdc_portal.domain.model.ProspectusEntity
+import com.jerson.hcdc_portal.domain.model.ProspectusSubjectEntity
 import com.jerson.hcdc_portal.domain.model.Schedule
 import com.jerson.hcdc_portal.domain.model.Term
 
@@ -19,9 +22,11 @@ import com.jerson.hcdc_portal.domain.model.Term
         EnrollHistory::class,
         Grade::class,
         Schedule::class,
-        Term::class
+        Term::class,
+        ProspectusEntity::class,
+        ProspectusSubjectEntity::class
     ],
-    version = 1, exportSchema = false
+    version = 2, exportSchema = false
 )
 abstract class PortalDB : RoomDatabase() {
     abstract fun scheduleDao(): ScheduleDao
@@ -29,5 +34,5 @@ abstract class PortalDB : RoomDatabase() {
     abstract fun gradeDao(): GradeDao
     abstract fun enrollHistoryDao(): EnrollHistoryDao
     abstract fun termDao(): TermDao
-
-}
+    abstract fun prospectusDao(): ProspectusDao
+}

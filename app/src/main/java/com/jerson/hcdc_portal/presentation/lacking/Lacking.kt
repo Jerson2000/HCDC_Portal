@@ -70,15 +70,19 @@ class Lacking : AppCompatActivity() {
 
                         is Resource.Success -> {
                             loadingDialog.dismiss()
-                            if (it.data!!.lowercase().contains("complied")) {
+                            val data = it.data.orEmpty()
+                            if (data.lowercase().contains("complied")) {
+                                binding.layout.removeAllViews()
                                 val tv = TextView(this@Lacking)
-                                tv.text = it.data
+                                tv.text = data
                                 tv.textSize = 20F
                                 binding.layout.addView(tv)
                                 binding.recyclcerView.visibility = View.GONE
                             } else {
+                                binding.layout.removeAllViews()
+                                binding.recyclcerView.visibility = View.VISIBLE
                                 list.clear()
-                                list.addAll(it.data.split(":"))
+                                list.addAll(data.split(":"))
                                 adapter.notifyDataSetChanged()
                             }
                         }
@@ -89,7 +93,7 @@ class Lacking : AppCompatActivity() {
                                     loginViewModel.reLogon()
                                 else {
                                     loadingDialog.dismiss()
-                                    SnackBarKt.snackBarLong(binding.root, it.message)
+                                    SnackBarKt.snackBarLong(binding.root, msg)
                                 }
                             }
                         }
@@ -99,6 +103,11 @@ class Lacking : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        loadingDialog.dismiss()
     }
 
     private fun reLogonResponse() {

@@ -35,6 +35,10 @@ class SubjectDetailsKt:AppCompatActivity() {
         binding.header.toolbar.setNavigationOnClickListener {
            onBackPressedDispatcher.onBackPressed()
         }
+
+        binding.btnViewCampusMap.setOnClickListener {
+            startActivity(android.content.Intent(this, com.jerson.hcdc_portal.presentation.building.Building::class.java))
+        }
     }
 
     private fun setupViews(subject:Schedule){

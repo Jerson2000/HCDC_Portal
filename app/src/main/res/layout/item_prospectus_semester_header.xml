@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="6dp">
+
+    <TextView
+        android:id="@+id/tvSemesterTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="1st Semester"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvSemesterTotalUnits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_chip_soft"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="2dp"
+        android:text="21.0 Units"
+        android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+        android:textColor="?attr/colorOnSecondaryContainer"
+        android:textStyle="bold" />
+
+</LinearLayout>

@@ -33,29 +33,15 @@ class EnrollHistoryViewModel @Inject constructor(
     private val isConnected = networkMonitor.isConnected
 
     init {
-        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
-        if(!isLoaded){
-            fetchEnrollHistory()
-        }
-
+        fetchEnrollHistory()
     }
-    fun fetchEnrollHistory(term:Term){
+
+    fun fetchEnrollHistory(term: Term){
         viewModelScope.launch {
-            _fetchEnrollHistory.value = Resource.Loading()
-
-            if(!isConnected.first()){
-                _fetchEnrollHistory.value = Resource.Error("No internet connection.")
-                return@launch
-            }
-
             repository.fetchEnrollHistory(term).collect{
-                when(it){
-                    is Resource.Success ->{
-                        _fetchEnrollHistory.value = it
-                        pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED,true)
-                    }
-                    is Resource.Error->_fetchEnrollHistory.value = Resource.Error(it.message)
-                    else -> Unit
+                _fetchEnrollHistory.value = it
+                if (it is Resource.Success && !it.data.isNullOrEmpty()) {
+                    pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED, true)
                 }
             }
         }
@@ -63,20 +49,10 @@ class EnrollHistoryViewModel @Inject constructor(
 
     fun fetchEnrollHistory(){
         viewModelScope.launch {
-            _fetchEnrollHistory.value = Resource.Loading()
-
-            if(!isConnected.first()){
-                _fetchEnrollHistory.value = Resource.Error("No internet connection.")
-                return@launch
-            }
             repository.fetchEnrollHistory().collect{
-                when(it){
-                    is Resource.Success ->{
-                        _fetchEnrollHistory.value = it
-                        pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED,true)
-                    }
-                    is Resource.Error->_fetchEnrollHistory.value = Resource.Error(it.message)
-                    else -> Unit
+                _fetchEnrollHistory.value = it
+                if (it is Resource.Success && !it.data.isNullOrEmpty()) {
+                    pref.setBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED, true)
                 }
             }
         }

@@ -60,7 +60,7 @@ class LoginViewModel @Inject constructor(
             _session.value = Resource.Loading()
 
             if (!isConnected.first()) {
-                _login.value = Resource.Error("No internet connection.")
+                _session.value = Resource.Error("No internet connection.")
                 return@launch
             }
             loginRepository.checkSession().collect {

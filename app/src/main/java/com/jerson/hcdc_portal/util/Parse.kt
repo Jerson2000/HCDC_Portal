@@ -58,36 +58,47 @@ fun termLinksParse(doc: Document, isGrade: Int): List<Term> {
 }
 
 fun userParse(doc: Document, pref: AppPreference) {
-
     val units = doc.select("div.col-sm-9 > b").text().replace("Total Units: ", "")
-    val name = doc.select(".app-sidebar__user-name").text().lowercase().split(" ").joinToString(" ") { it.replaceFirstChar { x-> x.uppercase() } }
-    val id = doc.select(".app-sidebar__user-designation").text().replace(Regex("\\(\\)"), "").split(" ")[1]
-    val course = doc.select(".app-sidebar__user-designation").text().replace(Regex("\\(\\)"), "").split(" ")[0]
+    val rawName = doc.select(".app-sidebar__user-name").text()
+    val name = if (rawName.isNotBlank()) {
+        rawName.lowercase().split(Regex("\\s+")).joinToString(" ") { token ->
+            token.replaceFirstChar { x -> x.uppercase() }
+        }
+    } else {
+        ""
+    }
+    val rawDesignation = doc.select(".app-sidebar__user-designation").text().replace(Regex("\\(\\)"), "").trim()
+    val designationParts = rawDesignation.split(Regex("\\s+")).filter { it.isNotBlank() }
+    val course = designationParts.getOrElse(0) { "" }
+    val id = designationParts.getOrElse(1) { "" }
+
     val enrollAnnounce = doc.select(".mybox-body > center > h5").text()
     val isEnrolled = doc.body().text().contains("Officially Enrolled")
-    val enrolled = if(isEnrolled)
-        "Officially Enrolled."
-    else
-        "Not enrolled this sem."
-    pref.setStringPreference(KEY_STUDENTS_UNITS,units)
-    pref.setStringPreference(KEY_STUDENT_NAME,name)
-    pref.setStringPreference(KEY_STUDENT_ID,id)
-    pref.setStringPreference(KEY_STUDENT_COURSE,course)
-    pref.setStringPreference(KEY_ENROLL_ANNOUNCE,enrollAnnounce)
-    pref.setStringPreference(KEY_IS_ENROLLED,enrolled)
+    val enrolled = if (isEnrolled) "Officially Enrolled." else "Not enrolled this sem."
 
+    pref.setStringPreference(KEY_STUDENTS_UNITS, units)
+    pref.setStringPreference(KEY_STUDENT_NAME, name)
+    pref.setStringPreference(KEY_STUDENT_ID, id)
+    pref.setStringPreference(KEY_STUDENT_COURSE, course)
+    pref.setStringPreference(KEY_ENROLL_ANNOUNCE, enrollAnnounce)
+    pref.setStringPreference(KEY_IS_ENROLLED, enrolled)
 }
 
-@OptIn(ExperimentalEncodingApi::class)
-fun userAvatar(pref:AppPreference):Any{
-    val avatar = pref.getStringPreference(KEY_USER_AVATAR).substringAfter("base64,")
-    return  if(pref.getBooleanPreference(KEY_IS_CUSTOM_PROFILE)){
-        pref.getIntPreference(KEY_CUSTOM_PROFILE_VALUE)
-    }else{
-        if(!avatar.contains("logo")){
-            Base64.decode(avatar.toByteArray(), 0, avatar.toByteArray().size)
-        }else
+fun userAvatar(pref: AppPreference): Any {
+    if (pref.getBooleanPreference(KEY_IS_CUSTOM_PROFILE)) {
+        val customRes = pref.getIntPreference(KEY_CUSTOM_PROFILE_VALUE)
+        if (customRes != 0) return customRes
+    }
+    val avatarRaw = pref.getStringPreference(KEY_USER_AVATAR)
+    val avatar = if (avatarRaw.contains("base64,")) avatarRaw.substringAfter("base64,") else avatarRaw
+    return if (avatar.isNotEmpty() && !avatar.contains("logo")) {
+        try {
+            android.util.Base64.decode(avatar, android.util.Base64.DEFAULT)
+        } catch (e: Exception) {
             R.drawable.logo
+        }
+    } else {
+        R.drawable.logo
     }
 }
 

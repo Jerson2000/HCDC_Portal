@@ -9,6 +9,12 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 
+/**
+ * Deprecated for production use.
+ * Bypassing SSL validation and disabling hostname verification creates severe
+ * Man-in-the-Middle (MITM) vulnerabilities that compromise student credentials.
+ */
+@Deprecated("Insecure for production builds; use network-security-config or pinned certificates instead.")
 @SuppressLint("CustomX509TrustManager")
 fun OkHttpClient.Builder.bypassSSLErrors() = also { builder ->
     runCatching {

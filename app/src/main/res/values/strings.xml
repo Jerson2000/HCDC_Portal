@@ -36,4 +36,95 @@
     <string name="lacking_credential">Lacking Credential</string>
     <string name="chatgpt">ChatGPT</string>
     <string name="vision_mission">Vision-Mission</string>
+
+    <!-- Modern UI Strings -->
+    <string name="sync_status_synced">Synced • Up to date</string>
+    <string name="sync_status_syncing">Syncing portal data…</string>
+    <string name="sync_status_offline">Offline • Showing saved data</string>
+    <string name="sync_status_error">Sync issue • Using cached data</string>
+    <string name="no_classes_today">No classes scheduled for today</string>
+    <string name="no_classes_today_sub">Enjoy your free time or review your enrolled subjects.</string>
+    <string name="no_subjects_found">No subjects found</string>
+    <string name="no_grades_found">No grades available for this term</string>
+    <string name="no_accounts_found">No account records found for this term</string>
+    <string name="no_enroll_history_found">No enrollment history records found</string>
+    <string name="search_subjects_hint">Search subjects by code or title…</string>
+    <string name="filter_all">All Days</string>
+    <string name="today_schedule">Today\'s Classes</string>
+    <string name="quick_actions">Student Services</string>
+    <string name="due_balance">Outstanding Balance</string>
+    <string name="passed">Passed</string>
+    <string name="failed">Failed</string>
+    <string name="ongoing">Ongoing</string>
+    <string name="academic_standing">Academic Standing</string>
+    <string name="view_all_schedule">View Full Schedule</string>
+    <string name="student_id_label">Student ID</string>
+
+    <!-- Navigation Bar -->
+    <string name="nav_home">Home</string>
+    <string name="nav_academics">Academics</string>
+    <string name="nav_finance">Finance</string>
+    <string name="nav_campus">Campus</string>
+    <string name="nav_more">More</string>
+
+    <!-- Academic Hub Tabs -->
+    <string name="tab_schedule">Schedule</string>
+    <string name="tab_subjects">Subjects</string>
+    <string name="tab_grades">Grades</string>
+    <string name="tab_evaluation">Curriculum</string>
+    <string name="tab_history">History</string>
+    <string name="tab_offerings">Offerings</string>
+
+    <!-- Home Dashboard -->
+    <string name="next_class">NEXT CLASS</string>
+    <string name="no_more_classes">No more classes today</string>
+    <string name="no_more_classes_sub">You are all caught up for the day.</string>
+    <string name="starts_in">Starts in %1$d mins</string>
+    <string name="class_in_progress">Class in progress</string>
+    <string name="completed_class">Completed</string>
+    <string name="upcoming_class">Upcoming</string>
+    <string name="current_class">Happening Now</string>
+    <string name="view_schedule_btn">View schedule</string>
+    <string name="today_schedule_title">Today\'s Schedule</string>
+    <string name="view_full_schedule_action">View full schedule</string>
+    <string name="outstanding_balance_title">Outstanding</string>
+    <string name="all_settled">No Outstanding Balance</string>
+    <string name="all_settled_sub">Your account is fully cleared for this term.</string>
+    <string name="view_finance_details">View details</string>
+    <string name="quick_actions_title">Quick Actions</string>
+
+    <!-- Finance Hub -->
+    <string name="financial_overview">Account Overview</string>
+    <string name="ledger_breakdown">Transaction Ledger</string>
+    <string name="credentials_compliance">Credentials &amp; Compliance</string>
+    <string name="all_credentials_complied">All Credentials Complied</string>
+    <string name="all_credentials_complied_sub">You have satisfied all university registrar requirements.</string>
+
+    <!-- Campus Finder -->
+    <string name="search_campus_hint">Search building, room (e.g., 406, IT Lab)...</string>
+    <string name="quick_destinations">Campus Facilities</string>
+    <string name="all_buildings">All Buildings</string>
+    <string name="all_rooms">All Rooms</string>
+    <string name="chip_all_buildings">All Buildings</string>
+    <string name="chip_classrooms">Classrooms</string>
+    <string name="chip_laboratories">Laboratories</string>
+    <string name="chip_offices">Offices / Admin</string>
+    <string name="floor_label">%1$s Floor</string>
+
+    <!-- AI Assistant -->
+    <string name="ai_greeting_title">How can I help you?</string>
+    <string name="ai_greeting_sub">Ask me anything about your classes, schedule, grades, campus rooms, or fees.</string>
+    <string name="prompt_next_class">What\'s my next class?</string>
+    <string name="prompt_grades">Show my grades</string>
+    <string name="prompt_balance">Do I have accountabilities?</string>
+    <string name="prompt_subjects">What subjects am I taking?</string>
+    <string name="prompt_room">Where is Room 406?</string>
+
+    <!-- Global Search -->
+    <string name="global_search_title">Search Portal</string>
+    <string name="global_search_hint">Search subjects, schedules, rooms, buildings...</string>
+    <string name="category_subjects">SUBJECTS</string>
+    <string name="category_schedule">SCHEDULE</string>
+    <string name="category_rooms">ROOMS</string>
+    <string name="category_buildings">BUILDINGS</string>
 </resources>

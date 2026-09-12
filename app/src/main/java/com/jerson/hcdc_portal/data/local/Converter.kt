@@ -8,15 +8,11 @@ class Converter {
 
     @TypeConverter
     fun fromAnyToString(attribute: Any?): String {
-        if (attribute == null)
-            return ""
-        return attribute as String
+        return attribute?.toString() ?: ""
     }
 
     @TypeConverter
-    fun fromStringToAny(attribute: String?):Any{
-        if(attribute == null)
-            return ""
-        return attribute
+    fun fromStringToAny(attribute: String?): Any {
+        return attribute ?: ""
     }
 }

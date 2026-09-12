@@ -4,9 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -47,17 +45,15 @@ class SplashKt : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                delay(500L)
-                keepSplash = false
-                val destination = if (pref.getBooleanPreference(KEY_IS_LOGIN))
-                    MainKt::class.java else LoginKt::class.java
-                startActivity(
-                    Intent(this@SplashKt, destination)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-
-            }
+            delay(500L)
+            keepSplash = false
+            val destination = if (pref.getBooleanPreference(KEY_IS_LOGIN))
+                MainKt::class.java else LoginKt::class.java
+            startActivity(
+                Intent(this@SplashKt, destination)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+            finish()
         }
     }
 }

@@ -10,6 +10,7 @@ import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersisto
 import com.jerson.hcdc_portal.data.local.PortalDB
 import com.jerson.hcdc_portal.util.AppPreference
 import com.jerson.hcdc_portal.util.NetworkMonitor
+import com.jerson.hcdc_portal.util.SecurePreference
 import com.jerson.hcdc_portal.util.TimingInterceptorKt
 import com.jerson.hcdc_portal.util.bypassSSLErrors
 import dagger.Module
@@ -45,9 +46,9 @@ object AppModule {
             .cookieJar(PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(app)))
             .bypassSSLErrors()
             .retryOnConnectionFailure(true)
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20, TimeUnit.SECONDS)
             .build()
     }
 
@@ -57,18 +58,30 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providesPortalDB(app:Application):PortalDB = Room.databaseBuilder(app,PortalDB::class.java,"portal.db").build()
+    fun providesPortalDB(app:Application):PortalDB = Room.databaseBuilder(app,PortalDB::class.java,"portal.db")
+        .fallbackToDestructiveMigration()
+        .build()
+
+    @Provides
+    fun providesProspectusDao(db: PortalDB) = db.prospectusDao()
 
     @Provides
     @Singleton
-    fun providesAppPreference(application:Application):AppPreference{
-        return AppPreference(application.applicationContext)
+    fun providesSecurePreference(application: Application): SecurePreference {
+        return SecurePreference(application.applicationContext)
     }
 
     @Provides
-    fun providesImageLoader(app:Application): ImageLoader {
+    @Singleton
+    fun providesAppPreference(application: Application, securePreference: SecurePreference): AppPreference {
+        return AppPreference(application.applicationContext, securePreference)
+    }
+
+    @Provides
+    @Singleton
+    fun providesImageLoader(app: Application, client: OkHttpClient): ImageLoader {
         return ImageLoader.Builder(app)
-            .okHttpClient(OkHttpClient())
+            .okHttpClient(client)
             .build()
     }
 

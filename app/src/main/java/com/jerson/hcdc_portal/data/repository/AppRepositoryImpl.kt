@@ -20,6 +20,10 @@ class AppRepositoryImpl @Inject constructor(
 ) : AppRepository {
     override suspend fun sendCrashReport(report: String): Flow<Resource<Boolean>> = channelFlow {
         try {
+            if (BuildConfig.key1.isBlank() || !BuildConfig.key1.startsWith("http")) {
+                send(Resource.Error("Crash reporting endpoint is not configured."))
+                return@channelFlow
+            }
             send(Resource.Loading())
             val json = JSONObject()
                 .put("content", report)
@@ -38,15 +42,10 @@ class AppRepositoryImpl @Inject constructor(
                 if (it.isSuccessful) {
                     send(Resource.Success(true))
                 } else {
-                    println("ERROR:->  ${it.message}\t${it.code}")
                     send(Resource.Error(it.message))
                 }
-
             }
-
-
         } catch (e: Exception) {
-            println("ERROR:->  $e")
             send(Resource.Error("${e.message}"))
         }
     }
@@ -57,31 +56,45 @@ class AppRepositoryImpl @Inject constructor(
             val response = client.newCall(getRequest(Constants.githubReleases)).await()
             response.use {
                 if (it.isSuccessful) {
-                    val json = JSONObject(it.body.string())
-                    val latest = extractVersion(json.getString("tag_name"))
-                    val current = extractVersion(BuildConfig.VERSION_NAME)
-                    val downloadApkLink = JSONObject(json.getJSONArray("assets")[0].toString())
-                    if (latest > current)
-                        send(Resource.Success(downloadApkLink.getString("browser_download_url")))
-                    else
+                    val bodyStr = it.body?.string().orEmpty()
+                    if (bodyStr.isBlank()) {
                         send(Resource.Success(""))
-
-
+                        return@channelFlow
+                    }
+                    val json = JSONObject(bodyStr)
+                    val latestTag = json.optString("tag_name", "")
+                    val isNewer = isVersionNewer(latestTag, BuildConfig.VERSION_NAME)
+                    val assets = json.optJSONArray("assets")
+                    if (isNewer && assets != null && assets.length() > 0) {
+                        val assetObj = assets.optJSONObject(0)
+                        val downloadUrl = assetObj?.optString("browser_download_url").orEmpty()
+                        send(Resource.Success(downloadUrl))
+                    } else {
+                        send(Resource.Success(""))
+                    }
                 } else {
                     send(Resource.Error(it.message))
                 }
             }
-
         } catch (e: Exception) {
             send(Resource.Error("${e.message}"))
         }
     }
 
-    private fun extractVersion(str: String): Int {
-        val y = str.substringAfter("v")
-        val x = y.split(".").map { it.toInt() }
-        var c = 0
-        for (v in x) c += v
-        return c
+    companion object {
+        fun isVersionNewer(latestStr: String, currentStr: String): Boolean {
+            val latestClean = latestStr.trim().removePrefix("v")
+            val currentClean = currentStr.trim().removePrefix("v")
+            val latestParts = latestClean.split(".").mapNotNull { it.toIntOrNull() }
+            val currentParts = currentClean.split(".").mapNotNull { it.toIntOrNull() }
+            val maxLen = maxOf(latestParts.size, currentParts.size)
+            for (i in 0 until maxLen) {
+                val l = latestParts.getOrElse(i) { 0 }
+                val c = currentParts.getOrElse(i) { 0 }
+                if (l > c) return true
+                if (l < c) return false
+            }
+            return false
+        }
     }
 }

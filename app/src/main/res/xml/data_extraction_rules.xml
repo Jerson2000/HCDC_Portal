@@ -5,15 +5,15 @@
 -->
 <data-extraction-rules>
     <cloud-backup>
-        <!-- TODO: Use <include> and <exclude> to control what is backed up.
-        <include .../>
-        <exclude .../>
-        -->
+        <!-- Exclude all shared preferences containing credentials or authentication tokens -->
+        <exclude domain="sharedpref" path="secure_portal_prefs.xml" />
+        <exclude domain="sharedpref" path="PortalApp.xml" />
+        <exclude domain="sharedpref" path="CookiePersistence.xml" />
     </cloud-backup>
-    <!--
     <device-transfer>
-        <include .../>
-        <exclude .../>
+        <!-- MasterKey cannot be transferred across hardware security modules / devices -->
+        <exclude domain="sharedpref" path="secure_portal_prefs.xml" />
+        <exclude domain="sharedpref" path="PortalApp.xml" />
+        <exclude domain="sharedpref" path="CookiePersistence.xml" />
     </device-transfer>
-    -->
 </data-extraction-rules>

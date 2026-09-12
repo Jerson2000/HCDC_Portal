@@ -26,13 +26,16 @@ import com.jerson.hcdc_portal.util.Resource
 import com.jerson.hcdc_portal.util.SnackBarKt
 import com.jerson.hcdc_portal.util.TermSelectionDialog
 import com.jerson.hcdc_portal.util.convertToReadableTerm
+import com.jerson.hcdc_portal.util.setupCustomTheme
+import com.jerson.hcdc_portal.util.stopRefreshing
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class EnrollHistoryKt : Fragment() {
-    private lateinit var binding: FragmentEnrollmentHistoryKtBinding
+    private var _binding: FragmentEnrollmentHistoryKtBinding? = null
+    private val binding get() = _binding!!
     private val enrollHistoryViewModel: EnrollHistoryViewModel by viewModels()
     private val loginViewModel: LoginViewModel by viewModels()
     private lateinit var adapter: EnrollHistoryAdapter
@@ -49,7 +52,7 @@ class EnrollHistoryKt : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentEnrollmentHistoryKtBinding.inflate(inflater)
+        _binding = FragmentEnrollmentHistoryKtBinding.inflate(inflater, container, false)
         loadingDialog = context?.let { LoadingDialog(it) }
         termDialog = context?.let {TermSelectionDialog(it) }
         return binding.root
@@ -58,19 +61,20 @@ class EnrollHistoryKt : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.bgImage.load(R.drawable.reunite){
-            size(300,300)
-        }
-
-        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
-
         adapter = EnrollHistoryAdapter(list)
         binding.apply {
             recyclerView.adapter = adapter
             recyclerView.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+            swipeRefresh.setupCustomTheme(requireContext())
+            swipeRefresh.setOnRefreshListener {
+                isRefresh = true
+                enrollHistoryViewModel.fetchEnrollHistory()
+            }
         }
 
+        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ENROLL_HISTORY_LOADED)
         if (isLoaded)
             enrollHistoryViewModel.getEnrollHistory(pref.getIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM))
         fetchEnrollHistory {
@@ -94,21 +98,10 @@ class EnrollHistoryKt : Fragment() {
                 }
             }
         }
-        binding.btnRefresh.setOnClickListener{
-            context?.let { cntxt ->
-                MaterialAlertDialogBuilder(cntxt)
-                    .setTitle("Refresh")
-                    .setMessage("Are you sure you want to refresh?")
-                    .setPositiveButton("Yes"){dialog,_->
-                        isRefresh = true
-                        enrollHistoryViewModel.fetchEnrollHistory()
-                        dialog.dismiss()
-                    }
-                    .setNegativeButton("No"){dialog,_->
-                        dialog.dismiss()
-                    }.show()
-
-            }
+        binding.btnRefresh.setOnClickListener {
+            binding.swipeRefresh.isRefreshing = true
+            isRefresh = true
+            enrollHistoryViewModel.fetchEnrollHistory()
         }
     }
 
@@ -118,36 +111,31 @@ class EnrollHistoryKt : Fragment() {
                 enrollHistoryViewModel.fetchEnrollHistory.collect {
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog!!.show()
+                            if (it.data.isNullOrEmpty() && list.isEmpty()) {
+                                _binding?.swipeRefresh?.isRefreshing = true
+                            } else {
+                                updateEnrollHistoryUi(it.data.orEmpty(), isDone)
+                            }
                         }
 
                         is Resource.Success -> {
-                            loadingDialog!!.dismiss()
-                            if (it.data!!.isNotEmpty()) {
-                                binding.apply {
-                                    tvTerm.text = convertToReadableTerm(it.data[0].term)
-                                }
-                                list.clear()
-                                list.addAll(it.data)
-                                adapter.notifyDataSetChanged()
-                            } else {
-                                binding.apply {
-                                    tvTerm.text = "Select term"
-                                    list.clear()
-                                    adapter.notifyDataSetChanged()
-                                }
-                            }
-                            isDone(true)
+                            _binding?.swipeRefresh?.stopRefreshing()
+                            loadingDialog?.dismiss()
+                            updateEnrollHistoryUi(it.data.orEmpty(), isDone)
                         }
 
                         is Resource.Error -> {
                             isDone(true)
+                            _binding?.swipeRefresh?.stopRefreshing()
+                            loadingDialog?.dismiss()
+                            if (!it.data.isNullOrEmpty()) {
+                                updateEnrollHistoryUi(it.data, isDone)
+                            }
                             it.message?.let {msg->
                                 if (msg.contains("session end", true))
                                     loginViewModel.reLogon()
                                 else {
-                                    loadingDialog?.dismiss()
-                                    SnackBarKt.snackBarLong(binding.root, it.message)
+                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
                                 }
                             }
                         }
@@ -157,6 +145,28 @@ class EnrollHistoryKt : Fragment() {
                 }
             }
         }
+    }
+
+    private fun updateEnrollHistoryUi(data: List<EnrollHistory>, isDone: (Boolean) -> Unit) {
+        if (data.isNotEmpty()) {
+            _binding?.apply {
+                tvTerm.text = convertToReadableTerm(data[0].term)
+                emptyHistoryLayout.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
+            }
+            list.clear()
+            list.addAll(data)
+            adapter.notifyDataSetChanged()
+        } else {
+            _binding?.apply {
+                tvTerm.text = "Select term"
+                emptyHistoryLayout.visibility = View.VISIBLE
+                recyclerView.visibility = View.GONE
+                list.clear()
+                adapter.notifyDataSetChanged()
+            }
+        }
+        isDone(true)
     }
 
 
@@ -176,7 +186,9 @@ class EnrollHistoryKt : Fragment() {
                         }
 
                         is Resource.Error -> {
-                            it.message?.let { msg -> SnackBarKt.snackBarLong(binding.root, msg) }
+                            it.message?.let { msg ->
+                                _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                            }
                         }
 
                         else -> Unit
@@ -192,7 +204,7 @@ class EnrollHistoryKt : Fragment() {
                 loginViewModel.login.collect{
                     when (it) {
                         is Resource.Loading -> {
-                            loadingDialog!!.show()
+                            loadingDialog?.show()
                         }
 
                         is Resource.Success -> {
@@ -206,7 +218,7 @@ class EnrollHistoryKt : Fragment() {
                             it.message?.let{msg->
                                 if(!msg.contains("null")){
                                     loadingDialog?.dismiss()
-                                    SnackBarKt.snackBarLong(binding.root, msg)
+                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
                                 }
                             }
                         }
@@ -216,5 +228,13 @@ class EnrollHistoryKt : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        loadingDialog?.dismiss()
+        loadingDialog = null
+        termDialog = null
+        _binding = null
     }
 }

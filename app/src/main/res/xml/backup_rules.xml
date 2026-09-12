@@ -6,8 +6,8 @@
    See https://developer.android.com/about/versions/12/backup-restore
 -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <!-- Exclude all shared preferences containing credentials or authentication tokens -->
+    <exclude domain="sharedpref" path="secure_portal_prefs.xml" />
+    <exclude domain="sharedpref" path="PortalApp.xml" />
+    <exclude domain="sharedpref" path="CookiePersistence.xml" />
 </full-backup-content>

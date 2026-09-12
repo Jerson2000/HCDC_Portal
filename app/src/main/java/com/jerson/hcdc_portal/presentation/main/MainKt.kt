@@ -47,52 +47,63 @@ class MainKt : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentHost) as NavHostFragment
         binding.navbar.setupWithNavController(navHostFragment.navController)
+        checkAppUpdates()
+    }
+
+    fun navigateToTab(navId: Int) {
+        binding.navbar.selectedItemId = navId
+    }
+
+    private var hasCheckedUpdateOnLaunch = false
+
+    private fun checkAppUpdates() {
+        if (hasCheckedUpdateOnLaunch) return
+        hasCheckedUpdateOnLaunch = true
+
         appViewModel.checkForUpdate()
-        checkForUpdate{
-            if(it.isNotEmpty()){
-                println("LINK:-> $it")
-                if(!appPref.getBooleanPreference(Constants.KEY_IS_SHOW_UPDATE_DIALOG)){
-                    dialog = MaterialAlertDialogBuilder(this@MainKt)
-                        .setTitle(title)
-                        .setMessage(msg)
-                        .setPositiveButton("Update") { dialog, _ ->
-                            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
-                                if (checkPermission()){
-                                    downloadApk(it)
-                                    Toast.makeText(this@MainKt,"Downloading...", Toast.LENGTH_LONG).show()
+        checkForUpdate { downloadUrl ->
+            if (downloadUrl.isNotEmpty()) {
+                if (!appPref.getBooleanPreference(Constants.KEY_IS_SHOW_UPDATE_DIALOG)) {
+                    if (!isFinishing && !isDestroyed) {
+                        dialog?.dismiss()
+                        dialog = MaterialAlertDialogBuilder(this@MainKt)
+                            .setTitle(title)
+                            .setMessage(msg)
+                            .setPositiveButton("Update") { dialog, _ ->
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                    if (checkPermission()) {
+                                        downloadApk(downloadUrl, this@MainKt)
+                                    } else {
+                                        apkLink = downloadUrl
+                                        checkAndRequestPermissions()
+                                    }
+                                } else {
+                                    downloadApk(downloadUrl, this@MainKt)
                                 }
-                                else{
-                                    apkLink = it
-                                    checkAndRequestPermissions()
-                                }
-                            }else{
-                                downloadApk(it)
+                                dialog.dismiss()
                             }
+                            .setNegativeButton("Cancel") { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .setNeutralButton("Don't show again") { dialog, _ ->
+                                appPref.setBooleanPreference(Constants.KEY_IS_SHOW_UPDATE_DIALOG, true)
+                                dialog.dismiss()
+                            }
+                            .create()
 
-
-                            dialog.dismiss()
-                        }
-                        .setNegativeButton("Cancel") { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .setNeutralButton("Don't show again") { dialog, _ ->
-                            appPref.setBooleanPreference(Constants.KEY_IS_SHOW_UPDATE_DIALOG,true)
-                            dialog.dismiss()
-                        }
-                        .create()
-
-                    if (dialog!!.isShowing) {
-                        dialog!!.dismiss()
-                        dialog!!.show()
-                    } else {
                         dialog?.show()
                     }
-
                 }
             }
+            // Reset the update state so repeatOnLifecycle re-collections don't re-show the dialog
+            appViewModel.resetUpdateState()
         }
+    }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        dialog?.dismiss()
+        dialog = null
     }
 
     private fun checkForUpdate(callback:(String)->Unit){
@@ -126,8 +137,7 @@ class MainKt : AppCompatActivity() {
             if (!(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 snackBarLong(binding.root,"Permission has been denied you cannot download the latest version of the app.")
             }else{
-                downloadApk(apkLink)
-                Toast.makeText(this@MainKt,"Downloading...", Toast.LENGTH_LONG).show()
+                downloadApk(apkLink, this@MainKt)
             }
         }
     }

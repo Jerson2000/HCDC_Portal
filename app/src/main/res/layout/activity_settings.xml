@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -13,105 +14,224 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:paddingBottom="40dp">
 
-            <LinearLayout
+            <!-- Student Account Summary Card -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:padding="10dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="UI"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:textStyle="bold" />
-
-                <com.jerson.hcdc_portal.view.SettingOptionView
-                    android:id="@+id/theme_option"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:settingIcon="@drawable/ic_brightness"
-                    app:settingSubtitle="Change app theme."
-                    app:settingTitle="Select default theme" />
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/theme_mode_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="16dp"
-                    app:chipSpacingHorizontal="5dp"
-                    app:chipSpacingVertical="5dp"
-                    android:visibility="gone"
-                    app:singleSelection="true">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/auto_chip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Auto"
-                        android:checkable="true"
-                        app:chipIcon="@drawable/ic_brightness_auto" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/night_chip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dark"
-                        android:checkable="true"
-                        app:chipIcon="@drawable/ic_brightness" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/light_chip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Light"
-                        android:checkable="true"
-                        app:chipIcon="@drawable/ic_brightness_low" />
-
-                </com.google.android.material.chip.ChipGroup>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height=".7dp" />
-
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="1dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/colorOutlineVariant">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:orientation="vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/settingsProfileIV"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
+                        app:srcCompat="@drawable/logo"
+                        app:strokeColor="?attr/colorPrimary"
+                        app:strokeWidth="1.5dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/settingsNameTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Student Account"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/settingsCourseTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Holy Cross of Davao College"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                            android:textColor="?android:attr/textColorSecondary" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: Appearance -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:text="Appearance"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="?attr/colorPrimary"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="14dp"
+                app:strokeColor="?attr/colorOutlineVariant">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <com.jerson.hcdc_portal.view.SettingOptionView
-                        android:id="@+id/github"
+                        android:id="@+id/theme_option"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:settingIcon="@drawable/ic_github_24"
-                        app:settingSubtitle="Developer info. and app release."
-                        app:settingTitle="Github" />
+                        app:settingIcon="@drawable/ic_brightness"
+                        app:settingSubtitle="Select light, dark, or follow system theme."
+                        app:settingTitle="App Theme" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/theme_mode_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:chipSpacingHorizontal="8dp"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/auto_chip"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="System Auto"
+                            app:chipIcon="@drawable/ic_brightness_auto" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/night_chip"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="Dark"
+                            app:chipIcon="@drawable/ic_brightness" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/light_chip"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="Light"
+                            app:chipIcon="@drawable/ic_brightness_low" />
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: Application & Updates -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:text="Application &amp; Updates"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="?attr/colorPrimary"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="14dp"
+                app:strokeColor="?attr/colorOutlineVariant">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
                     <com.jerson.hcdc_portal.view.SettingOptionView
                         android:id="@+id/checkUpdate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:settingIcon="@drawable/ic_update"
-                        app:settingSubtitle="Check if there is available updates."
-                        app:settingTitle="Check for updates" />
+                        app:settingSubtitle="Check for the latest companion release."
+                        app:settingTitle="Check for Updates" />
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="12dp" />
+
+                    <com.jerson.hcdc_portal.view.SettingOptionView
+                        android:id="@+id/github"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:settingIcon="@drawable/ic_github_24"
+                        app:settingSubtitle="Source code, releases, and documentation."
+                        app:settingTitle="GitHub Repository" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section: Session & Account -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:text="Session"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="?attr/colorPrimary"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="14dp"
+                app:strokeColor="?attr/colorOutlineVariant">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
                     <com.jerson.hcdc_portal.view.SettingOptionView
                         android:id="@+id/btnLogout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:settingIcon="@drawable/ic_logout"
-                        app:settingSubtitle="End session."
-                        app:settingTitle="Logout" />
+                        app:settingSubtitle="Sign out of your portal account on this device."
+                        app:settingTitle="Log Out" />
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 

@@ -5,11 +5,16 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
+import androidx.room.Index
+
 @Parcelize
-@Entity("enroll_history")
+@Entity(
+    tableName = "enroll_history",
+    indices = [Index(value = ["termId"])]
+)
 data class EnrollHistory(
-    @PrimaryKey(true)
-    val id:Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val termId:Int?,
     val term:String?,
     val offeredNo:String?,

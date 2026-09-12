@@ -27,16 +27,15 @@ class TermSelectionDialog(private val context: Context) : MaterialAlertDialogBui
             }
             dialog = create()
 
-        if (!dialog?.isShowing!!) {
+        if (dialog?.isShowing != true) {
             dialog?.show()
-        }else{
+        } else {
             dialog?.dismiss()
         }
     }
 
-    private fun dismiss() {
-
-        if (dialog?.isShowing!!) {
+    fun dismiss() {
+        if (dialog?.isShowing == true) {
             dialog?.dismiss()
         }
     }

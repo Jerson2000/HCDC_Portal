@@ -18,7 +18,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AccountDetails : Fragment() {
-    private lateinit var binding: FragmentAccountDetailBinding
+    private var _binding: FragmentAccountDetailBinding? = null
+    private val binding get() = _binding!!
     private val list = mutableListOf<Account>()
     private lateinit var adapter: AccountAdapter
     private var loadingDialog: LoadingDialog? = null
@@ -27,15 +28,15 @@ class AccountDetails : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAccountDetailBinding.inflate(inflater)
+        _binding = FragmentAccountDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadingDialog = context?.let { LoadingDialog(it) }
-        (requireActivity() as AppCompatActivity).setSupportActionBar(binding.header.toolbar)
-        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
+        (activity as? AppCompatActivity)?.setSupportActionBar(binding.header.toolbar)
+        (activity as? AppCompatActivity)?.supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowHomeEnabled(true)
             binding.header.collapsingToolbar.title = "Accountabilities"
@@ -53,18 +54,22 @@ class AccountDetails : Fragment() {
                 list.clear()
                 list.addAll(objectList)
                 adapter.notifyDataSetChanged()
-                binding.header.collapsingToolbar.subtitle = convertToReadableTerm(list[0].term)
+                if (list.isNotEmpty()) {
+                    binding.header.collapsingToolbar.subtitle = convertToReadableTerm(list[0].term)
+                }
             }
         }
         savedInstanceState?.getParcelableArrayListCompat<Account>("accountList")?.let {
             list.clear()
             list.addAll(it)
             adapter.notifyDataSetChanged()
-            binding.header.collapsingToolbar.subtitle = list[0].term
+            if (list.isNotEmpty()) {
+                binding.header.collapsingToolbar.subtitle = list[0].term
+            }
         }
 
         binding.header.toolbar.setNavigationOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            activity?.supportFragmentManager?.popBackStack()
         }
 
 
@@ -75,5 +80,11 @@ class AccountDetails : Fragment() {
         outState.putParcelableArrayList("accountList", ArrayList(list))
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        loadingDialog?.dismiss()
+        loadingDialog = null
+        _binding = null
+    }
 
 }

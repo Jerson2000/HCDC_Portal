@@ -20,6 +20,34 @@
     </fragment>
 
     <fragment
+        android:id="@+id/academics"
+        android:name="com.jerson.hcdc_portal.presentation.academics.AcademicsKt"
+        android:label="Academics"
+        tools:layout="@layout/fragment_academics_kt"/>
+
+    <fragment
+        android:id="@+id/finance"
+        android:name="com.jerson.hcdc_portal.presentation.finance.FinanceKt"
+        android:label="Finance"
+        tools:layout="@layout/fragment_finance_kt">
+        <action
+            android:id="@+id/action_finance_to_accountDetails"
+            app:destination="@id/accountDetails" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/campus"
+        android:name="com.jerson.hcdc_portal.presentation.campus.CampusKt"
+        android:label="Campus"
+        tools:layout="@layout/fragment_campus_kt"/>
+
+    <fragment
+        android:id="@+id/more"
+        android:name="com.jerson.hcdc_portal.presentation.more.MoreKt"
+        android:label="More"
+        tools:layout="@layout/fragment_more_kt"/>
+
+    <fragment
         android:id="@+id/grades"
         android:name="com.jerson.hcdc_portal.presentation.grade.GradesKt"
         android:label="GradesKt"
@@ -37,6 +65,9 @@
         <action
             android:id="@+id/action_accountDetails_to_accounts"
             app:destination="@id/accounts" />
+        <action
+            android:id="@+id/action_accountDetails_to_finance"
+            app:destination="@id/finance" />
     </fragment>
     <fragment
         android:id="@+id/subjects"

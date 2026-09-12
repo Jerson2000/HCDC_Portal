@@ -91,39 +91,48 @@ fun parseTerm(term: String): Pair<Int, Int> {
 }
 
 fun convertToReadableTerm(term: String?): String {
-
-    if (term.isNullOrEmpty()) {
+    if (term.isNullOrBlank()) {
         return "Unknown Term"
     }
 
+    // Handle format "1-2023-2024" or "2-2023-2024" or "3-2023-2024"
+    if (term.contains("-")) {
+        val parts = term.split("-")
+        if (parts.size >= 3) {
+            val sem = parts[0].toIntOrNull()
+            val startYear = parts[1]
+            val endYear = parts[2]
+            return when (sem) {
+                1 -> "1st Sem $startYear-$endYear"
+                2 -> "2nd Sem $startYear-$endYear"
+                3 -> "Summer $startYear-$endYear"
+                else -> term
+            }
+        }
+    }
+
+    // Handle format "20252026_1"
     val semesterNumber = term.substringAfter("_", "").toIntOrNull()
-    if (semesterNumber == null || term.length < 8) {
-        return "Unknown Term"
+    if (semesterNumber != null && term.length >= 8) {
+        val yearRange = term.substring(0, 8)
+        val yearStart = yearRange.substring(0, 4)  // Extract start year, e.g., "2025"
+        val yearEnd = yearRange.substring(4, 8)    // Extract end year, e.g., "2026"
+
+        return when (semesterNumber) {
+            1 -> "1st Semester $yearStart-$yearEnd"
+            2 -> "2nd Semester $yearStart-$yearEnd"
+            3 -> "Summer $yearStart-$yearEnd"
+            else -> term
+        }
     }
 
-    val yearRange = term.substring(0, 8)
-    val yearStart = yearRange.substring(0, 4)  // Extract start year, e.g., "2025"
-    val yearEnd = yearRange.substring(4, 8)    // Extract end year, e.g., "2026"
-
-    return when (semesterNumber) {
-        1 -> "1st Semester $yearStart-$yearEnd"
-        2 -> "2nd Semester $yearStart-$yearEnd"
-        3 -> "Summer $yearStart-$yearEnd"
-        else -> "Unknown Term"
-    }
+    return term
 }
 
 
 
-fun downloadApk(url: String) {
-    val downloadManager = appContext.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-    val urlX = url.toUri()
-    val request = DownloadManager.Request(urlX)
-        .setTitle("${appContext.getString(R.string.app_name)} ${urlX.lastPathSegment?.substringAfter("app-")}")
-        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, urlX.lastPathSegment)
-        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-        .setMimeType("application/vnd.android.package-archive")
-    downloadManager.enqueue(request)
+fun downloadApk(url: String, context: Context = appContext) {
+    UpdateDownloader.startDownload(context, url)
 }
 
 

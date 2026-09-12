@@ -5,11 +5,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
-@Entity("schedules")
+@Entity(tableName = "schedules")
 @Parcelize
 data class Schedule(
-    @PrimaryKey(true)
-    val id:Int,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val offeredNo:String?,
     val gClassCode:String?,
     val subjectCode:String?,

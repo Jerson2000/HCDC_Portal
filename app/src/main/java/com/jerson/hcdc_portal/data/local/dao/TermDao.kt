@@ -16,6 +16,13 @@ interface TermDao{
      */
     @Query("delete from terms where isGrade = :isGrade")
     suspend fun deleteAllTerm(isGrade:Int)
+
+    @androidx.room.Transaction
+    suspend fun replaceTerms(isGrade: Int, terms: List<Term>) {
+        deleteAllTerm(isGrade)
+        upsertTerm(terms)
+    }
+
     @Query("delete from terms")
     suspend fun deleteAllTerm()
 

@@ -18,7 +18,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 5
-        versionName = "1.1.3"
+        versionName = "1.1.2"
 
         val propFile = project.rootProject.file("local.properties")
         val (key1Value, key2Value, aiEndPoint) = if (propFile.exists()) {
@@ -89,6 +89,8 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("androidx.webkit:webkit:1.11.0")
     implementation("androidx.core:core-splashscreen:1.1.0-rc01")
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
 
     // Web Scraping Library

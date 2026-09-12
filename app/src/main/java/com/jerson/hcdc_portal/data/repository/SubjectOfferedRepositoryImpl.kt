@@ -35,69 +35,74 @@ class SubjectOfferedRepositoryImpl@Inject constructor(
             .build()
 
         try{
-                withContext(Dispatchers.IO){
+                withContext(Dispatchers.IO) {
                     send(Resource.Loading())
-                    val response = client.newCall(postRequest("$baseUrl$subjectOffered",formBody)).await()
-                    val responseBody = response.body.string()
-                    if(response.isSuccessful){
-                        response.body.use{
-                            val jsonArray = JsonParser.parseString(responseBody).asJsonArray
-                            val offeredList = mutableListOf<SubjectOffered>()
-                            for (item in jsonArray) {
-                                val offered = Gson().fromJson(item,SubjectOffered::class.java)
-                                offeredList.add(offered)
+                    val response = client.newCall(postRequest("$baseUrl$subjectOffered", formBody)).await()
+                    response.use {
+                        if (it.isSuccessful) {
+                            val responseBody = it.body?.string().orEmpty()
+                            val element = JsonParser.parseString(responseBody)
+                            if (element.isJsonArray) {
+                                val jsonArray = element.asJsonArray
+                                val offeredList = mutableListOf<SubjectOffered>()
+                                for (item in jsonArray) {
+                                    val offered = Gson().fromJson(item, SubjectOffered::class.java)
+                                    offeredList.add(offered)
+                                }
+                                send(Resource.Success(offeredList))
+                            } else {
+                                send(Resource.Error("Invalid response format"))
                             }
-                            send(Resource.Success(offeredList))
+                        } else if (it.code == HTTP_INSUFFICIENT_SPACE_ON_RESOURCE) {
+                            send(Resource.Error("session end"))
+                        } else {
+                            send(Resource.Error("${it.message}-${it.code}"))
                         }
-                    }else if(response.code == HTTP_INSUFFICIENT_SPACE_ON_RESOURCE){
-                        send(Resource.Error("session end"))
-                    }
-                    else{
-                        send(Resource.Error("${response.message}-${response.code}"))
                     }
                 }
-        }catch (ex:Exception){
-            println("ERROR: ${ex.stackTraceToString()}")
+        } catch (ex: Exception) {
             send(Resource.Error(ex.message))
         }
-
-
     }
 
-    override suspend fun fetchSubjectOffered(query: String?): Flow<Resource<List<SubjectOffered>>> = channelFlow{
+    override suspend fun fetchSubjectOffered(query: String?): Flow<Resource<List<SubjectOffered>>> = channelFlow {
         val formBody = FormBody.Builder()
-            .add("query",query?:"")
+            .add("query", query ?: "")
             .add("_token", pref.getStringPreference(Constants.KEY_CSRF_TOKEN))
             .add("arnel", "arnel")
             .build()
 
-        try{
-            if(isConnected(App.appContext)) {
+        try {
+            if (isConnected(App.appContext)) {
                 withContext(Dispatchers.IO) {
                     send(Resource.Loading())
-                    val response = client.newCall(postRequest("$baseUrl$subjectOfferedSearch",formBody)).await()
-                    if(response.isSuccessful){
-                        response.body.use {
-                            val jsonArray = JsonParser.parseString(response.body.string()).asJsonArray
-                            val offeredList = mutableListOf<SubjectOffered>()
-                            for (item in jsonArray) {
-                                val offered = Gson().fromJson(item,SubjectOffered::class.java)
-                                offeredList.add(offered)
+                    val response = client.newCall(postRequest("$baseUrl$subjectOfferedSearch", formBody)).await()
+                    response.use {
+                        if (it.isSuccessful) {
+                            val responseBody = it.body?.string().orEmpty()
+                            val element = JsonParser.parseString(responseBody)
+                            if (element.isJsonArray) {
+                                val jsonArray = element.asJsonArray
+                                val offeredList = mutableListOf<SubjectOffered>()
+                                for (item in jsonArray) {
+                                    val offered = Gson().fromJson(item, SubjectOffered::class.java)
+                                    offeredList.add(offered)
+                                }
+                                send(Resource.Success(offeredList))
+                            } else {
+                                send(Resource.Error("Invalid response format"))
                             }
-                            send(Resource.Success(offeredList))
+                        } else if (it.code == HTTP_INSUFFICIENT_SPACE_ON_RESOURCE) {
+                            send(Resource.Error("session end"))
+                        } else {
+                            send(Resource.Error("${it.message}-${it.code}"))
                         }
-                    }else if(response.code == HTTP_INSUFFICIENT_SPACE_ON_RESOURCE){
-                        send(Resource.Error("session end"))
-                    }
-                    else{
-                        send(Resource.Error("${response.message}-${response.code}"))
                     }
                 }
-            }else{
+            } else {
                 send(Resource.Error("No internet connection!"))
             }
-        }catch (ex:Exception){
-            println("ERROR: ${ex.stackTraceToString()}")
+        } catch (ex: Exception) {
             send(Resource.Error(ex.message))
         }
     }

@@ -34,52 +34,26 @@ class GradeViewModel @Inject constructor(
     private val isConnected = networkMonitor.isConnected
 
     init {
-        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_GRADE_LOADED)
-        if(!isLoaded){
-            fetchGrades()
-        }
-
+        fetchGrades()
     }
-    fun fetchGrades(term:Term) {
 
+    fun fetchGrades(term: Term) {
         viewModelScope.launch {
-            _fetchGrades.value = Resource.Loading()
-
-            if(!isConnected.first()){
-                _fetchGrades.value = Resource.Error("No internet connection.")
-                return@launch
-            }
-
             repository.fetchGrades(term).collect {
-                when (it) {
-                    is Resource.Success -> {
-                        _fetchGrades.value = it
-                        pref.setBooleanPreference(Constants.KEY_IS_GRADE_LOADED, true)
-                    }
-                    is Resource.Error -> _fetchGrades.value = Resource.Error(it.message)
-                    else -> Unit
+                _fetchGrades.value = it
+                if (it is Resource.Success && !it.data.isNullOrEmpty()) {
+                    pref.setBooleanPreference(Constants.KEY_IS_GRADE_LOADED, true)
                 }
             }
         }
     }
 
-     fun fetchGrades() {
+    fun fetchGrades() {
         viewModelScope.launch {
-            _fetchGrades.value = Resource.Loading()
-
-            if(!isConnected.first()){
-                _fetchGrades.value = Resource.Error("No internet connection.")
-                return@launch
-            }
             repository.fetchGrades().collect {
-                when (it) {
-                    is Resource.Success -> {
-                        _fetchGrades.value = it
-                        pref.setBooleanPreference(Constants.KEY_IS_GRADE_LOADED, true)
-                    }
-                    is Resource.Error -> _fetchGrades.value = Resource.Error(it.message)
-
-                    else -> Unit
+                _fetchGrades.value = it
+                if (it is Resource.Success && !it.data.isNullOrEmpty()) {
+                    pref.setBooleanPreference(Constants.KEY_IS_GRADE_LOADED, true)
                 }
             }
         }

@@ -17,8 +17,8 @@ import io.noties.markwon.Markwon
 
 class ChatGPTAdapter(private val list: List<Chat>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    // Track which messages have already been animated
-    private val animatedMessages = mutableSetOf<Chat>()
+    // Track positions of messages that have already completed typewriter animation
+    private val animatedPositions = mutableSetOf<Int>()
 
     inner class UserViewHolder(private val binding: ItemContainerChatUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -35,28 +35,29 @@ class ChatGPTAdapter(private val list: List<Chat>) : RecyclerView.Adapter<Recycl
 
         fun bind(chat: Chat, position: Int) {
             currentRunnable?.let { handler.removeCallbacks(it) }
-            binding.textMessage.text = ""
-
-            if (animatedMessages.contains(chat)) return
 
             val content = chat.content
             val markWon = Markwon.create(binding.root.context)
 
-
+            if (animatedPositions.contains(position)) {
+                markWon.setMarkdown(binding.textMessage, content)
+            } else {
+                binding.textMessage.text = ""
                 var index = 0
                 val typeWriter = object : Runnable {
                     override fun run() {
                         if (index <= content.length) {
-                            markWon.setMarkdown(binding.textMessage,content.substring(0, index))
+                            markWon.setMarkdown(binding.textMessage, content.substring(0, index))
                             index++
-                            handler.postDelayed(this, 30L)
+                            handler.postDelayed(this, 20L)
                         } else {
-                            animatedMessages.add(chat)
+                            animatedPositions.add(position)
                         }
                     }
                 }
                 currentRunnable = typeWriter
                 handler.post(typeWriter)
+            }
 
             binding.textMessage.setOnLongClickListener {
                 copyToClipboard(content, binding.root.context)

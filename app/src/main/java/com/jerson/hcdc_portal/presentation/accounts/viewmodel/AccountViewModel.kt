@@ -33,28 +33,15 @@ class AccountViewModel @Inject constructor(
     private val isConnected= networkMonitor.isConnected
 
     init {
-        val isLoaded = pref.getBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED)
-
-        if (!isLoaded) {
-            fetchAccounts()
-            pref.setBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED, true)
-        }
-
+        fetchAccounts()
     }
 
     fun fetchAccounts(termId: Term) {
         viewModelScope.launch {
-            _fetchAccounts.value = Resource.Loading()
-
-            if (!isConnected.first()) {
-                _fetchAccounts.value = Resource.Error("No internet connection.")
-                return@launch
-            }
             repository.fetchAccounts(termId).collect {
-                when (it) {
-                    is Resource.Success -> _fetchAccounts.value = it
-                    is Resource.Error -> _fetchAccounts.value = Resource.Error(it.message)
-                    else -> Unit
+                _fetchAccounts.value = it
+                if (it is Resource.Success && !it.data.isNullOrEmpty()) {
+                    pref.setBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED, true)
                 }
             }
         }
@@ -62,17 +49,10 @@ class AccountViewModel @Inject constructor(
 
     fun fetchAccounts() {
         viewModelScope.launch {
-            _fetchAccounts.value = Resource.Loading()
-
-            if (!isConnected.first()) {
-                _fetchAccounts.value = Resource.Error("No internet connection.")
-                return@launch
-            }
             repository.fetchAccounts().collect {
-                when (it) {
-                    is Resource.Success -> _fetchAccounts.value = it
-                    is Resource.Error -> _fetchAccounts.value = Resource.Error(it.message)
-                    else -> Unit
+                _fetchAccounts.value = it
+                if (it is Resource.Success && !it.data.isNullOrEmpty()) {
+                    pref.setBooleanPreference(Constants.KEY_IS_ACCOUNT_LOADED, true)
                 }
             }
         }

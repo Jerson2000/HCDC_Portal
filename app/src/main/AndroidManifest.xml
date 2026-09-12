@@ -5,11 +5,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -24,6 +22,7 @@
 
         <activity
             android:name=".presentation.splash.SplashKt"
+            android:theme="@style/Theme.App.Splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,6 +34,7 @@
             android:exported="false"/>
 
         <activity android:name=".presentation.login.LoginKt"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false"/>
         <activity android:name=".presentation.evaluation.EvaluationKt"
             android:exported="false"/>
@@ -49,12 +49,15 @@
         <activity android:name=".presentation.building.BuildingDetails"
             android:exported="false"/>
         <activity android:name=".presentation.chat.ChatGPT"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false"/>
         <activity android:name=".presentation.lacking.Lacking"
             android:exported="false"/>
         <activity android:name=".presentation.main.Crash"
             android:exported="false"/>
         <activity android:name=".presentation.building.ImageViewer"
+            android:exported="false"/>
+        <activity android:name=".presentation.search.GlobalSearchActivity"
             android:exported="false"/>
 
 
@@ -70,6 +73,16 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
 
+        </provider>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
 
 

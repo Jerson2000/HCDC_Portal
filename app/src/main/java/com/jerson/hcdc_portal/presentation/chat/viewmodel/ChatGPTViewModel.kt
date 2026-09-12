@@ -41,4 +41,8 @@ class ChatGPTViewModel @Inject constructor(
             }
         }
     }
+
+    fun resetChatResponse() {
+        _fetchChatGPT.value = null
+    }
 }

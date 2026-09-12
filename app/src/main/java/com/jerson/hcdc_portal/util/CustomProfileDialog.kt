@@ -68,12 +68,12 @@ class CustomProfileAdapter(
     override fun getItemId(position: Int): Long = list[position].toLong()
 }
 
-class CustomProfileDialog(
-    private val pref: AppPreference,
-    private val callbackItem: (Any) -> Unit
-) : DialogFragment() {
+class CustomProfileDialog : DialogFragment() {
 
-    private lateinit var binding: DialogCustomProfileBinding
+    private var _binding: DialogCustomProfileBinding? = null
+    private val binding get() = _binding!!
+    private var pref: AppPreference? = null
+    private var callbackItem: ((Any) -> Unit)? = null
     private var selected: Int? = null
     private val list = listOf(
         R.drawable.profile_male_1,
@@ -84,8 +84,17 @@ class CustomProfileDialog(
         R.drawable.profile_female_3
     )
 
+    companion object {
+        fun newInstance(pref: AppPreference, callbackItem: (Any) -> Unit): CustomProfileDialog {
+            val dialog = CustomProfileDialog()
+            dialog.pref = pref
+            dialog.callbackItem = callbackItem
+            return dialog
+        }
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogCustomProfileBinding.inflate(layoutInflater)
+        _binding = DialogCustomProfileBinding.inflate(layoutInflater)
 
         val adapter = CustomProfileAdapter(list) {
             selected = it
@@ -97,19 +106,26 @@ class CustomProfileDialog(
             .setView(binding.root)
             .setPositiveButton("OK") { dialog, _ ->
                 selected?.let {
-                    callbackItem(it)
-                    pref.setBooleanPreference(KEY_IS_CUSTOM_PROFILE, true)
-                    pref.setIntPreference(KEY_CUSTOM_PROFILE_VALUE, it)
+                    callbackItem?.invoke(it)
+                    pref?.setBooleanPreference(KEY_IS_CUSTOM_PROFILE, true)
+                    pref?.setIntPreference(KEY_CUSTOM_PROFILE_VALUE, it)
                 }
                 dialog.dismiss()
             }
             .setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
             .setNeutralButton("Reset") { dialog, _ ->
-                pref.setBooleanPreference(KEY_IS_CUSTOM_PROFILE, false)
-                callbackItem(userAvatar(pref))
+                pref?.let { p ->
+                    p.setBooleanPreference(KEY_IS_CUSTOM_PROFILE, false)
+                    callbackItem?.invoke(userAvatar(p))
+                }
                 dialog.dismiss()
             }
             .create()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
 

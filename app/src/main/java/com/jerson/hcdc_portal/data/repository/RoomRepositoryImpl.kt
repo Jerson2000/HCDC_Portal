@@ -27,15 +27,23 @@ class RoomRepositoryImpl @Inject constructor(
 
         try {
             withContext(Dispatchers.IO) {
-                val inputStream = FileInputStream(filePath)
-                val inputStreamReader = InputStreamReader(inputStream)
-                val room = Gson().fromJson(inputStreamReader, Room::class.java)
-
-                inputStreamReader.close()
-                send(Resource.Success(room))
+                val inputStream = if (file.exists() && file.length() > 0) {
+                    FileInputStream(file)
+                } else {
+                    appContext.assets.open("rooms.json")
+                }
+                inputStream.use { stream ->
+                    InputStreamReader(stream).use { reader ->
+                        val room = Gson().fromJson(reader, Room::class.java)
+                        if (room != null) {
+                            send(Resource.Success(room))
+                        } else {
+                            send(Resource.Error("Failed to parse building data."))
+                        }
+                    }
+                }
             }
         } catch (e: Exception) {
-            println("getBuilding: Err-> $e")
             send(Resource.Error(e.message))
         }
     }

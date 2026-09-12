@@ -2,33 +2,52 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="2dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/textView"
+    <LinearLayout
+        android:id="@+id/headerLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Assistant"
-        android:layout_marginStart="12dp"
-        android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="4dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@drawable/ic_school"
+            app:tint="?colorPrimary"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Assistant"
+            android:layout_marginStart="4dp"
+            android:textColor="?colorPrimary"
+            android:textAppearance="@style/TextAppearance.Material3.LabelSmall" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_chat_ai"
-        android:paddingStart="12dp"
-        android:paddingTop="8dp"
-        android:layout_marginStart="5dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="8dp"
-        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:paddingStart="14dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="10dp"
+        android:textColor="?colorOnSurface"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintWidth_percent="0.8"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintWidth_percent="0.85"
         app:layout_constraintWidth_max="wrap" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

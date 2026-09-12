@@ -27,52 +27,39 @@ class DownloadWorkerKt @AssistedInject constructor(
         val url = inputData.getString("url")
         val fileName = inputData.getString("fileName")
 
-        return try {
-            withContext(Dispatchers.IO){
-                val client = OkHttpClient()
-                val request = url?.let {
-                    Request.Builder()
-                        .url(it)
-                        .build()
-                }
-                val response: Response? = request?.let { client.newCall(it).execute() }
-                val body: ResponseBody? = response?.body
-                val outputFile = fileName?.let { File(applicationContext.cacheDir, it) }
+        if (url.isNullOrBlank() || fileName.isNullOrBlank()) {
+            return Result.failure()
+        }
 
-                if (outputFile != null) {
+        return try {
+            withContext(Dispatchers.IO) {
+                val client = OkHttpClient()
+                val request = Request.Builder().url(url).build()
+                val response = client.newCall(request).execute()
+
+                response.use { resp ->
+                    if (!resp.isSuccessful) {
+                        return@withContext Result.retry()
+                    }
+                    val body = resp.body ?: return@withContext Result.failure()
+                    val outputFile = File(applicationContext.cacheDir, fileName)
                     if (outputFile.exists()) {
                         outputFile.delete()
                     }
-                }
 
-                val outputStream = FileOutputStream(outputFile)
-                val inputStream = body?.byteStream()
-                var totalBytesRead = 0L
-                val fileLength = body?.contentLength() ?: 0L
-                val buffer = ByteArray(8192)
-                inputStream?.use { input ->
-                    outputStream.use { output ->
-                        var bytesRead: Int
-
-                        while (true) {
-                            bytesRead = input.read(buffer)
-                            if (bytesRead == -1) break
-
-                            output.write(buffer, 0, bytesRead)
-                            totalBytesRead += bytesRead
-
-                            if (fileLength > 0) {
-                                val progress = (totalBytesRead * 100) / fileLength
+                    val buffer = ByteArray(8192)
+                    body.byteStream().use { input ->
+                        FileOutputStream(outputFile).use { output ->
+                            var bytesRead: Int
+                            while (input.read(buffer).also { bytesRead = it } != -1) {
+                                output.write(buffer, 0, bytesRead)
                             }
                         }
                     }
+                    Result.success()
                 }
-                val filePath = outputFile?.absolutePath
-                Log.e(TAG, "doWork: $filePath")
-                Result.success()
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
+        } catch (e: Exception) {
             Result.failure()
         }
     }

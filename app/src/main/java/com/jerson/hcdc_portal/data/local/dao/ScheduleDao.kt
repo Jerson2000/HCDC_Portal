@@ -14,6 +14,12 @@ interface ScheduleDao {
     @Query("delete from schedules")
     suspend fun deleteAllSchedules()
 
+    @androidx.room.Transaction
+    suspend fun replaceSchedules(schedules: List<Schedule>) {
+        deleteAllSchedules()
+        upsertSchedules(schedules)
+    }
+
     @Query("select * from schedules")
     fun getSchedules(): Flow<List<Schedule>>
 }

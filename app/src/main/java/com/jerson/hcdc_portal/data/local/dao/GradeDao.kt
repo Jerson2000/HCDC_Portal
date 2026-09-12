@@ -16,6 +16,15 @@ interface GradeDao {
     @Query("delete from grades")
     suspend fun deleteAllGrades()
 
+    @androidx.room.Transaction
+    suspend fun replaceGrades(termId: Int, grades: List<Grade>) {
+        deleteAllGrades(termId)
+        upsertGrade(grades)
+    }
+
     @Query("select * from grades where termId = :termId")
     fun getGrades(termId:Int): Flow<List<Grade>>
+
+    @Query("select * from grades")
+    fun getAllGrades(): Flow<List<Grade>>
 }

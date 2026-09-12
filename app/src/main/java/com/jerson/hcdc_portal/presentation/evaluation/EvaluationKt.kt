@@ -48,11 +48,21 @@ class EvaluationKt:AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         webView = binding.myWebView
+        webView.settings.apply {
+            allowFileAccess = false
+            allowContentAccess = false
+        }
         val isLoaded = pref.getBooleanPreference(Constants.KEY_HTML_EVALUATION_LOADED)
         if(!isLoaded) evalViewModel.fetchEvaluation()
         display2WebView(pref.getStringPreference(Constants.KEY_HTML_EVALUATION))
         fetchEvaluation()
         reLogonResponse()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        loadingDialog.dismiss()
+        webView.destroy()
     }
 
     private fun fetchEvaluation(){

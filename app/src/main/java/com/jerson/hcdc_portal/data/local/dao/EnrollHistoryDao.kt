@@ -14,6 +14,12 @@ interface EnrollHistoryDao {
     @Query("delete from enroll_history where termId = :termId")
     suspend fun deleteAllHistory(termId:Int)
 
+    @androidx.room.Transaction
+    suspend fun replaceHistory(termId: Int, history: List<EnrollHistory>) {
+        deleteAllHistory(termId)
+        upsertHistory(history)
+    }
+
     @Query("delete from enroll_history")
     suspend fun deleteAllHistory()
 

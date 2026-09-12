@@ -25,6 +25,11 @@ class ChatGPTRepositoryImpl @Inject constructor(
     override suspend fun chat(chatList:List<Chat>): Flow<Resource<String>> = channelFlow {
         try {
 
+            if (BuildConfig.ai_endpoint.isBlank() || !BuildConfig.ai_endpoint.startsWith("http")) {
+                send(Resource.Error("AI chat service is not configured."))
+                return@channelFlow
+            }
+
             withContext(Dispatchers.IO) {
                 send(Resource.Loading())
                 val gson = GsonBuilder()
@@ -33,7 +38,7 @@ class ChatGPTRepositoryImpl @Inject constructor(
                     .create()
                 val formData = FormBody.Builder()
                     .add("chat_style", "gpt-chat")
-                    .add("chatHistory",gson.toJson(chatList).toString())
+                    .add("chatHistory", gson.toJson(chatList).toString())
                     .add("model", "standard")
                     .add("hacker_is_stinky", "very_stinky")
                     .build()
@@ -42,9 +47,9 @@ class ChatGPTRepositoryImpl @Inject constructor(
 
                 response.use {
                     if (it.isSuccessful) {
-                        send(Resource.Success(it.body.string()))
+                        send(Resource.Success(it.body?.string().orEmpty()))
                     } else {
-                        send(Resource.Error("Something went wrong."))
+                        send(Resource.Error("Something went wrong (${it.code})."))
                     }
                 }
 
