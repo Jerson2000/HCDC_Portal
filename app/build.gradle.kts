@@ -17,8 +17,8 @@ android {
         applicationId = "com.jerson.hcdc_portal"
         minSdk = 24
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.1.2"
+        versionCode = 6
+        versionName = "1.1.4"
 
         val propFile = project.rootProject.file("local.properties")
         val (key1Value, key2Value, aiEndPoint) = if (propFile.exists()) {
