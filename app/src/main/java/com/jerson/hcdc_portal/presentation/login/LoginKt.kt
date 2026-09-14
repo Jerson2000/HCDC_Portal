@@ -191,8 +191,11 @@ class LoginKt : AppCompatActivity(R.layout.activity_login_kt) {
                         }
 
                         is Resource.Error -> {
+                            loadingDialog?.dismiss()
+                            binding.progressBar.visibility = View.GONE
+                            binding.loginBtn.text = "Sign In"
+                            binding.loginBtn.isEnabled = true
                             if (!it.message.equals("null")) {
-                                loadingDialog?.dismiss()
                                 snackBarLong(binding.root, it.message.toString())
                             }
                         }

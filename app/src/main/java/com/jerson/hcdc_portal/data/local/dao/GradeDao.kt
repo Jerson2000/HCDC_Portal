@@ -27,4 +27,10 @@ interface GradeDao {
 
     @Query("select * from grades")
     fun getAllGrades(): Flow<List<Grade>>
+
+    @Query("select * from grades where term = :term")
+    fun getGradesByTermName(term: String): Flow<List<Grade>>
+
+    @Query("update grades set termId = :termId where term = :term and (termId = 0 or termId is null)")
+    suspend fun updateTermId(termId: Int, term: String)
 }

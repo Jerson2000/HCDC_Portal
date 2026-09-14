@@ -102,7 +102,8 @@ class ProspectusFragment : Fragment() {
                                 binding.swipeRefresh.stopRefreshing()
                                 if (items.isEmpty()) {
                                     binding.layoutEmpty.visibility = View.VISIBLE
-                                    binding.tvEmptyDesc.text = resource.message ?: "Failed to load prospectus."
+                                    val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(resource.message)
+                                    binding.tvEmptyDesc.text = friendly
                                 }
                             }
                             else -> Unit

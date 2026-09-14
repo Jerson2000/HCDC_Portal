@@ -135,8 +135,8 @@ class SubjectKt : Fragment() {
     }
 
     private fun listenerFetch() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 dashboardViewModel.fetchSchedules.collect {
                     when (it) {
                         is Resource.Loading -> {
@@ -160,10 +160,11 @@ class SubjectKt : Fragment() {
                             _binding?.swipeRefresh?.stopRefreshing()
                             loadingDialog?.dismiss()
                             it.message?.let { msg ->
-                                if (msg.contains("session end", true))
+                                if (msg.contains("session end", true)) {
                                     loginViewModel.reLogon()
-                                else {
-                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                } else {
+                                    val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                                 }
                             }
                         }
@@ -176,8 +177,8 @@ class SubjectKt : Fragment() {
     }
 
     private fun reLogonResponse() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 loginViewModel.login.collect {
                     when (it) {
                         is Resource.Loading -> {
@@ -192,7 +193,8 @@ class SubjectKt : Fragment() {
                             it.message?.let { msg ->
                                 if (!msg.contains("null")) {
                                     _binding?.swipeRefresh?.isRefreshing = false
-                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                    val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                                 }
                             }
                         }

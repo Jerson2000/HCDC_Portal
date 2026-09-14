@@ -54,13 +54,13 @@ class GradesKt : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGradesKtBinding.inflate(inflater, container, false)
-        loadingDialog = context?.let { LoadingDialog(it) }
-        termDialog = context?.let { TermSelectionDialog(it) }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadingDialog = context?.let { LoadingDialog(it) }
+        termDialog = context?.let { TermSelectionDialog(it) }
         adapter = GradeAdapter(list)
         binding.apply {
             recyclcerView.layoutManager =
@@ -87,9 +87,10 @@ class GradesKt : Fragment() {
         binding.cardTerm.setOnClickListener {
             termDialog?.showDialog { term ->
                 selectedTerm = term
-                gradesViewModel.hasData(term) {
-                    pref.setIntPreference(Constants.KEY_SELECT_GRADE_TERM, term.id)
-                    if (!it) {
+                binding.tvTerm.text = convertToReadableTerm(term.term)
+                pref.setIntPreference(Constants.KEY_SELECT_GRADE_TERM, term.id)
+                gradesViewModel.hasData(term) { hasData ->
+                    if (!hasData) {
                         gradesViewModel.fetchGrades(term)
                     } else {
                         gradesViewModel.getGrades(term.id)
@@ -106,8 +107,8 @@ class GradesKt : Fragment() {
     }
 
     private fun fetchGrades(isDone:(Boolean)->Unit) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 gradesViewModel.fetchGrades.collect {
                     when (it) {
                         is Resource.Loading -> {
@@ -130,12 +131,23 @@ class GradesKt : Fragment() {
                             loadingDialog?.dismiss()
                             if (!it.data.isNullOrEmpty()) {
                                 updateGradesUi(it.data, isDone)
+                            } else {
+                                _binding?.apply {
+                                    selectedTerm?.let { t -> tvTerm.text = convertToReadableTerm(t.term) }
+                                    tvUnits.text = "0"
+                                    tvGWA.text = "0.0"
+                                    emptyGradesLayout.visibility = View.VISIBLE
+                                    recyclcerView.visibility = View.GONE
+                                    list.clear()
+                                    adapter.notifyDataSetChanged()
+                                }
                             }
-                            it.message?.let {msg->
-                                if (msg.contains("session end", true))
+                            it.message?.let { msg ->
+                                if (msg.contains("session end", true)) {
                                     loginViewModel.reLogon()
-                                else {
-                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                } else {
+                                    val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                                 }
                             }
                         }
@@ -174,8 +186,8 @@ class GradesKt : Fragment() {
     }
 
     private fun reLogonResponse() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 loginViewModel.login.collect {
                     when (it) {
                         is Resource.Loading -> {
@@ -193,7 +205,8 @@ class GradesKt : Fragment() {
                             it.message?.let{msg->
                                 if(!msg.contains("null")){
                                     loadingDialog?.dismiss()
-                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                    val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                                 }
                             }
                         }
@@ -206,8 +219,8 @@ class GradesKt : Fragment() {
     }
 
     private fun getTerms() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 gradesViewModel.fetchTerms.collect {
                     when (it) {
                         is Resource.Loading -> {
@@ -221,7 +234,8 @@ class GradesKt : Fragment() {
 
                         is Resource.Error -> {
                             it.message?.let { msg ->
-                                _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                             }
                         }
 

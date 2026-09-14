@@ -53,13 +53,13 @@ class EnrollHistoryKt : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEnrollmentHistoryKtBinding.inflate(inflater, container, false)
-        loadingDialog = context?.let { LoadingDialog(it) }
-        termDialog = context?.let {TermSelectionDialog(it) }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadingDialog = context?.let { LoadingDialog(it) }
+        termDialog = context?.let { TermSelectionDialog(it) }
 
         adapter = EnrollHistoryAdapter(list)
         binding.apply {
@@ -88,11 +88,12 @@ class EnrollHistoryKt : Fragment() {
         binding.cardTerm.setOnClickListener {
             termDialog?.showDialog { term ->
                 selectedTerm = term
-                enrollHistoryViewModel.hasData(term) {
-                    if (!it) {
+                binding.tvTerm.text = convertToReadableTerm(term.term)
+                pref.setIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM, term.id)
+                enrollHistoryViewModel.hasData(term) { hasData ->
+                    if (!hasData) {
                         enrollHistoryViewModel.fetchEnrollHistory(term)
-                    }else{
-                        pref.setIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM,term.id)
+                    } else {
                         enrollHistoryViewModel.getEnrollHistory(term.id)
                     }
                 }
@@ -106,8 +107,8 @@ class EnrollHistoryKt : Fragment() {
     }
 
     private fun fetchEnrollHistory(isDone : (Boolean)-> Unit) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 enrollHistoryViewModel.fetchEnrollHistory.collect {
                     when (it) {
                         is Resource.Loading -> {
@@ -130,12 +131,21 @@ class EnrollHistoryKt : Fragment() {
                             loadingDialog?.dismiss()
                             if (!it.data.isNullOrEmpty()) {
                                 updateEnrollHistoryUi(it.data, isDone)
+                            } else {
+                                _binding?.apply {
+                                    selectedTerm?.let { t -> tvTerm.text = convertToReadableTerm(t.term) }
+                                    emptyHistoryLayout.visibility = View.VISIBLE
+                                    recyclerView.visibility = View.GONE
+                                    list.clear()
+                                    adapter.notifyDataSetChanged()
+                                }
                             }
-                            it.message?.let {msg->
-                                if (msg.contains("session end", true))
+                            it.message?.let { msg ->
+                                if (msg.contains("session end", true)) {
                                     loginViewModel.reLogon()
-                                else {
-                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                } else {
+                                    val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                                 }
                             }
                         }
@@ -171,8 +181,8 @@ class EnrollHistoryKt : Fragment() {
 
 
     private fun getTerms() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 enrollHistoryViewModel.fetchTerms.collect {
                     when (it) {
                         is Resource.Loading -> {
@@ -187,7 +197,8 @@ class EnrollHistoryKt : Fragment() {
 
                         is Resource.Error -> {
                             it.message?.let { msg ->
-                                _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                             }
                         }
 
@@ -199,8 +210,8 @@ class EnrollHistoryKt : Fragment() {
     }
 
     private fun reLogonResponse(){
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 loginViewModel.login.collect{
                     when (it) {
                         is Resource.Loading -> {
@@ -218,7 +229,8 @@ class EnrollHistoryKt : Fragment() {
                             it.message?.let{msg->
                                 if(!msg.contains("null")){
                                     loadingDialog?.dismiss()
-                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                    val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                                 }
                             }
                         }

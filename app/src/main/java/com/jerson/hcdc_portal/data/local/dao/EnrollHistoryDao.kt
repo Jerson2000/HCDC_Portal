@@ -25,4 +25,10 @@ interface EnrollHistoryDao {
 
     @Query("select * from enroll_history where termId = :termId")
     fun getHistory(termId:Int): Flow<List<EnrollHistory>>
+
+    @Query("select * from enroll_history where term = :term")
+    fun getHistoryByTermName(term: String): Flow<List<EnrollHistory>>
+
+    @Query("update enroll_history set termId = :termId where term = :term and (termId = 0 or termId is null)")
+    suspend fun updateTermId(termId: Int, term: String)
 }

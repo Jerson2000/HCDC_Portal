@@ -52,13 +52,13 @@ class AccountsKt : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAccountKtBinding.inflate(inflater, container, false)
-        loadingDialog = context?.let { LoadingDialog(it) }
-        termDialog = context?.let { TermSelectionDialog(it) }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadingDialog = context?.let { LoadingDialog(it) }
+        termDialog = context?.let { TermSelectionDialog(it) }
 
         binding.swipeRefresh.setupCustomTheme(requireContext())
         binding.swipeRefresh.setOnRefreshListener {
@@ -79,8 +79,9 @@ class AccountsKt : Fragment() {
         binding.cardTerm.setOnClickListener {
             termDialog?.showDialog { term ->
                 selectedTerm = term
-                accountViewModel.hasData(term) {hasData->
-                    pref.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM, term.id)
+                binding.tvTerm.text = convertToReadableTerm(term.term)
+                pref.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM, term.id)
+                accountViewModel.hasData(term) { hasData ->
                     if (!hasData) {
                         accountViewModel.fetchAccounts(term)
                     } else {
@@ -107,8 +108,8 @@ class AccountsKt : Fragment() {
     }
 
     fun getAccounts(isDone: (Boolean) -> Unit) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 accountViewModel.fetchAccounts.collect {
                     when (it) {
                         is Resource.Loading -> {
@@ -131,12 +132,20 @@ class AccountsKt : Fragment() {
                             loadingDialog?.dismiss()
                             if (!it.data.isNullOrEmpty()) {
                                 updateAccountsUi(it.data, isDone)
+                            } else {
+                                _binding?.apply {
+                                    selectedTerm?.let { t -> tvTerm.text = convertToReadableTerm(t.term) }
+                                    tvDue.text = "Php 0.0"
+                                    tvDueText.text = "Due Amount"
+                                    list.clear()
+                                }
                             }
-                            it.message?.let {msg->
-                                if (msg.contains("session end", true))
+                            it.message?.let { msg ->
+                                if (msg.contains("session end", true)) {
                                     loginViewModel.reLogon()
-                                else {
-                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                } else {
+                                    val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                                 }
                             }
                         }
@@ -170,8 +179,8 @@ class AccountsKt : Fragment() {
     }
 
     private fun getTerms() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 accountViewModel.fetchTerms.collect {
                     when (it) {
                         is Resource.Loading -> {
@@ -186,7 +195,8 @@ class AccountsKt : Fragment() {
 
                         is Resource.Error -> {
                             it.message?.let { msg ->
-                                _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                             }
                         }
 
@@ -198,8 +208,8 @@ class AccountsKt : Fragment() {
     }
 
     private fun reLogonResponse() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 loginViewModel.login.collect {
                     when (it) {
                         is Resource.Loading -> {
@@ -217,7 +227,8 @@ class AccountsKt : Fragment() {
                             it.message?.let{msg->
                                 if(!msg.contains("null")){
                                     loadingDialog?.dismiss()
-                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, msg) }
+                                    val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                    _binding?.let { b -> SnackBarKt.snackBarLong(b.root, friendly) }
                                 }
                             }
                         }

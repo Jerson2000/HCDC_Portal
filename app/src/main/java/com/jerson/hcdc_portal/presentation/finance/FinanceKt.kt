@@ -91,8 +91,9 @@ class FinanceKt : Fragment() {
         binding.cardTerm.setOnClickListener {
             termDialog?.showDialog { term ->
                 selectedTerm = term
+                binding.tvTerm.text = convertToReadableTerm(term.term)
+                pref.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM, term.id)
                 accountViewModel.hasData(term) { hasData ->
-                    pref.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM, term.id)
                     if (!hasData) {
                         accountViewModel.fetchAccounts(term)
                     } else {
@@ -147,6 +148,13 @@ class FinanceKt : Fragment() {
                             loadingDialog?.dismiss()
                             if (!res.data.isNullOrEmpty()) {
                                 updateAccountsUi(res.data, isDone)
+                            } else {
+                                _binding?.apply {
+                                    selectedTerm?.let { t -> tvTerm.text = convertToReadableTerm(t.term) }
+                                    tvDue.text = "Php 0.00"
+                                    tvDueText.text = "Outstanding Balance"
+                                    list.clear()
+                                }
                             }
                             res.message?.let { msg ->
                                 if (msg.contains("session end", true)) {

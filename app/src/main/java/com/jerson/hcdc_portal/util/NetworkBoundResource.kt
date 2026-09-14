@@ -1,4 +1,4 @@
-﻿package com.jerson.hcdc_portal.util
+package com.jerson.hcdc_portal.util
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -32,7 +32,9 @@ inline fun <ResultType, RequestType> networkBoundResource(
         } catch (throwable: Throwable) {
             onFetchFailed(throwable)
             val currentCachedData = query().first()
-            emit(Resource.Error(throwable.localizedMessage ?: "An unexpected error occurred", currentCachedData))
+            val rawMessage = throwable.localizedMessage ?: "An unexpected error occurred"
+            val formattedMessage = ErrorMessageHelper.format(rawMessage)
+            emit(Resource.Error(formattedMessage, currentCachedData))
         }
     } else {
         emitAll(query().map { Resource.Success(it) })

@@ -29,4 +29,10 @@ interface AccountDao {
 
     @Query("select * from accounts where termId = :termId")
     fun getAccounts(termId:Int): Flow<List<Account>>
+
+    @Query("select * from accounts where term = :term")
+    fun getAccountsByTermName(term: String): Flow<List<Account>>
+
+    @Query("update accounts set termId = :termId where term = :term and (termId = 0 or termId is null)")
+    suspend fun updateTermId(termId: Int, term: String)
 }

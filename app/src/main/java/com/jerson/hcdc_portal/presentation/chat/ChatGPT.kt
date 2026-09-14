@@ -298,8 +298,8 @@ class ChatGPT : AppCompatActivity() {
 
                         is Resource.Error -> {
                             resource.message?.let { msg ->
-                                // If remote endpoint failed (e.g. not configured), give helpful fallback
-                                val fallback = "I couldn't reach the AI server ($msg). You can still tap the suggestion chips above to ask about your **Next Class**, **Grades**, **Balance**, **Subjects**, or campus **Rooms**."
+                                val friendly = com.jerson.hcdc_portal.util.ErrorMessageHelper.format(msg)
+                                val fallback = "I couldn't reach the AI server ($friendly). You can still tap the suggestion chips above to ask about your **Next Class**, **Grades**, **Balance**, **Subjects**, or campus **Rooms**."
                                 deliverAssistantResponse(fallback)
                                 viewModel.resetChatResponse()
                             }

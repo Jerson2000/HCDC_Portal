@@ -62,17 +62,22 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
             },
             saveFetchResult = { (terms, initialHistory) ->
                 if (terms.isNotEmpty()) {
-                    db.termDao().replaceTerms(0, terms)
+                    val existingTerms = db.termDao().getTerms(0).firstOrNull().orEmpty()
+                    val termsToSave = terms.map { parsed ->
+                        val existing = existingTerms.firstOrNull { it.term == parsed.term }
+                        if (existing != null) parsed.copy(id = existing.id) else parsed
+                    }
+                    db.termDao().replaceTerms(0, termsToSave)
                 }
                 if (initialHistory.isNotEmpty()) {
                     val targetTermName = initialHistory.firstOrNull()?.term
-                    val matchedTerm = terms.firstOrNull { it.term == targetTermName }
-                        ?: db.termDao().getTerms(0).firstOrNull()?.firstOrNull { it.term == targetTermName }
-                    val finalTermId = matchedTerm?.id ?: selectedTermId
+                    val savedTerms = db.termDao().getTerms(0).firstOrNull().orEmpty()
+                    val matchedTerm = savedTerms.firstOrNull { it.term == targetTermName }
+                    val finalTermId = matchedTerm?.id ?: if (selectedTermId != 0) selectedTermId else (savedTerms.firstOrNull()?.id ?: 0)
                     val finalHistory = initialHistory.map { it.copy(termId = finalTermId) }
                     db.enrollHistoryDao().replaceHistory(finalTermId, finalHistory)
-                    if (matchedTerm != null) {
-                        preference.setIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM, matchedTerm.id)
+                    if (finalTermId != 0) {
+                        preference.setIntPreference(Constants.KEY_SELECTED_ENROLL_HISTORY_TERM, finalTermId)
                     }
                 }
             }
@@ -80,6 +85,12 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchEnrollHistory(term: Term): Flow<Resource<List<EnrollHistory>>> {
+        if (!term.term.isNullOrBlank()) {
+            val legacy = runCatching { db.enrollHistoryDao().getHistoryByTermName(term.term).firstOrNull().orEmpty() }.getOrNull().orEmpty()
+            if (legacy.isNotEmpty()) {
+                db.enrollHistoryDao().updateTermId(term.id, term.term)
+            }
+        }
         return networkBoundResource(
             query = { db.enrollHistoryDao().getHistory(term.id) },
             fetch = {
@@ -126,8 +137,13 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                             send(Resource.Error("session end - ${res.code}"))
                         } else {
                             val terms = enrollHistoryParser.parseTerms(html)
-                            db.termDao().replaceTerms(0, terms)
-                            send(Resource.Success(terms))
+                            val existingTerms = db.termDao().getTerms(0).firstOrNull().orEmpty()
+                            val termsToSave = terms.map { parsed ->
+                                val existing = existingTerms.firstOrNull { it.term == parsed.term }
+                                if (existing != null) parsed.copy(id = existing.id) else parsed
+                            }
+                            db.termDao().replaceTerms(0, termsToSave)
+                            send(Resource.Success(termsToSave))
                         }
                     } else {
                         send(Resource.Error(res.message))
@@ -146,8 +162,19 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
                 .catch {
                     send(Resource.Error(it.message))
                 }
-                .collect {
-                    send(Resource.Success(it))
+                .collect { list ->
+                    if (list.isEmpty()) {
+                        val termObj = db.termDao().getTerms(0).firstOrNull()?.firstOrNull { it.id == termId }
+                        if (!termObj?.term.isNullOrBlank()) {
+                            val legacy = db.enrollHistoryDao().getHistoryByTermName(termObj!!.term!!).firstOrNull().orEmpty()
+                            if (legacy.isNotEmpty()) {
+                                db.enrollHistoryDao().updateTermId(termId, termObj.term!!)
+                                send(Resource.Success(legacy))
+                                return@collect
+                            }
+                        }
+                    }
+                    send(Resource.Success(list))
                 }
         }
 
@@ -163,7 +190,18 @@ class EnrollHistoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun hasData(term: Term, hasData: (Boolean) -> Unit) {
-        val existing = runCatching { db.enrollHistoryDao().getHistory(term.id).firstOrNull() }.getOrNull()
+        val existing = runCatching {
+            val list = db.enrollHistoryDao().getHistory(term.id).firstOrNull()
+            if (!list.isNullOrEmpty()) {
+                list
+            } else if (!term.term.isNullOrBlank()) {
+                val legacy = db.enrollHistoryDao().getHistoryByTermName(term.term).firstOrNull()
+                if (!legacy.isNullOrEmpty()) {
+                    db.enrollHistoryDao().updateTermId(term.id, term.term)
+                    legacy
+                } else null
+            } else null
+        }.getOrNull()
         hasData(!existing.isNullOrEmpty())
     }
 }

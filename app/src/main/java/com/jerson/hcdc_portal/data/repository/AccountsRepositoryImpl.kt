@@ -65,17 +65,22 @@ class AccountsRepositoryImpl @Inject constructor(
             },
             saveFetchResult = { (terms, initialAccounts) ->
                 if (terms.isNotEmpty()) {
-                    db.termDao().replaceTerms(2, terms)
+                    val existingTerms = db.termDao().getTerms(2).firstOrNull().orEmpty()
+                    val termsToSave = terms.map { parsed ->
+                        val existing = existingTerms.firstOrNull { it.term == parsed.term }
+                        if (existing != null) parsed.copy(id = existing.id) else parsed
+                    }
+                    db.termDao().replaceTerms(2, termsToSave)
                 }
                 if (initialAccounts.isNotEmpty()) {
                     val targetTermName = initialAccounts.firstOrNull()?.term
-                    val matchedTerm = terms.firstOrNull { it.term == targetTermName }
-                        ?: db.termDao().getTerms(2).firstOrNull()?.firstOrNull { it.term == targetTermName }
-                    val finalTermId = matchedTerm?.id ?: selectedTermId
+                    val savedTerms = db.termDao().getTerms(2).firstOrNull().orEmpty()
+                    val matchedTerm = savedTerms.firstOrNull { it.term == targetTermName }
+                    val finalTermId = matchedTerm?.id ?: if (selectedTermId != 0) selectedTermId else (savedTerms.firstOrNull()?.id ?: 0)
                     val finalAccounts = initialAccounts.map { it.copy(termId = finalTermId) }
                     db.accountDao().replaceAccounts(finalTermId, finalAccounts)
-                    if (matchedTerm != null) {
-                        preference.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM, matchedTerm.id)
+                    if (finalTermId != 0) {
+                        preference.setIntPreference(Constants.KEY_SELECTED_ACCOUNT_TERM, finalTermId)
                     }
                 }
             }
@@ -83,6 +88,12 @@ class AccountsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchAccounts(term: Term): Flow<Resource<List<Account>>> {
+        if (!term.term.isNullOrBlank()) {
+            val legacy = runCatching { db.accountDao().getAccountsByTermName(term.term).firstOrNull().orEmpty() }.getOrNull().orEmpty()
+            if (legacy.isNotEmpty()) {
+                db.accountDao().updateTermId(term.id, term.term)
+            }
+        }
         return networkBoundResource(
             query = { db.accountDao().getAccounts(term.id) },
             fetch = {
@@ -130,8 +141,19 @@ class AccountsRepositoryImpl @Inject constructor(
             .catch {
                 send(Resource.Error(it.message))
             }
-            .collect {
-                send(Resource.Success(it))
+            .collect { list ->
+                if (list.isEmpty()) {
+                    val termObj = db.termDao().getTerms(2).firstOrNull()?.firstOrNull { it.id == termId }
+                    if (!termObj?.term.isNullOrBlank()) {
+                        val legacy = db.accountDao().getAccountsByTermName(termObj!!.term!!).firstOrNull().orEmpty()
+                        if (legacy.isNotEmpty()) {
+                            db.accountDao().updateTermId(termId, termObj.term!!)
+                            send(Resource.Success(legacy))
+                            return@collect
+                        }
+                    }
+                }
+                send(Resource.Success(list))
             }
     }
 
@@ -147,7 +169,18 @@ class AccountsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun hasData(term: Term, hasData: (Boolean) -> Unit) {
-        val existing = runCatching { db.accountDao().getAccounts(term.id).firstOrNull() }.getOrNull()
+        val existing = runCatching {
+            val list = db.accountDao().getAccounts(term.id).firstOrNull()
+            if (!list.isNullOrEmpty()) {
+                list
+            } else if (!term.term.isNullOrBlank()) {
+                val legacy = db.accountDao().getAccountsByTermName(term.term).firstOrNull()
+                if (!legacy.isNullOrEmpty()) {
+                    db.accountDao().updateTermId(term.id, term.term)
+                    legacy
+                } else null
+            } else null
+        }.getOrNull()
         hasData(!existing.isNullOrEmpty())
     }
 }
